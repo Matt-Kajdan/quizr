@@ -80,4 +80,4 @@ const UsersController = {
   deleteUser: deleteUser
 };
 
-module.exports = UsersController;
+module.exports = { upsertMe };
