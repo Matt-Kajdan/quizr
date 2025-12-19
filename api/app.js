@@ -17,6 +17,9 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+// public username availability check
+app.use("/users", usersRouter);
+
 // ----------------------------------------------------
 // AUTHENTICATION GATE, everything below requires auth
 app.use(requireAuth);
@@ -24,7 +27,6 @@ app.use(requireAuth);
 
 
 app.use("/me", meRouter);
-app.use("/users", usersRouter);
 // app.use("/quizzes", quizzesRouter);
 
 // 404 handler
