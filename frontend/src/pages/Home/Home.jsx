@@ -1,23 +1,14 @@
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../services/firebase";
-import { useNavigate, Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import { getQuizzes } from "../../services/quizzes";
 
 export function Home() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [quizzes, setQuizzes] = useState([]);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true)
+  const [quizzes, setQuizzes] = useState([])
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (!user) {
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
+
+useEffect(() => {
+    const fetchQuizzes = async () => {
       try {
         const data = await getQuizzes();
         setQuizzes(Array.isArray(data?.quizzes) ? data.quizzes : []);
@@ -27,9 +18,9 @@ export function Home() {
       } finally {
         setLoading(false);
       }
-    });
-    return unsub;
-  }, [navigate]);
+    };
+    fetchQuizzes();
+  }, []);
 
   const gradients = [
     "from-rose-500 to-pink-600",
@@ -50,11 +41,8 @@ export function Home() {
       </div>
     );
 
-  if (!user) return null;
-
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-y-auto">
-      {/* Animated background elements */}
+    <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-y-auto pt-16">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
