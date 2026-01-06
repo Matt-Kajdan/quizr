@@ -27,7 +27,7 @@ const QuizSchema = new mongoose.Schema({
   created_by: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
   attempts: [
     {
-      user_id: { type: mongoose.Schema.Types.ObjectId, required: true},
+      user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
       attempted_at: { type: Date, required: true},
       correct: { type: Number, required: true}
     }
