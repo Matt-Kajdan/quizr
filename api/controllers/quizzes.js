@@ -1,6 +1,7 @@
 const Quiz = require("../models/quiz");
 const User = require("../models/user");
 
+
 async function getAllQuizzes(req, res) {
   try{
     const { created_by } = req.query;
