@@ -9,5 +9,7 @@ router.post("/", requireAuth, UsersController.createUser);
 router.get("/me", requireAuth, UsersController.showUser);
 router.get("/:userId", requireAuth, UsersController.getUserById);
 router.delete("/:userId", requireAuth, UsersController.deleteUser);
+router.post("/me/favourites/:quizId", requireAuth, UsersController.addFavourite);
+router.delete("/me/favourites/:quizId", requireAuth, UsersController.removeFavourite);
 
 module.exports = router;
