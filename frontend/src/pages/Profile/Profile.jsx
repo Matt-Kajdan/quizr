@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../services/firebase";
 import { getUserByUsername } from '../../services/users';
 import { apiFetch } from "../../services/api";
 import { getPendingRequests, sendFriendRequest, getFriends, removeRequest, acceptFriendRequest } from '../../services/friends';
+import { removeFavourite } from "../../services/favourites";
 import { QuizStats } from '../../components/quizStats'
 
 export default function ProfilePage() {
@@ -13,6 +14,7 @@ export default function ProfilePage() {
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [takenQuizzes, setTakenQuizzes] = useState([]);
   const [createdQuizzes, setCreatedQuizzes] = useState([]);
+  const [myFavourites, setMyFavourites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sendingRequest, setSendingRequest] = useState(false);
@@ -35,6 +37,7 @@ export default function ProfilePage() {
     async function loadMyProfile() {
       if (!loggedInUser) {
         setMyUserId(null);
+        setMyFavourites([]);
         return;
       }
       try {
@@ -42,8 +45,11 @@ export default function ProfilePage() {
         if (!mounted) return;
         const body = await res.json();
         setMyUserId(body.user?._id || null);
+        const favs = Array.isArray(body.user?.favourites) ? body.user.favourites : [];
+        setMyFavourites(favs);
       } catch (err) {
         setMyUserId(null);
+        setMyFavourites([]);
       }
     }
     loadMyProfile();
@@ -163,6 +169,22 @@ export default function ProfilePage() {
     }
   }
 
+  async function handleRemoveFavourite(quizId) {
+    const previous = myFavourites;
+    setMyFavourites((prev) =>
+      prev.filter((item) => {
+        const itemId = typeof item === "string" ? item : item._id;
+        return itemId !== quizId;
+      })
+    );
+    try {
+      await removeFavourite(quizId);
+    } catch (err) {
+      console.error("Could not remove favourite", err);
+      setMyFavourites(previous);
+    }
+  }
+
   async function handleViewStats(quizId) {
     try {
       const response = await apiFetch(`/quizzes/${quizId}`);
@@ -212,7 +234,7 @@ export default function ProfilePage() {
             </svg>
           </div>
           <h3 className="text-2xl font-bold text-white mb-3">User Not Found</h3>
-          <p className="text-gray-300">The user you're looking for doesn't exist.</p>
+          <p className="text-gray-300">The user you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     );
@@ -374,6 +396,70 @@ export default function ProfilePage() {
             <div className="text-gray-300 text-sm">Average Score</div>
           </div>
         </div>
+        {isOwnProfile && (
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20 mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">Favourites</h2>
+            {myFavourites.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">No Favourites Yet</h3>
+                <p className="text-gray-300">Star a quiz to save it here</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {myFavourites.map((quiz) => {
+                  const quizId = typeof quiz === "string" ? quiz : quiz._id;
+                  const quizTitle = typeof quiz === "string" ? "Quiz" : quiz.title;
+                  const quizCategory = typeof quiz === "string" ? null : quiz.category;
+                  const creatorName = typeof quiz === "string" ? null : quiz.created_by?.username;
+                  return (
+                    <Link
+                      key={quizId}
+                      to={`/quiz/${quizId}`}
+                      className="group block bg-white/5 backdrop-blur rounded-2xl p-5 border border-white/10 hover:border-white/30 transition-all hover:bg-white/10"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-white mb-2">{quizTitle}</h3>
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
+                            {quizCategory && (
+                              <span className="inline-flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{quizCategory}</span>
+                              </span>
+                            )}
+                            {creatorName && (
+                              <span>Created by {creatorName}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              handleRemoveFavourite(quizId);
+                            }}
+                            className="px-4 py-2 rounded-full bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-semibold hover:shadow-lg hover:shadow-red-500/50 transition-all transform hover:scale-105 active:scale-95"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
         <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20 mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">Quizzes Taken</h2>
           {takenQuizzes.length === 0 ? (
@@ -444,7 +530,6 @@ export default function ProfilePage() {
               <span className="text-white font-semibold">{createdQuizzes.length} Quiz{createdQuizzes.length !== 1 ? 'zes' : ''}</span>
             </div>
           </div>
-
           {createdQuizzes.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -469,18 +554,14 @@ export default function ProfilePage() {
                 const avgScore = totalAttempts > 0
                   ? Math.round((quiz.attempts.reduce((sum, a) => sum + a.correct, 0) / totalAttempts / quiz.questions.length) * 100)
                   : 0;
-
                 return (
                   <div
                     key={quiz._id}
                     onClick={() => handleViewStats(quiz._id)}
                     className="group relative bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:border-white/30 transition-all hover:bg-white/10 cursor-pointer overflow-hidden hover:scale-105 transform duration-300"
                   >
-                    {/* Gradient header bar */}
                     <div className={`h-2 bg-gradient-to-r ${categoryColors[quiz.category] || categoryColors.other}`}></div>
-
                     <div className="p-6">
-                      {/* Category badge */}
                       <div className="flex items-center justify-between mb-4">
                         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${categoryColors[quiz.category] || categoryColors.other} text-white text-xs font-semibold`}>
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -488,7 +569,6 @@ export default function ProfilePage() {
                           </svg>
                           <span className="capitalize">{quiz.category}</span>
                         </div>
-
                         {totalAttempts > 0 && (
                           <div className="flex items-center gap-1 text-gray-400">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -499,13 +579,9 @@ export default function ProfilePage() {
                           </div>
                         )}
                       </div>
-
-                      {/* Quiz title */}
                       <h3 className="text-lg font-bold text-white mb-3 group-hover:text-purple-300 transition-colors line-clamp-2 min-h-[3.5rem]">
                         {quiz.title}
                       </h3>
-
-                      {/* Stats grid */}
                       <div className="grid grid-cols-2 gap-3 mb-4">
                         <div className="bg-white/5 rounded-xl p-3 text-center">
                           <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
@@ -521,8 +597,6 @@ export default function ProfilePage() {
                           <div className="text-xs text-gray-400 mt-1">Attempts</div>
                         </div>
                       </div>
-
-                      {/* Performance indicators */}
                       {totalAttempts > 0 ? (
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center justify-between text-xs">
@@ -537,7 +611,6 @@ export default function ProfilePage() {
                               style={{ width: `${passRate}%` }}
                             ></div>
                           </div>
-
                           <div className="flex items-center justify-between text-xs mt-3">
                             <span className="text-gray-400">Avg Score</span>
                             <span className="font-semibold text-blue-400">{avgScore}%</span>
@@ -548,8 +621,6 @@ export default function ProfilePage() {
                           <div className="text-gray-400 text-xs">No attempts yet</div>
                         </div>
                       )}
-
-                      {/* View stats button */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -562,8 +633,6 @@ export default function ProfilePage() {
                         </svg>
                         View Details
                       </button>
-
-                      {/* Created date - subtle footer */}
                       <div className="mt-3 pt-3 border-t border-white/10 flex items-center gap-1 text-xs text-gray-500">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

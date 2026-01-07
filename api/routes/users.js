@@ -11,5 +11,7 @@ router.get("/username/:username", requireAuth, UsersController.getUserIdByUserna
 router.patch("/:userId", requireAuth, UsersController.updateUser);
 router.get("/:userId", requireAuth, UsersController.getUserById);
 router.delete("/:userId", requireAuth, UsersController.deleteUser);
+router.post("/me/favourites/:quizId", requireAuth, UsersController.addFavourite);
+router.delete("/me/favourites/:quizId", requireAuth, UsersController.removeFavourite);
 
 module.exports = router;
