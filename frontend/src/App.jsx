@@ -11,6 +11,7 @@ import Layout from "./components/Layout";
 import ProfilePage from "./pages/Profile/Profile";
 import FriendsPage from "./pages/Friends/Friends"
 import SettingsPage from "./pages/SettingsPage/SettingsPage"
+import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
 
 
 // docs: https://reactrouter.com/en/main/start/overview
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       {path: "quizzes/create", element: <CreateQuiz /> },
       {path: "users/:username", element: <ProfilePage /> },
       {path: "friends", element: <FriendsPage /> },
+      {path: "leaderboard", element: <LeaderboardPage /> },
       {path: "settings", element: <SettingsPage />}
     ],
   },

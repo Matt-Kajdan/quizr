@@ -45,6 +45,82 @@ async function getQuizById(req, res) {
   }
 }
 
+async function getLeaderboard(req, res) {
+  try {
+    const leaderboard = await Quiz.aggregate([
+      { $unwind: "$attempts" },
+      {
+        $project: {
+          user_id: "$attempts.user_id",
+          correct: "$attempts.correct",
+          totalQuestions: { $size: "$questions" },
+          quiz_id: "$_id"
+        }
+      },
+      {
+        $group: {
+          _id: "$user_id",
+          totalCorrect: { $sum: "$correct" },
+          totalQuestions: { $sum: "$totalQuestions" },
+          attemptsCount: { $sum: 1 },
+          bestPercent: {
+            $max: {
+              $cond: [
+                { $gt: ["$totalQuestions", 0] },
+                { $multiply: [{ $divide: ["$correct", "$totalQuestions"] }, 100] },
+                0
+              ]
+            }
+          },
+          quizzes: { $addToSet: "$quiz_id" }
+        }
+      },
+      {
+        $project: {
+          user_id: "$_id",
+          totalCorrect: 1,
+          totalQuestions: 1,
+          attemptsCount: 1,
+          bestPercent: 1,
+          quizzesTaken: { $size: "$quizzes" },
+          avgPercent: {
+            $cond: [
+              { $gt: ["$totalQuestions", 0] },
+              { $multiply: [{ $divide: ["$totalCorrect", "$totalQuestions"] }, 100] },
+              0
+            ]
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          user_id: 1,
+          username: "$user.username",
+          totalCorrect: 1,
+          totalQuestions: 1,
+          attemptsCount: 1,
+          quizzesTaken: 1,
+          bestPercent: 1,
+          avgPercent: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({ leaderboard: leaderboard });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching leaderboard", error: error.message });
+  }
+}
+
 async function deleteQuiz(req, res) {
   try{
     const quiz = await Quiz.findByIdAndDelete(req.params.id);
@@ -108,6 +184,7 @@ const QuizzesController = {
   getAllQuizzes: getAllQuizzes,
   createQuiz: createQuiz,
   getQuizById: getQuizById,
+  getLeaderboard: getLeaderboard,
   deleteQuiz: deleteQuiz,
   submitQuiz: submitQuiz
 };

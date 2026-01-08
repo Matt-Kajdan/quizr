@@ -16,6 +16,12 @@ export async function createQuiz(quizData) {
   return res.json();
 }
 
+export async function getLeaderboard() {
+  const res = await apiFetch("/quizzes/leaderboard");
+  if (!res.ok) throw new Error("Unable to fetch leaderboard");
+  return res.json();
+}
+
 // import { auth } from "./firebase"
 // const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
