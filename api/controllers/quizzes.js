@@ -33,13 +33,105 @@ async function createQuiz(req, res) {
 
 async function getQuizById(req, res) {
   try{
-    const quiz = await Quiz.findById(req.params.id).populate("created_by", "username");
+    const quiz = await Quiz.findById(req.params.id)
+      .populate("created_by", "username")
+      .populate("attempts.user_id", "username");
     if(!quiz){
       return res.status(404).json({ message: "Quiz not found" });
     }
     res.status(200).json({ quiz: quiz })
   } catch (error) {
     res.status(500).json({ message: "Error fetching quiz", error: error.message})
+  }
+}
+
+async function getLeaderboard(req, res) {
+  try {
+    const leaderboard = await Quiz.aggregate([
+      { $unwind: "$attempts" },
+      {
+        $project: {
+          user_id: "$attempts.user_id",
+          correct: "$attempts.correct",
+          totalQuestions: { $size: "$questions" },
+          quiz_id: "$_id"
+        }
+      },
+      {
+        $group: {
+          _id: "$user_id",
+          totalCorrect: { $sum: "$correct" },
+          totalQuestions: { $sum: "$totalQuestions" },
+          attemptsCount: { $sum: 1 },
+          bestPercent: {
+            $max: {
+              $cond: [
+                { $gt: ["$totalQuestions", 0] },
+                { $multiply: [{ $divide: ["$correct", "$totalQuestions"] }, 100] },
+                0
+              ]
+            }
+          },
+          quizzes: { $addToSet: "$quiz_id" }
+        }
+      },
+      {
+        $project: {
+          user_id: "$_id",
+          totalCorrect: 1,
+          totalQuestions: 1,
+          attemptsCount: 1,
+          bestPercent: 1,
+          quizzesTaken: { $size: "$quizzes" },
+          avgPercent: {
+            $cond: [
+              { $gt: ["$totalQuestions", 0] },
+              { $multiply: [{ $divide: ["$totalCorrect", "$totalQuestions"] }, 100] },
+              0
+            ]
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "quizzes",
+          let: { userId: "$user_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$created_by", "$$userId"] } } },
+            { $count: "count" }
+          ],
+          as: "createdQuizzes"
+        }
+      },
+      {
+        $project: {
+          user_id: 1,
+          username: "$user.username",
+          totalCorrect: 1,
+          totalQuestions: 1,
+          attemptsCount: 1,
+          quizzesTaken: 1,
+          quizzesCreated: {
+            $ifNull: [{ $arrayElemAt: ["$createdQuizzes.count", 0] }, 0]
+          },
+          bestPercent: 1,
+          avgPercent: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({ leaderboard: leaderboard });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching leaderboard", error: error.message });
   }
 }
 
@@ -106,6 +198,7 @@ const QuizzesController = {
   getAllQuizzes: getAllQuizzes,
   createQuiz: createQuiz,
   getQuizById: getQuizById,
+  getLeaderboard: getLeaderboard,
   deleteQuiz: deleteQuiz,
   submitQuiz: submitQuiz
 };

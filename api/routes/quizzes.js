@@ -4,6 +4,7 @@ const router = express.Router();
 const QuizzesController = require("../controllers/quizzes");
 
 router.get("/", QuizzesController.getAllQuizzes);
+router.get("/leaderboard", QuizzesController.getLeaderboard);
 router.get("/:id", QuizzesController.getQuizById);
 router.post("/", QuizzesController.createQuiz);
 router.delete("/:id", QuizzesController.deleteQuiz)
