@@ -9,6 +9,7 @@ export function Home() {
   const [loading, setLoading] = useState(true)
   const [quizzes, setQuizzes] = useState([])
   const [favouriteIds, setFavouriteIds] = useState([]);
+  const [selectedCatergory, setSelectedCatergory] = useState("all");
 
 
 useEffect(() => {
@@ -69,6 +70,14 @@ useEffect(() => {
     "from-fuchsia-500 to-pink-600"
   ];
 
+  const catergories = [
+    "all",
+    ...new Set (quizzes.map((quiz) => quiz.category))
+  ];
+
+  const filteredQuizzes = selectedCatergory === "all" ? quizzes : quizzes.filter(
+    (quiz) => quiz.category === selectedCatergory
+  );
   if (loading)
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -91,6 +100,34 @@ useEffect(() => {
             Quiz app
           </h1>
           <p className="text-gray-300 text-base sm:text-lg px-4">Challenge yourself and expand your knowledge</p>
+        </div>
+        <div className="flex justify-center mb-6">
+          <select
+            value={selectedCatergory}
+            onChange={(e) => setSelectedCatergory(e.target.value)}
+            className="
+              w-full max-w-md
+              bg-white/10 text-white
+              px-6 py-3
+              rounded-2xl
+              border border-white/20
+              backdrop-blur
+              text-center
+              focus:outline-none focus:ring-2 focus:ring-purple-400
+            "
+          >
+              {catergories.map((category) => (
+                <option
+                key={category}
+                value={category}
+                className="text-black"
+                >
+                  {category === "all"
+                  ? "All Quizzes"
+                  : category.charAt(0).toUpperCase() + category.slice(1)}
+                </option>
+              ))}
+            </select>
         </div>
         {quizzes.length > 0 && (
           <div className="mb-6 sm:mb-8 grid grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto px-4">
@@ -120,7 +157,7 @@ useEffect(() => {
         )}
         {quizzes.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4">
-            {quizzes.map((quiz, index) => {
+            {filteredQuizzes.map((quiz, index) => {
               const gradient = gradients[index % gradients.length];
               const isFavourited = favouriteIds.includes(quiz._id);
               return (
