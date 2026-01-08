@@ -51,7 +51,7 @@ export default function UserSearchBar({ excludeUsername }) {
       } finally {
         if (requestIdRef.current === id) setLoading(false);
       }
-    }, 250);
+    }, 100);
 
     return () => clearTimeout(t);
   }, [q, excludeUsername]);
