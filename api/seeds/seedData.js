@@ -278,7 +278,7 @@ const seed = async () => {
               { text: "Resistance", is_correct: false },
               { text: "Noble", is_correct: false },
             ]),
-          } 
+          }
         ],
       },
       {
@@ -323,7 +323,7 @@ const seed = async () => {
               { text: "Claude Debussy", is_correct: false },
               { text: "Erik Satie", is_correct: true },
             ]),
-          } 
+          }
         ],
       },
       {
@@ -368,7 +368,7 @@ const seed = async () => {
               { text: "Uruguay", is_correct: true },
               { text: "Suriname", is_correct: false },
             ]),
-          } 
+          }
         ],
       },
       {
@@ -413,7 +413,7 @@ const seed = async () => {
               { text: "Irish", is_correct: false },
               { text: "Bourbon", is_correct: true },
             ]),
-          } 
+          }
         ],
       },
       {
@@ -458,7 +458,7 @@ const seed = async () => {
               { text: "Cambridge University", is_correct: false },
               { text: "National Theatre", is_correct: false },
             ]),
-          } 
+          }
         ],
       },
       {
@@ -503,7 +503,7 @@ const seed = async () => {
               { text: "Miles Davis", is_correct: false },
               { text: "Glenn Miller", is_correct: false },
             ]),
-          } 
+          }
         ],
       },
       {
@@ -548,7 +548,223 @@ const seed = async () => {
               { text: "Barbacoa", is_correct: false },
               { text: "Chanclas Poblanas", is_correct: false },
             ]),
-          } 
+          }
+        ],
+      },
+      {
+        _id: new mongoose.Types.ObjectId(),
+        title: "Ancient Egypt - The Comprehensive Test",
+        category: "history",
+        created_by: jane._id,
+        req_to_pass: 6,
+        questions: [
+          {
+            text: "Which pharaoh built the Great Pyramid of Giza?",
+            answers: addAnswerIds([
+              { text: "Tutankhamun", is_correct: false },
+              { text: "Khufu", is_correct: true },
+              { text: "Ramesses II", is_correct: false },
+              { text: "Cleopatra", is_correct: false },
+            ]),
+          },
+          {
+            text: "What was the primary purpose of the pyramids?",
+            answers: addAnswerIds([
+              { text: "Temples for worship", is_correct: false },
+              { text: "Astronomical observatories", is_correct: false },
+              { text: "Tombs for pharaohs", is_correct: true },
+              { text: "Storage facilities", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which god was associated with the afterlife and mummification?",
+            answers: addAnswerIds([
+              { text: "Ra", is_correct: false },
+              { text: "Horus", is_correct: false },
+              { text: "Anubis", is_correct: true },
+              { text: "Thoth", is_correct: false },
+            ]),
+          },
+          {
+            text: "What writing system did the ancient Egyptians use?",
+            answers: addAnswerIds([
+              { text: "Cuneiform", is_correct: false },
+              { text: "Hieroglyphics", is_correct: true },
+              { text: "Linear B", is_correct: false },
+              { text: "Sanskrit", is_correct: false },
+            ]),
+          },
+          {
+            text: "The Rosetta Stone was crucial in deciphering which language?",
+            answers: addAnswerIds([
+              { text: "Ancient Greek", is_correct: false },
+              { text: "Ancient Egyptian", is_correct: true },
+              { text: "Coptic", is_correct: false },
+              { text: "Aramaic", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which female pharaoh ruled Egypt for over 20 years?",
+            answers: addAnswerIds([
+              { text: "Nefertiti", is_correct: false },
+              { text: "Cleopatra", is_correct: false },
+              { text: "Hatshepsut", is_correct: true },
+              { text: "Nefertari", is_correct: false },
+            ]),
+          },
+          {
+            text: "What was the capital of ancient Egypt during the Old Kingdom?",
+            answers: addAnswerIds([
+              { text: "Thebes", is_correct: false },
+              { text: "Alexandria", is_correct: false },
+              { text: "Memphis", is_correct: true },
+              { text: "Luxor", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which pharaoh's tomb was discovered virtually intact in 1922?",
+            answers: addAnswerIds([
+              { text: "Ramesses II", is_correct: false },
+              { text: "Tutankhamun", is_correct: true },
+              { text: "Akhenaten", is_correct: false },
+              { text: "Seti I", is_correct: false },
+            ]),
+          }
+        ],
+      },
+      {
+        _id: new mongoose.Types.ObjectId(),
+        title: "Impressionism: Masters of Light",
+        category: "art",
+        created_by: jane._id,
+        req_to_pass: 4,
+        questions: [
+          {
+            text: "Which artist painted 'Impression, Sunrise', giving the movement its name?",
+            answers: addAnswerIds([
+              { text: "Pierre-Auguste Renoir", is_correct: false },
+              { text: "Claude Monet", is_correct: true },
+              { text: "Edgar Degas", is_correct: false },
+              { text: "Camille Pissarro", is_correct: false },
+            ]),
+          },
+          {
+            text: "What subject did Edgar Degas famously paint repeatedly?",
+            answers: addAnswerIds([
+              { text: "Water lilies", is_correct: false },
+              { text: "Ballet dancers", is_correct: true },
+              { text: "Haystacks", is_correct: false },
+              { text: "Cathedrals", is_correct: false },
+            ]),
+          },
+          {
+            text: "In which French city did Impressionism primarily develop?",
+            answers: addAnswerIds([
+              { text: "Lyon", is_correct: false },
+              { text: "Marseille", is_correct: false },
+              { text: "Paris", is_correct: true },
+              { text: "Nice", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which Impressionist painter was known for painting outdoor social gatherings?",
+            answers: addAnswerIds([
+              { text: "Pierre-Auguste Renoir", is_correct: true },
+              { text: "Berthe Morisot", is_correct: false },
+              { text: "Mary Cassatt", is_correct: false },
+              { text: "Alfred Sisley", is_correct: false },
+            ]),
+          },
+          {
+            text: "What technique did Impressionists use to capture the effect of light?",
+            answers: addAnswerIds([
+              { text: "Chiaroscuro", is_correct: false },
+              { text: "Impasto", is_correct: false },
+              { text: "Broken color and short brushstrokes", is_correct: true },
+              { text: "Sfumato", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which American artist became closely associated with French Impressionism?",
+            answers: addAnswerIds([
+              { text: "John Singer Sargent", is_correct: false },
+              { text: "Mary Cassatt", is_correct: true },
+              { text: "James McNeill Whistler", is_correct: false },
+              { text: "Winslow Homer", is_correct: false },
+            ]),
+          }
+        ],
+      },
+      {
+        _id: new mongoose.Types.ObjectId(),
+        title: "Space Exploration Milestones",
+        category: "science",
+        created_by: alice._id,
+        req_to_pass: 5,
+        questions: [
+          {
+            text: "Who was the first human in space?",
+            answers: addAnswerIds([
+              { text: "Neil Armstrong", is_correct: false },
+              { text: "Yuri Gagarin", is_correct: true },
+              { text: "Alan Shepard", is_correct: false },
+              { text: "John Glenn", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which spacecraft first landed humans on the Moon?",
+            answers: addAnswerIds([
+              { text: "Apollo 10", is_correct: false },
+              { text: "Apollo 11", is_correct: true },
+              { text: "Apollo 12", is_correct: false },
+              { text: "Gemini 12", is_correct: false },
+            ]),
+          },
+          {
+            text: "What was the first artificial satellite to orbit Earth?",
+            answers: addAnswerIds([
+              { text: "Explorer 1", is_correct: false },
+              { text: "Vanguard 1", is_correct: false },
+              { text: "Sputnik 1", is_correct: true },
+              { text: "Telstar 1", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which rover has been exploring Mars since 2012?",
+            answers: addAnswerIds([
+              { text: "Spirit", is_correct: false },
+              { text: "Opportunity", is_correct: false },
+              { text: "Curiosity", is_correct: true },
+              { text: "Sojourner", is_correct: false },
+            ]),
+          },
+          {
+            text: "What is the name of the telescope launched in 1990 that revolutionized astronomy?",
+            answers: addAnswerIds([
+              { text: "James Webb Space Telescope", is_correct: false },
+              { text: "Hubble Space Telescope", is_correct: true },
+              { text: "Spitzer Space Telescope", is_correct: false },
+              { text: "Chandra X-ray Observatory", is_correct: false },
+            ]),
+          },
+          {
+            text: "Which spacecraft was the first to leave our solar system?",
+            answers: addAnswerIds([
+              { text: "Pioneer 10", is_correct: false },
+              { text: "Voyager 1", is_correct: true },
+              { text: "Voyager 2", is_correct: false },
+              { text: "New Horizons", is_correct: false },
+            ]),
+          },
+          {
+            text: "What year did humans first walk on the Moon?",
+            answers: addAnswerIds([
+              { text: "1967", is_correct: false },
+              { text: "1968", is_correct: false },
+              { text: "1969", is_correct: true },
+              { text: "1970", is_correct: false },
+            ]),
+          }
         ],
       }
     ]
