@@ -27,11 +27,11 @@ We dealt with real engineering challenges like version control conflicts, debugg
 
 ## 🧠✨ Our Team of 5 Contributors  
 
-- [Emilia Furtan](https://github.com/EmilkaFn)
 - [Ryan Osmaston](https://github.com/Ryasmaston)
 - [Matt Kajdan](https://github.com/Matt-Kajdan)
 - [Dylan Scott](https://github.com/dylanscottvr11)
 - [Dominik Nowak](https://github.com/DominikNowak-DN)
+- [Emilia Furtan](https://github.com/EmilkaFn)
 
 
 ## 🧢✨ Our Coach 
@@ -100,18 +100,18 @@ Current core features include:
 - **Friends Access:** view quizzes within your friend network (where enabled)
 - **Seed Data:** natural seed users/quizzes + Firebase user seeding (where required)
 - **UI:** responsive Tailwind CSS styling across core pages (Home, Auth, Profile, Quizzes)
-
-### 🌱 Still in Development – paused due to project deadline
 - **Profile linking:** link to user profiles from Friends and Quizzes views
 - **Leaderboards:** friends-only leaderboard view
 - **Deployment:** deploy the database
-- **Media:** Firebase image upload + user profile picture
 - **Multi-answer questions:** allow multiple correct answers + allow users to select more than one answer
-- **Quiz generation:** LLM-assisted quiz creation (auto-generate quizzes)
 - **Difficulty insights:** difficulty ratings + average completion rate
+- **Profile stats:** show common quiz topics + average difficulty for created quizzes
+
+### 🌱 Still in Development – paused due to project deadline
+- **Media:** Firebase image upload + user profile picture
+- **Quiz generation:** LLM-assisted quiz creation (auto-generate quizzes)
 - **Mistake follow-up:** missed questions show a short explanation and/or a mini-quiz later
 - **Adaptive difficulty:** questions adjust based on performance
-- **Profile stats:** show common quiz topics + average difficulty for created quizzes
 - **Randomisation:** randomise question order during quiz creation/delivery
 - **Streaks:** quiz completion streaks
 
@@ -251,5 +251,3 @@ No auth logic here. It’s already enforced globally.
 - `api/controllers/*` - always use `req.user.uid`
 ### Extra explainer
 Internally, `apiFetch` retrieves the Firebase ID token from the current session and sends it as an `Authorization: Bearer <token>` header. The backend verifies this token once per request.
-
-
