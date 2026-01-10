@@ -495,7 +495,7 @@ return (
                 <button
                 className="w-full sm:w-auto px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/20 transition-all flex items-center justify-center gap-2"
                 type="button"
-                onClick={() => navigate(`/quiz/${id}/edit`)}
+                onClick={() => navigate(`/quiz/${id}/edit`, { state: { from: "quiz", returnTo: `/quiz/${id}` } })}
                 >
                 <svg
                     className="w-5 h-5"
@@ -535,7 +535,7 @@ return (
                 {showDeleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className="bg-slate-800 rounded-2xl border border-white/20 p-6 max-w-md w-full shadow-2xl">
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-3 mb-4 text-left">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/20">
                         <svg
                             className="h-6 w-6 text-rose-400"

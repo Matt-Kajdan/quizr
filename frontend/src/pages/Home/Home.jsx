@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getQuizzes } from "../../services/quizzes";
 import { toggleFavourite } from "../../services/favourites";
 import { apiFetch } from "../../services/api";
@@ -10,6 +10,7 @@ export function Home() {
   const [quizzes, setQuizzes] = useState([])
   const [favouriteIds, setFavouriteIds] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const navigate = useNavigate();
 
 
 useEffect(() => {
@@ -119,15 +120,15 @@ useEffect(() => {
       </div>
       <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 min-h-full">
         <div className="mb-8 sm:mb-12 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 mb-3 sm:mb-4 animate-fade-in px-4">
-            Quizr.app
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 mb-3 sm:mb-4 animate-fade-in px-4">
+            Quizr.fun
           </h1>
           <p className="text-gray-300 text-base sm:text-lg px-4">Challenge yourself and expand your knowledge</p>
         </div>
         {quizzes.length > 0 && (
-  <div className="mb-6 sm:mb-8 max-w-3xl mx-auto px-4 flex flex-col-reverse sm:flex-row sm:flex-wrap items-center justify-between gap-4">
+  <div className="mb-6 sm:mb-8 max-w-3xl mx-auto px-4 flex flex-col-reverse sm:flex-row sm:flex-wrap items-center justify-center gap-5">
     {/* Total Quizzes Card */}
-    <div className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl px-4 py-3 border border-white/20 flex flex-col justify-center min-w-[150px] w-full sm:w-auto">
+    <div className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl px-4 border border-white/20 flex flex-col justify-center min-w-[150px] w-full sm:w-auto h-[72px]">
       <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{filteredQuizzes.length}</div>
       <div className="text-gray-300 text-xs sm:text-sm">Total Quizzes</div>
     </div>
@@ -137,16 +138,24 @@ useEffect(() => {
       value={selectedCategory}
       onChange={(e) => setSelectedCategory(e.target.value)}
       className="
-        h-14
+        h-[72px]
         w-full max-w-md
         bg-white/10 text-white
-        px-4
+        pl-4 pr-10
         rounded-2xl
         border border-white/20
         backdrop-blur
         text-center
-        focus:outline-none focus:ring-2 focus:ring-purple-400
+        focus:outline-none focus:ring-0
+        appearance-none
+        transition-colors duration-150 hover:bg-white/15 hover:border-white/30
       "
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "right 1.25rem center",
+        backgroundSize: "1.1rem"
+      }}
     >
       {categories.map((category) => (
         <option
@@ -204,7 +213,7 @@ useEffect(() => {
                       event.stopPropagation();
                       handleToggleFavourite(quiz._id, isFavourited);
                     }}
-                    className={`absolute top-3 right-3 z-10 inline-flex items-center justify-center rounded-full border border-white/20 bg-black/30 p-2 backdrop-blur transition-transform duration-200 group-hover:-translate-y-2 group-hover:scale-110 ${
+                    className={`absolute top-6 right-3 z-10 inline-flex items-center justify-center rounded-full border border-white/20 bg-black/30 p-2 backdrop-blur transition-transform duration-200 group-hover:-translate-y-1 ${
                       isFavourited ? "text-yellow-300" : "text-white/70 hover:text-yellow-200"
                     }`}
                   >
@@ -220,10 +229,10 @@ useEffect(() => {
                       <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
                     </svg>
                   </button>
-                  <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity blur-xl -z-10"
+                  <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-60 transition-opacity blur-lg -z-10"
                     style={{ background: `linear-gradient(135deg, rgb(168 85 247), rgb(236 72 153))` }}></div>
-                  <div className="relative bg-white/10 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-white/20 hover:border-white/40 transition-all transform group-hover:-translate-y-2 group-hover:shadow-2xl overflow-hidden h-full flex flex-col">                    <div className={`absolute top-0 left-0 right-0 h-1.5 sm:h-2 bg-gradient-to-r ${gradient}`}></div>
-                    <div className="relative z-10 pt-2 flex-1 flex flex-col">
+                  <div className="relative bg-white/10 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-5 px-5 pb-1.5 sm:pt-6 sm:px-6 sm:pb-2 border border-white/20 hover:border-white/40 transition-all transform group-hover:-translate-y-1 group-hover:shadow-2xl overflow-hidden h-full flex flex-col">                    <div className={`absolute top-0 left-0 right-0 h-1.5 sm:h-2 bg-gradient-to-r ${gradient}`}></div>
+                    <div className="relative z-10 flex-1 flex flex-col">
                       <div className="flex items-center justify-between mb-3 sm:mb-4">
                         <div className="flex flex-wrap items-center gap-2">
                           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${gradient} text-white text-xs font-semibold`}>
@@ -234,7 +243,7 @@ useEffect(() => {
                             />
                             <span className="capitalize">{categoryLabel}</span>
                           </div>
-                          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold ${difficulty.className}`}>
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/20 bg-white/10 text-xs font-semibold text-white/90">
                             <img
                               src={difficulty.icon}
                               alt=""
@@ -245,18 +254,31 @@ useEffect(() => {
                           </div>
                         </div>
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3 line-clamp-2 transition-all flex-1">
-                        {quiz.title}
-                      </h3>
-                      <div className="flex flex-col items-center justify-center gap-1 text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4">
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span>{quiz?.questions?.length || 0} questions</span>
-                        </div>
-                        <div>
-                          <span>Created by {quiz?.created_by?.username}</span>
+                      <div className="flex-1 flex items-center">
+                        <h3 className="text-lg sm:text-xl font-bold text-white py-2 mb-3 sm:mb-4 line-clamp-2 transition-all text-center w-full">
+                          {quiz.title}
+                        </h3>
+                      </div>
+                      <div className="mt-auto -mx-5 sm:-mx-6">
+                        <div className="h-px w-full bg-white/10 -translate-y-1"></div>
+                        <div className="flex items-center justify-between gap-2 py-0.5 px-4 sm:px-5 text-xs sm:text-sm text-gray-200">
+                          <div className="flex items-center gap-1.5 leading-none">
+                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-gray-200 text-[10px] text-gray-200 select-none">?</span>
+                            <span>{quiz?.questions?.length || 0} questions</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              if (quiz?.created_by?.username) {
+                                navigate(`/users/${quiz.created_by.username}`);
+                              }
+                            }}
+                            className="rounded-lg px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white hover:backdrop-blur"
+                          >
+                            <span>By {quiz?.created_by?.username}</span>
+                          </button>
                         </div>
                       </div>
                     </div>

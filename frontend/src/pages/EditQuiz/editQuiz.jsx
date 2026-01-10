@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { auth } from "../../services/firebase";
 import { apiFetch } from "../../services/api";
 import { getQuizById, updateQuiz } from "../../services/quizzes";
@@ -66,6 +66,8 @@ export default function EditQuiz() {
   const DEFAULT_ANSWERS_PER_QUESTION = 4;
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.returnTo || `/quiz/${id}`;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [initialQuiz, setInitialQuiz] = useState(null);
@@ -120,7 +122,7 @@ export default function EditQuiz() {
         const creatorId =
           typeof quiz?.created_by === "string" ? quiz.created_by : quiz?.created_by?._id;
         if (!creatorId || creatorId !== meBody.user?._id) {
-          navigate(`/quiz/${id}`);
+          navigate(returnTo);
           return;
         }
 
@@ -158,7 +160,7 @@ export default function EditQuiz() {
         prevQuestionCountRef.current = normalizedQuestions.length || 1;
       } catch (error) {
         alert(error.message);
-        navigate(`/quiz/${id}`);
+        navigate(returnTo);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -315,7 +317,7 @@ export default function EditQuiz() {
         lock_answers: lockAnswers,
         req_to_pass: safeReqToPass,
       });
-      navigate(`/quiz/${id}`);
+      navigate(returnTo);
     } catch (err) {
       alert(err.message);
     }
@@ -660,7 +662,7 @@ export default function EditQuiz() {
             </button>
             <button
               type="button"
-              onClick={() => navigate(`/quiz/${id}`)}
+              onClick={() => navigate(returnTo)}
               className="flex-1 bg-white/10 border border-white/20 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all"
             >
               Discard Changes

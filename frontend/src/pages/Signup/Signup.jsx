@@ -163,11 +163,11 @@ export function Signup() {
 </div>
         <h1 className="text-center text-3xl sm:text-4xl font-semibold tracking-tight">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400">
-            Welcome to Quiz.app
+            Welcome to Quizr.fun
           </span>
         </h1>
         <p className="mt-2 text-center text-sm sm:text-base font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300">
-          Build confidence — one quiz at a time.
+          Expand your knowledge — one quiz at a time.
         </p>
         <div className="mt-5 bg-white/10 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-5 border border-white/20">
           <h2 className="text-lg font-medium">Sign up</h2>

@@ -11,6 +11,13 @@ function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState(null);
+  const profileLabel = username || "Profile";
+  const profileSizeClass =
+    username && username.length > 16
+      ? "text-xs"
+      : username && username.length > 12
+      ? "text-sm"
+      : "text-sm";
 
   useEffect(() => {
     // redirect to login when we know there's no user
@@ -95,14 +102,14 @@ function NavBar() {
               <NavLink
                 to={`/users/${username}`}
                 className={({ isActive }) =>
-                  `text-sm font-medium transition-colors ${
+                  `${profileSizeClass} font-medium transition-colors ${
                     isActive
                       ? "text-purple-400"
                       : "text-gray-300 hover:text-white"
                   }`
                 }
               >
-                Profile
+                {profileLabel}
               </NavLink>
             )}
             {user && (
