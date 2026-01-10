@@ -85,7 +85,7 @@ export default function UserSearchBar({ excludeUsername }) {
       />
 
       {open && (
-        <div className="absolute mt-2 w-full rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-md shadow-lg overflow-hidden z-50">
+        <div className="absolute mt-2 w-full rounded-xl border border-white/10 bg-slate-900 backdrop-blur-md shadow-lg overflow-hidden z-50">
           {loading && (
             <div className="px-4 py-2 text-sm text-gray-300">Searching…</div>
           )}
@@ -101,7 +101,7 @@ export default function UserSearchBar({ excludeUsername }) {
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => selectUser(u.username)}
-                className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-white/10 flex items-center gap-3"
+                className="w-full text-left px-4 py-5 text-sm text-gray-200 hover:bg-white/10 flex items-center gap-3"
               >
                 {u.profile_pic ? (
                   <img

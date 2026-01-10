@@ -373,9 +373,6 @@ export default function ProfilePage() {
                   <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
                     {isOwnProfile && (
                       <>
-                        <button disabled className="px-6 py-2.5 rounded-full bg-white/20 text-white font-semibold border border-white/30 cursor-not-allowed">
-                          Your Profile
-                        </button>
                         <a
                           href={`/settings`}
                           className="px-6 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2"
@@ -386,6 +383,9 @@ export default function ProfilePage() {
                           </svg>
                           Settings
                         </a>
+                        <span className="px-2 py-2.5 text-white font-semibold">
+                          Your Profile
+                        </span>
                       </>
                     )}
                     {!isOwnProfile && friendsLoading && (
