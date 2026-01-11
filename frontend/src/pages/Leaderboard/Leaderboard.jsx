@@ -250,7 +250,7 @@ export default function LeaderboardPage() {
                               className="flex items-center gap-3 min-w-0 cursor-pointer text-slate-800 hover:text-slate-800 hover:font-semibold"
                             >
                               <div
-                                className={`h-9 w-9 shrink-0 rounded-full bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm`}
+                                className={`h-9 w-9 shrink-0 rounded-xl bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm`}
                               >
                                 {(entry.username || "?").charAt(0).toUpperCase()}
                               </div>

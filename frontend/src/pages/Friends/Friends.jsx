@@ -191,7 +191,7 @@ const isIncoming = (request) => profile && request.user2?._id === profile._id
                                 to={`/users/${other.username}`}
                                 className="flex items-center gap-3 min-w-0 text-left hover:opacity-80 transition-opacity"
                               >
-                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
+                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
                                   {other.profile_pic ? (
                                     <img
                                       src={other.profile_pic}
@@ -261,7 +261,7 @@ const isIncoming = (request) => profile && request.user2?._id === profile._id
                                 to={`/users/${other.username}`}
                                 className="flex items-center gap-3 min-w-0 text-left hover:opacity-80 transition-opacity"
                               >
-                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
+                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
                                   {other.profile_pic ? (
                                     <img
                                       src={other.profile_pic}
@@ -381,7 +381,7 @@ const isIncoming = (request) => profile && request.user2?._id === profile._id
                               to={`/users/${other.username}`}
                               className="flex items-center gap-3 min-w-0 text-left hover:opacity-80 transition-opacity"
                             >
-                              <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
+                            <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
                                 {other.profile_pic ? (
                                   <img
                                     src={other.profile_pic}
