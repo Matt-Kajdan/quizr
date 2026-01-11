@@ -578,12 +578,14 @@ export default function ProfilePage() {
                   <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 mb-2">{profile.user_data?.username}</h1>
                   {profile.user_data?.created_at && (
                     <div className="flex items-center justify-center sm:justify-start gap-2 text-slate-500 text-sm mb-4">
-                      <span className="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
-                        <svg className="w-3.5 h-3.5 text-amber-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.45a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.45a1 1 0 00-1.175 0l-3.37 2.45c-.784.57-1.84-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.963 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.05 2.927z" />
-                        </svg>
-                        You
-                      </span>
+                      {isOwnProfile && (
+                        <span className="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                          <svg className="w-3.5 h-3.5 text-amber-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.45a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.45a1 1 0 00-1.175 0l-3.37 2.45c-.784.57-1.84-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.963 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.05 2.927z" />
+                          </svg>
+                          You
+                        </span>
+                      )}
                       <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>

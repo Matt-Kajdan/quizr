@@ -191,7 +191,7 @@ export default function FriendsPage() {
                                 to={`/users/${other.user_data?.username}`}
                                 className="flex items-center gap-3 min-w-0 text-left hover:opacity-80 transition-opacity"
                               >
-                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
+                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg`}>
                                   {other.user_data?.profile_pic ? (
                                     <img
                                       src={other.user_data.profile_pic}
@@ -261,7 +261,7 @@ export default function FriendsPage() {
                                 to={`/users/${other.user_data?.username}`}
                                 className="flex items-center gap-3 min-w-0 text-left hover:opacity-80 transition-opacity"
                               >
-                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
+                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg`}>
                                   {other.user_data?.profile_pic ? (
                                     <img
                                       src={other.user_data.profile_pic}
@@ -378,10 +378,10 @@ export default function FriendsPage() {
                         ) : (
                           <div className="flex items-center justify-between gap-3">
                             <Link
-                              to={`/users/${other.username}`}
+                              to={`/users/${other.user_data?.username}`}
                               className="flex items-center gap-3 min-w-0 text-left hover:opacity-80 transition-opacity"
                             >
-                              <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg border border-white/40`}>
+                              <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg`}>
                                 {other.user_data?.profile_pic ? (
                                   <img
                                     src={other.user_data.profile_pic}

@@ -237,9 +237,21 @@ export default function LeaderboardPage() {
                               className="flex items-center gap-3 min-w-0 cursor-pointer text-slate-800 hover:text-slate-800 hover:font-semibold"
                             >
                               <div
-                                className={`h-9 w-9 shrink-0 rounded-[30%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm`}
+                                className={`h-9 w-9 shrink-0 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm shadow-sm`}
                               >
-                                {(entry.user_data?.username || "?").charAt(0).toUpperCase()}
+                                {entry.user_data?.profile_pic ? (
+                                  <img
+                                    src={entry.user_data.profile_pic}
+                                    alt={entry.user_data.username}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.style.display = 'none';
+                                      e.target.parentElement.innerHTML = `<span>${(entry.user_data?.username || "?").charAt(0).toUpperCase()}</span>`;
+                                    }}
+                                  />
+                                ) : (
+                                  <span>{(entry.user_data?.username || "?").charAt(0).toUpperCase()}</span>
+                                )}
                               </div>
                               <span className="truncate">{entry.user_data?.username}</span>
                             </Link>

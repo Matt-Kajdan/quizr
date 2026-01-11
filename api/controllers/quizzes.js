@@ -116,6 +116,7 @@ async function getAllQuizzes(req, res) {
       {
         $project: {
           "created_by.user_data.username": 1,
+          "created_by.user_data.profile_pic": 1,
           "created_by.authId": 1,
           "created_by._id": 1,
           title: 1,
@@ -295,6 +296,7 @@ async function getLeaderboard(req, res) {
         $project: {
           user_id: 1,
           "user_data.username": "$user.user_data.username",
+          "user_data.profile_pic": "$user.user_data.profile_pic",
           totalCorrect: 1,
           totalQuestions: 1,
           attemptsCount: 1,
