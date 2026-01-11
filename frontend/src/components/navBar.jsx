@@ -63,6 +63,12 @@ function NavBar() {
               <>
                 <NavLink
                   to="/"
+                  onClick={(event) => {
+                    if (location.pathname === "/") {
+                      event.preventDefault();
+                      navigate(0);
+                    }
+                  }}
                   className={({ isActive }) =>
                     `text-sm transition-colors h-16 px-5 inline-flex items-center ${
                       isActive

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getQuizzes } from "../../services/quizzes";
 import { toggleFavourite } from "../../services/favourites";
 import { apiFetch } from "../../services/api";
@@ -11,6 +11,7 @@ export function Home() {
   const [favouriteIds, setFavouriteIds] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const navigate = useNavigate();
+  const location = useLocation();
   const opalBackdropStyle = {
     backgroundColor: "#f7f5f1",
     backgroundImage: `
@@ -45,7 +46,7 @@ useEffect(() => {
       }
     };
     fetchQuizzes();
-  }, []);
+  }, [location.state?.refreshKey]);
 
 useEffect(() => {
   let mounted = true;
@@ -359,33 +360,9 @@ useEffect(() => {
                   onMouseLeave={handleCardMouseLeave}
                 >
                   <div
-                    className="relative z-10 bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-5 px-5 pb-1.5 sm:pt-6 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-full flex flex-col"
+                    className="relative z-10 bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-4 px-5 pb-1.5 sm:pt-5 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-full flex flex-col"
                     style={{ "--shadow-color": gradient.hover.primary }}
                   >
-                    <button
-                      type="button"
-                      aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        handleToggleFavourite(quiz._id, isFavourited);
-                      }}
-                      className={`absolute top-6 right-3 z-20 inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-colors duration-200 ${
-                        isFavourited ? "text-amber-500" : "text-slate-500 hover:text-amber-400"
-                      }`}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        className="h-4 w-4"
-                        fill={isFavourited ? "currentColor" : "none"}
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                      </svg>
-                    </button>
                     <div
                       className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-45 transition-opacity blur-2xl"
                       style={{
@@ -396,7 +373,6 @@ useEffect(() => {
                         `
                       }}
                     ></div>
-                    <div className={`absolute top-0 left-0 right-0 h-1.5 sm:h-2 bg-gradient-to-r ${gradient.className}`}></div>
                     <div className="relative z-10 flex-1 flex flex-col">
                       <div className="flex items-center justify-between mb-3 sm:mb-4">
                         <div className="flex flex-wrap items-center gap-2">
@@ -426,6 +402,30 @@ useEffect(() => {
                             <span>{difficulty.label}</span>
                           </div>
                         </div>
+                        <button
+                          type="button"
+                          aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            handleToggleFavourite(quiz._id, isFavourited);
+                          }}
+                          className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-colors duration-200 ${
+                            isFavourited ? "text-amber-500" : "text-slate-500 hover:text-amber-400"
+                          }`}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            className="h-4 w-4"
+                            fill={isFavourited ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                          </svg>
+                        </button>
                       </div>
                       <div className="flex-1 flex items-center">
                         <h3 className="text-lg sm:text-xl font-bold text-slate-800 py-2 mb-3 sm:mb-4 line-clamp-2 transition-all text-center w-full">
