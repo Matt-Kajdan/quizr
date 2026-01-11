@@ -283,28 +283,10 @@ export default function SettingsPage() {
           <h1 className="text-4xl font-semibold text-slate-800 mb-8">
             Settings
           </h1>
-          {message && (
-            <div className="mb-6 bg-emerald-100/70 border border-emerald-200/80 rounded-2xl p-4 backdrop-blur">
-              <p className="text-emerald-700">{message}</p>
-            </div>
-          )}
-          {error && (
-            <div className="mb-6 bg-rose-100/80 border border-rose-200/80 rounded-2xl p-4 backdrop-blur">
-              <p className="text-rose-700">{error}</p>
-            </div>
-          )}
           {isAccountLocked && (
-            <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 shadow-sm">
-              <h2 className="text-2xl font-semibold text-slate-800 mb-4">{deletionHeader}</h2>
-              {deletionError && (
-                <div className="mb-4 bg-rose-100/80 border border-rose-200/80 rounded-2xl p-4 backdrop-blur">
-                  <p className="text-rose-700">{deletionError}</p>
-                </div>
-              )}
-              <p className="text-slate-600 mb-4">
-                Your account is scheduled for deletion. Manage the countdown from your profile.
-              </p>
-              <div className="flex justify-center">
+            <div className="mb-6 bg-amber-100/70 border border-amber-200/80 rounded-3xl p-4 backdrop-blur">
+              <p className="text-amber-700">Your account is scheduled for deletion. Manage the countdown from your profile.</p>
+              <div className="mt-4">
                 <button
                   type="button"
                   onClick={() => navigate(`/users/${profile?.user_data?.username}`)}
@@ -313,6 +295,16 @@ export default function SettingsPage() {
                   Go to My Profile
                 </button>
               </div>
+            </div>
+          )}
+          {message && (
+            <div className="mb-6 bg-emerald-100/70 border border-emerald-200/80 rounded-2xl p-4 backdrop-blur">
+              <p className="text-emerald-700">{message}</p>
+            </div>
+          )}
+          {error && (
+            <div className="mb-6 bg-rose-100/80 border border-rose-200/80 rounded-2xl p-4 backdrop-blur">
+              <p className="text-rose-700">{error}</p>
             </div>
           )}
           <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 shadow-sm">

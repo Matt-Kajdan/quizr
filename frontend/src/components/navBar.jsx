@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../services/firebase";
 import { useAuth } from "./Auth";
-import { apiFetch } from "../services/api";
 import UserSearchBar from "./UserSearchBar";
 
-function NavBar() {
+function NavBar({ accountStatus, accountUsername }) {
   const user = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [username, setUsername] = useState(null);
-  const [accountStatus, setAccountStatus] = useState("active");
-  const [statusRefreshKey, setStatusRefreshKey] = useState(0);
+  const username = accountUsername;
+  const isAccountLocked = accountStatus === "pending_deletion";
   const profileLabel = username || "Profile";
   const profileSizeClass =
     username && username.length > 16
@@ -27,32 +25,6 @@ function NavBar() {
       navigate("/login");
     }
   }, [user, navigate]);
-
-  useEffect(() => {
-    async function fetchUsername() {
-      if (user) {
-        try {
-          const res = await apiFetch("/me"); // Changed from /users/me to /me
-          const body = await res.json();
-          setUsername(body.user?.user_data?.username);
-          setAccountStatus(body.user?.status || "active");
-        } catch (err) {
-          console.error("Could not fetch username", err);
-        }
-      }
-    }
-    fetchUsername();
-  }, [user, location.pathname, location.search, navigate, statusRefreshKey]); // Added location as dependency
-
-  useEffect(() => {
-    function handleStatusChange() {
-      setStatusRefreshKey((value) => value + 1);
-    }
-    window.addEventListener("account-status-changed", handleStatusChange);
-    return () => window.removeEventListener("account-status-changed", handleStatusChange);
-  }, []);
-
-  const isAccountLocked = accountStatus === "pending_deletion";
 
   return (
     <nav className="fixed top-0 left-0 z-50 w-screen bg-white/70 backdrop-blur-lg border-b border-slate-200/80">

@@ -94,13 +94,13 @@ export default function ProfilePage() {
         getFriends(),
         getPendingRequests()
       ]);
-      const isAlreadyFriend = friends.some((other) => {
+      const isAlreadyFriend = Array.isArray(friends) && friends.some((other) => {
         return other?._id === profile._id;
       });
       setIsFriend(isAlreadyFriend);
       setPendingSent(false);
       setIncomingRequest(null);
-      const relevantRequest = requests.find((r) => {
+      const relevantRequest = Array.isArray(requests) && requests.find((r) => {
         const other = r.user1._id === myUserId ? r.user2 : r.user1;
         return other?._id === profile._id;
       });
@@ -697,6 +697,52 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+          {isAccountLocked && (
+            <div className="mb-6 sm:mb-8 bg-amber-100/70 border border-amber-200/80 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-sm">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-amber-800 mb-2">
+                    Account scheduled for deletion
+                  </h2>
+                  <p className="text-amber-700 mb-2">
+                    Deletion in {remainingLabel}. {deletionModeLabel}
+                  </p>
+                  {deletionInfo?.scheduled_for && (
+                    <p className="text-amber-700/80 text-sm">
+                      Scheduled for {new Date(deletionInfo.scheduled_for).toLocaleString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
+                    </p>
+                  )}
+                  {deletionActionError && (
+                    <p className="text-rose-700 mt-3">{deletionActionError}</p>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={handleCancelDeletion}
+                    disabled={deletionActionLoading}
+                    className="px-5 py-2.5 rounded-xl bg-white/80 text-slate-700 font-semibold border border-amber-200/80 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deletionActionLoading ? "Working..." : "Cancel Deletion"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteNow}
+                    disabled={deletionActionLoading}
+                    className="px-5 py-2.5 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Delete Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
               <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes created</h2>
@@ -708,6 +754,7 @@ export default function ProfilePage() {
                       return (
                         <button
                           key={option}
+                          disabled={isAccountLocked}
                           onClick={() => {
                             if (isActive) {
                               setSortDirection(prev => prev === "desc" ? "asc" : "desc");
@@ -716,9 +763,11 @@ export default function ProfilePage() {
                               setSortDirection("desc");
                             }
                           }}
-                          className={`w-20 py-1.5 rounded-xl text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1 ${isActive
-                            ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
-                            : 'text-slate-500 hover:text-slate-700'
+                          className={`w-20 py-1.5 rounded-xl text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1 ${isAccountLocked
+                            ? "opacity-50 cursor-not-allowed text-slate-400"
+                            : isActive
+                              ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
+                              : 'text-slate-500 hover:text-slate-700'
                             }`}
                           style={{ WebkitTapHighlightColor: 'transparent' }}
                         >
@@ -994,52 +1043,6 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {isAccountLocked && (
-            <div className="mb-6 sm:mb-8 bg-amber-100/70 border border-amber-200/80 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-sm">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-amber-800 mb-2">
-                    Account scheduled for deletion
-                  </h2>
-                  <p className="text-amber-700 mb-2">
-                    Deletion in {remainingLabel}. {deletionModeLabel}
-                  </p>
-                  {deletionInfo?.scheduled_for && (
-                    <p className="text-amber-700/80 text-sm">
-                      Scheduled for {new Date(deletionInfo.scheduled_for).toLocaleString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                      })}
-                    </p>
-                  )}
-                  {deletionActionError && (
-                    <p className="text-rose-700 mt-3">{deletionActionError}</p>
-                  )}
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={handleCancelDeletion}
-                    disabled={deletionActionLoading}
-                    className="px-5 py-2.5 rounded-xl bg-white/80 text-slate-700 font-semibold border border-amber-200/80 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {deletionActionLoading ? "Working..." : "Cancel Deletion"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDeleteNow}
-                    disabled={deletionActionLoading}
-                    className="px-5 py-2.5 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Delete Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
           {isOwnProfile && (
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">

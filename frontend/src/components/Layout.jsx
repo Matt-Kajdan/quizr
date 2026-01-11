@@ -28,7 +28,8 @@ function Layout() {
                 const res = await apiFetch("/me");
                 const body = await res.json();
                 if (!mounted) return;
-                setAccountStatus(body.user?.status || "active");
+                // Status can be in different locations depending on the API response
+                setAccountStatus(body.user?.user_data?.status || body.user?.status || "active");
                 setAccountUsername(body.user?.user_data?.username || null);
             } catch (error) {
                 if (!mounted) return;
@@ -58,7 +59,7 @@ function Layout() {
 
     return (
         <>
-            {!hideNavbar && <NavBar />}
+            {!hideNavbar && <NavBar accountStatus={accountStatus} accountUsername={accountUsername} />}
             <main><Outlet /></main>
         </>
     );
