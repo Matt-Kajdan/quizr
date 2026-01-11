@@ -10,6 +10,8 @@ export function Home() {
   const [quizzes, setQuizzes] = useState([])
   const [favouriteIds, setFavouriteIds] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [sortDirection, setSortDirection] = useState("desc");
   const navigate = useNavigate();
   const location = useLocation();
   const returnTo = `${location.pathname}${location.search || ""}`;
@@ -115,7 +117,7 @@ export function Home() {
   const difficultyChips = {
     easy: {
       label: "Easy",
-      className: "border-emerald-300/50 bg-emerald-400/25 text-emerald-100",
+      className: "border-emerald-300/50 bg-emerald-400/25 text-emerald-700 hover:border-emerald-200/80 hover:bg-emerald-100/70 hover:text-emerald-700",
       iconPaths: [
         "M5 18c0-6 4.5-11 12-12 1 8-4 13-10 13-1.2 0-2-.3-2-.9z",
         "M8 16c1-3 4-5 8-6",
@@ -124,7 +126,7 @@ export function Home() {
     },
     medium: {
       label: "Medium",
-      className: "border-amber-400/40 bg-amber-500/20 text-amber-100",
+      className: "border-amber-400/40 bg-amber-500/20 text-amber-700 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700",
       iconPaths: [
         "M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0",
         "M9 15l6-6",
@@ -133,7 +135,7 @@ export function Home() {
     },
     hard: {
       label: "Hard",
-      className: "border-rose-400/40 bg-rose-500/20 text-rose-100",
+      className: "border-rose-400/40 bg-rose-500/20 text-rose-700 hover:border-rose-200/80 hover:bg-rose-100/70 hover:text-rose-700",
       iconPaths: [
         "M13 2L4 14h6l-1 8 9-12h-6z"
       ]
@@ -156,11 +158,31 @@ export function Home() {
       ? "Favourite Quizzes"
       : `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Quizzes`;
 
-  const filteredQuizzes = selectedCategory === "all"
+  const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
+
+  const filteredQuizzes = (selectedCategory === "all"
     ? quizzes
     : selectedCategory === "favourites"
       ? quizzes.filter((quiz) => favouriteIds.includes(quiz._id))
-      : quizzes.filter((quiz) => quiz.category === selectedCategory);
+      : quizzes.filter((quiz) => quiz.category === selectedCategory)
+  ).sort((a, b) => {
+    if (sortBy === "stars") {
+      const getStars = (q) => q.favourited_count ?? (Array.isArray(q.favourites) ? q.favourites.length : (q.favouritesCount ?? 0));
+      return sortDirection === "desc" ? getStars(b) - getStars(a) : getStars(a) - getStars(b);
+    }
+    if (sortBy === "questions") {
+      const getCount = (q) => q.questions?.length || 0;
+      return sortDirection === "desc" ? getCount(b) - getCount(a) : getCount(a) - getCount(b);
+    }
+    if (sortBy === "difficulty") {
+      const getDiff = (q) => difficultyOrder[q.difficulty] || 0;
+      return sortDirection === "desc" ? getDiff(b) - getDiff(a) : getDiff(a) - getDiff(b);
+    }
+    // Default to date (newest/oldest)
+    const dateA = new Date(a.created_at || 0);
+    const dateB = new Date(b.created_at || 0);
+    return sortDirection === "desc" ? dateB - dateA : dateA - dateB;
+  });
 
   const handleCardMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -174,6 +196,19 @@ export function Home() {
     event.currentTarget.style.setProperty("--hover-x", "50%");
     event.currentTarget.style.setProperty("--hover-y", "50%");
   };
+
+  const handleOutsideClick = (event) => {
+    const dropdown = document.getElementById('category-dropdown');
+    const button = event.target.closest('button');
+    if (dropdown && !dropdown.contains(event.target) && (!button || button.getAttribute('aria-haspopup') !== 'true')) {
+      dropdown.classList.add('hidden');
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, []);
   const handleLogoMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = Math.min(100, Math.max(0, ((event.clientX - rect.left) / rect.width) * 100));
@@ -269,51 +304,109 @@ export function Home() {
             <p className="text-slate-600 text-base sm:text-lg px-4">Challenge yourself and expand your knowledge</p>
           </div>
           {quizzes.length > 0 && (
-            <div className="mb-6 sm:mb-8 max-w-3xl mx-auto px-4 flex flex-col-reverse sm:flex-row sm:flex-wrap items-center justify-center gap-5">
-              {/* Total Quizzes Card */}
-              <div className="bg-white/70 backdrop-blur-lg rounded-xl sm:rounded-2xl px-4 border border-slate-200/80 flex flex-col justify-center min-w-[150px] w-full sm:w-auto h-[72px] shadow-sm">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">{filteredQuizzes.length}</div>
-                <div className="text-slate-500 text-xs sm:text-sm">{countLabel}</div>
+            <div className="mb-6 sm:mb-8 max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 [padding-left:calc(1rem+var(--removed-body-scroll-width,0px))] [padding-right:calc(1rem+var(--removed-body-scroll-width,0px))]">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                {/* Total Quizzes Card */}
+                <div className="bg-white/70 backdrop-blur-lg rounded-xl sm:rounded-2xl px-4 border border-slate-200/80 flex flex-col justify-center min-w-[160px] h-[72px] flex-1 sm:flex-none cursor-default">
+                  <div className="text-xl sm:text-2xl font-bold text-slate-900">{filteredQuizzes.length}</div>
+                  <div className="text-slate-500 text-xs sm:text-sm whitespace-nowrap">{countLabel}</div>
+                </div>
+
+                {/* Category filter drop down */}
+                <div className="relative flex-1 sm:w-64">
+                  <button
+                    type="button"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    onClick={() => {
+                      const dropdown = document.getElementById('category-dropdown');
+                      dropdown.classList.toggle('hidden');
+                    }}
+                    className="w-full h-[72px] bg-white/70 text-slate-800 rounded-2xl border border-slate-200/80 backdrop-blur text-left focus:outline-none focus:ring-0 appearance-none transition-all duration-200 hover:bg-white/90 hover:border-slate-300 hover:shadow-sm text-xs sm:text-sm font-semibold cursor-pointer flex items-center relative"
+                  >
+                    <span className="truncate text-center w-full px-8">
+                      {selectedCategory === "all"
+                        ? "All Categories"
+                        : selectedCategory === "favourites"
+                          ? "Favourites"
+                          : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+                    </span>
+                    <svg className="w-4 h-4 text-slate-500 flex-shrink-0 absolute right-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div id="category-dropdown" className="hidden absolute top-full left-0 right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-2xl border border-slate-200/80 shadow-lg z-50 max-h-64 overflow-y-auto">
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          const dropdown = document.getElementById('category-dropdown');
+                          dropdown.classList.add('hidden');
+                        }}
+                        className={`w-full text-left px-4 py-3 text-xs sm:text-sm font-semibold transition-colors hover:bg-slate-100/50 first:rounded-t-2xl last:rounded-b-2xl ${
+                          selectedCategory === category
+                            ? 'bg-slate-100/80 text-slate-900'
+                            : 'text-slate-700'
+                        }`}
+                      >
+                        {category === "all"
+                          ? "All Categories"
+                          : category === "favourites"
+                            ? "Favourites"
+                            : category.charAt(0).toUpperCase() + category.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              {/* Category filter drop down */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="
-        h-[72px]
-        w-full max-w-md
-        bg-white/70 text-slate-800
-        pl-4 pr-10
-        rounded-2xl
-        border border-slate-200/80
-        backdrop-blur
-        text-center
-        focus:outline-none focus:ring-0
-        appearance-none
-        transition-colors duration-150 hover:bg-white/90 hover:border-slate-300
-      "
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgb(71,85,105)' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "right 1.25rem center",
-                  backgroundSize: "1.1rem"
-                }}
-              >
-                {categories.map((category) => (
-                  <option
-                    key={category}
-                    value={category}
-                    className="text-black"
-                  >
-                    {category === "all"
-                      ? "All Quizzes"
-                      : category === "favourites"
-                        ? "Favourites"
-                        : category.charAt(0).toUpperCase() + category.slice(1)}
-                  </option>
-                ))}
-              </select>
+              {/* Sorting Bar */}
+              <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 backdrop-blur-lg rounded-2xl border border-slate-200/80 h-[72px] w-full sm:w-auto overflow-x-auto no-scrollbar">
+                {[
+                  { id: 'newest', label: 'Date', options: { desc: 'Newest', asc: 'Oldest' } },
+                  { id: 'stars', label: 'Stars' },
+                  { id: 'questions', label: 'Questions' },
+                  { id: 'difficulty', label: 'Difficulty' }
+                ].map((option) => {
+                  const isActive = sortBy === option.id;
+                  const isAsc = isActive && sortDirection === "asc";
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => {
+                        if (isActive) {
+                          setSortDirection(prev => prev === "desc" ? "asc" : "desc");
+                        } else {
+                          setSortBy(option.id);
+                          setSortDirection("desc");
+                        }
+                      }}
+                      className={`w-24 sm:w-28 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1.5 whitespace-nowrap h-full ${isActive
+                        ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
+                        : 'text-slate-500 hover:text-slate-900 hover:bg-white/80 hover:shadow-sm'
+                        }`}
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
+                    >
+                      <span>{option.id === 'newest' ? (isAsc ? option.options.asc : option.options.desc) : option.label}</span>
+                      {isActive && (
+                        <span className="inline-flex w-3 justify-center">
+                          {isAsc ? (
+                            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 5l4 6H6l4-6z" />
+                            </svg>
+                          ) : (
+                            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 15l-4-6h8l-4 6z" />
+                            </svg>
+                          )
+                          }
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -362,7 +455,7 @@ export function Home() {
                     onMouseLeave={handleCardMouseLeave}
                   >
                     <div
-                      className="relative z-10 bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-4 px-5 pb-1.5 sm:pt-5 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-full flex flex-col"
+                      className="relative z-10 bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-4 px-5 pb-1.5 sm:pt-5 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-[200px] flex flex-col"
                       style={{ "--shadow-color": gradient.hover.primary }}
                     >
                       <div
@@ -386,7 +479,7 @@ export function Home() {
                               />
                               <span className="capitalize">{categoryLabel}</span>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200/80 bg-white/70 text-xs font-semibold text-slate-700">
+                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200/80 bg-white/70 text-xs font-semibold text-slate-700 transition-all duration-200 ease-in-out ${difficulty.className}`}>
                               <svg
                                 viewBox="0 0 24 24"
                                 aria-hidden="true"
@@ -412,7 +505,7 @@ export function Home() {
                               event.stopPropagation();
                               handleToggleFavourite(quiz._id, isFavourited);
                             }}
-                            className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-colors duration-200 ${isFavourited ? "text-amber-500" : "text-slate-500 hover:text-amber-400"
+                            className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-all duration-150 ease-out ${isFavourited ? "text-amber-500" : "text-slate-500 hover:text-amber-400"
                               }`}
                           >
                             <svg
@@ -428,13 +521,13 @@ export function Home() {
                             </svg>
                           </button>
                         </div>
-                        <div className="flex-1 flex items-center">
-                          <h3 className="text-lg sm:text-xl font-bold text-slate-800 py-2 mb-3 sm:mb-4 line-clamp-2 transition-all text-center w-full">
+                        <div className="flex-1 flex items-center -translate-y-2">
+                          <h3 className="text-lg sm:text-xl font-bold text-slate-800 line-clamp-2 transition-all text-center w-full leading-tight">
                             {quiz.title}
                           </h3>
                         </div>
                         <div className="mt-auto -mx-5 sm:-mx-6">
-                          <div className="h-px w-full bg-slate-200/70 -translate-y-1"></div>
+                          <div className="h-px w-full bg-slate-200/70 mb-2"></div>
                           <div className="flex items-center justify-between gap-2 py-0.5 px-4 sm:px-5 text-xs sm:text-sm text-slate-600">
                             <div className="flex items-center gap-1.5 leading-none text-slate-600">
                               <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-[10px] font-semibold select-none">?</span>
