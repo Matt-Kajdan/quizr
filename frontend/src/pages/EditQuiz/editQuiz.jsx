@@ -447,24 +447,24 @@ export default function EditQuiz() {
       value: "easy",
       label: "Easy",
       description: "Review every question after finishing, including the correct answers.",
-      gradient: "from-emerald-500/80 via-emerald-500/80 to-emerald-500/80",
-      border: "border-emerald-400/50",
+      gradient: "from-emerald-500/80 via-emerald-500/80 to-emerald-500/80 dark:from-emerald-900/60 dark:via-emerald-900/60 dark:to-emerald-900/60",
+      border: "border-emerald-400/50 dark:border-emerald-800/50",
       icon: "/easy.svg",
     },
     {
       value: "medium",
       label: "Medium",
       description: "Review every question after finishing, showing which selections were right or wrong.",
-      gradient: "from-amber-400/85 via-amber-400/85 to-amber-400/85",
-      border: "border-amber-400/50",
+      gradient: "from-amber-400/85 via-amber-400/85 to-amber-400/85 dark:from-amber-900/60 dark:via-amber-900/60 dark:to-amber-900/60",
+      border: "border-amber-400/50 dark:border-amber-800/50",
       icon: "/medium.svg",
     },
     {
       value: "hard",
       label: "Hard",
       description: "Only see the total number of correct answers after finishing.",
-      gradient: "from-rose-500/85 via-rose-500/85 to-rose-500/85",
-      border: "border-rose-400/50",
+      gradient: "from-rose-500/85 via-rose-500/85 to-rose-500/85 dark:from-rose-900/60 dark:via-rose-900/60 dark:to-rose-900/60",
+      border: "border-rose-400/50 dark:border-rose-800/50",
       icon: "/hard.svg",
     },
   ];
@@ -476,11 +476,11 @@ export default function EditQuiz() {
     { value: "other", label: "Other" },
   ];
   const categoryBarColors = {
-    art: "bg-rose-200/80",
-    history: "bg-amber-200/80",
-    music: "bg-sky-200/80",
-    science: "bg-emerald-200/80",
-    other: "bg-slate-200/80",
+    art: "bg-rose-200/80 dark:bg-rose-900/60 dark:text-rose-200",
+    history: "bg-amber-200/80 dark:bg-amber-900/60 dark:text-amber-200",
+    music: "bg-sky-200/80 dark:bg-sky-900/60 dark:text-sky-200",
+    science: "bg-emerald-200/80 dark:bg-emerald-900/60 dark:text-emerald-200",
+    other: "bg-slate-200/80 dark:bg-slate-800/60 dark:text-slate-200",
   };
   const questionCount = questions.length;
   const passPercent = questionCount > 0 ? Math.round((reqToPass / questionCount) * 100) : 0;
@@ -512,314 +512,317 @@ export default function EditQuiz() {
             <p className="text-slate-600 text-base sm:text-lg select-none">Refine your quiz details</p>
           </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
-            <label className="block text-slate-800 font-semibold mb-3 text-lg">
-              Quiz Title
-            </label>
-            <input
-              type="text"
-              placeholder="Enter your quiz title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="w-full bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
-            />
-          </div>
-          <div className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-slate-800 font-semibold text-lg text-center w-full">Quiz Options</h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
+              <label className="block text-slate-800 font-semibold mb-3 text-lg">
+                Quiz Title
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your quiz title..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="w-full bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
+              />
             </div>
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="lg:col-span-2">
-                <label className="block text-slate-600 font-medium mb-3 text-sm">
-                  Difficulty
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {difficultyOptions.map((option) => {
-                    const isActive = difficulty === option.value;
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setDifficulty(option.value)}
-                        aria-pressed={isActive}
-                        className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-xs sm:text-sm font-semibold uppercase tracking-wide transition-all ${
-                          isActive
+            <div className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-slate-800 font-semibold text-lg text-center w-full">Quiz Options</h2>
+              </div>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <div className="lg:col-span-2">
+                  <label className="block text-slate-600 font-medium mb-3 text-sm">
+                    Difficulty
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {difficultyOptions.map((option) => {
+                      const isActive = difficulty === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setDifficulty(option.value)}
+                          aria-pressed={isActive}
+                          className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-xs sm:text-sm font-semibold uppercase tracking-wide transition-all ${isActive
                             ? `bg-gradient-to-r ${option.gradient} ${option.border} text-white shadow-sm`
                             : "bg-white/60 border-slate-200/80 text-slate-600 hover:border-slate-300/80 hover:text-slate-800"
+                            }`}
+                        >
+                          <img
+                            src={option.icon}
+                            alt=""
+                            aria-hidden="true"
+                            className="h-4 w-4"
+                          />
+                          <span>{option.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-3 px-1 text-sm text-slate-600 min-h-[60px]">
+                    {difficultyOptions.map((option) => (
+                      <p key={option.value} className={difficulty === option.value ? "block" : "hidden"}>
+                        {option.description}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-medium mb-2 text-sm">
+                    Category
+                  </label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
+                  >
+                    {categories.map((item) => (
+                      <option key={item.value} value={item.value} className="text-slate-800">
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-slate-500 mt-2">Used for category chips and filters.</p>
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-medium mb-2 text-sm">
+                    Answers per question
+                  </label>
+                  <select
+                    value={answersPerQuestion}
+                    onChange={(e) => handleAnswersPerQuestionChange(e.target.value)}
+                    className="w-full bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
+                  >
+                    {ANSWER_COUNT_OPTIONS.map((count) => (
+                      <option key={count} value={count} className="text-slate-800">
+                        {count} answers
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-slate-500 mt-2">Applies to every question.</p>
+                </div>
+                <div className="lg:col-span-2">
+                  <label className="block text-slate-600 font-medium mb-2 text-sm">
+                    Pass threshold
+                  </label>
+                  <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                    <span>Required correct answers</span>
+                    <span className="text-slate-800 font-semibold">{passLabel}</span>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-900/80 rounded-lg overflow-hidden">
+                      <div
+                        className="h-full bg-slate-800 dark:bg-slate-100"
+                        style={{ width: `${(reqToPass / (questionCount || 1)) * 100}%` }}
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max={questionCount}
+                      step="1"
+                      value={reqToPass}
+                      onChange={(e) => setReqToPass(Number(e.target.value))}
+                      className="relative w-full h-1.5 appearance-none bg-transparent cursor-pointer z-10 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-800 dark:[&::-webkit-slider-thumb]:bg-slate-100 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-slate-950 [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-800 dark:[&::-moz-range-thumb]:bg-slate-100 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-slate-950 [&::-moz-range-thumb]:shadow-sm"
+                    />
+                  </div>
+                </div>
+                <div className="lg:col-span-2">
+                  <label className="block text-slate-600 font-medium mb-2 text-sm">
+                    Correctness rules
+                  </label>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 hover:border-slate-300/80 transition-all cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={allowMultipleCorrect}
+                        onChange={(e) => handleAllowMultipleCorrectChange(e.target.checked)}
+                        className="mt-1 h-4 w-4 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[1px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
+                      />
+                      <span className="text-left text-sm text-slate-700">
+                        Allow multiple correct answers
+                        <span className="block text-xs text-slate-500 mt-1">
+                          Enables selecting more than one correct answer per question.
+                        </span>
+                      </span>
+                    </label>
+                    <label
+                      className={`flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 transition-all ${allowMultipleCorrect ? "hover:border-slate-300/80 cursor-pointer" : "opacity-50 cursor-not-allowed"
                         }`}
-                      >
-                        <img
-                          src={option.icon}
-                          alt=""
-                          aria-hidden="true"
-                          className="h-4 w-4"
-                        />
-                        <span>{option.label}</span>
-                      </button>
-                    );
-                  })}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={requireAllCorrect}
+                        onChange={(e) => setRequireAllCorrect(e.target.checked)}
+                        disabled={!allowMultipleCorrect}
+                        className={`mt-1 h-4 w-4 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[1px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45 ${allowMultipleCorrect ? "cursor-pointer" : "cursor-not-allowed"
+                          }`}
+                      />
+                      <span className="text-left text-sm text-slate-700">
+                        Require all correct answers
+                        <span className="block text-xs text-slate-500 mt-1">
+                          Mark correct only if the selection matches the full correct set.
+                        </span>
+                      </span>
+                    </label>
+                  </div>
                 </div>
-                <div className="mt-3 px-1 text-sm text-slate-600 min-h-[60px]">
-                  {difficultyOptions.map((option) => (
-                    <p key={option.value} className={difficulty === option.value ? "block" : "hidden"}>
-                      {option.description}
-                    </p>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-slate-600 font-medium mb-2 text-sm">
-                  Category
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
-                >
-                  {categories.map((item) => (
-                    <option key={item.value} value={item.value} className="text-slate-800">
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-slate-500 mt-2">Used for category chips and filters.</p>
-              </div>
-              <div>
-                <label className="block text-slate-600 font-medium mb-2 text-sm">
-                  Answers per question
-                </label>
-                <select
-                  value={answersPerQuestion}
-                  onChange={(e) => handleAnswersPerQuestionChange(e.target.value)}
-                  className="w-full bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
-                >
-                  {ANSWER_COUNT_OPTIONS.map((count) => (
-                    <option key={count} value={count} className="text-slate-800">
-                      {count} answers
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-slate-500 mt-2">Applies to every question.</p>
-              </div>
-              <div className="lg:col-span-2">
-                <label className="block text-slate-600 font-medium mb-2 text-sm">
-                  Pass threshold
-                </label>
-                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                  <span>Required correct answers</span>
-                  <span className="text-slate-800 font-semibold">{passLabel}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max={questionCount}
-                  step="1"
-                  value={reqToPass}
-                  onChange={(e) => setReqToPass(Number(e.target.value))}
-                  className="w-full accent-slate-800"
-                />
-              </div>
-              <div className="lg:col-span-2">
-                <label className="block text-slate-600 font-medium mb-2 text-sm">
-                  Correctness rules
-                </label>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="lg:col-span-2">
+                  <label className="block text-slate-600 font-medium mb-2 text-sm">
+                    Answer lock
+                  </label>
                   <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 hover:border-slate-300/80 transition-all cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={allowMultipleCorrect}
-                      onChange={(e) => handleAllowMultipleCorrectChange(e.target.checked)}
-                      className="mt-1 h-4 w-4 accent-slate-800 focus:ring-0 cursor-pointer"
+                      checked={lockAnswers}
+                      onChange={(e) => setLockAnswers(e.target.checked)}
+                      className="mt-1 h-4 w-4 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[1px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
                     />
                     <span className="text-left text-sm text-slate-700">
-                      Allow multiple correct answers
+                      Lock answers after Next
                       <span className="block text-xs text-slate-500 mt-1">
-                        Enables selecting more than one correct answer per question.
-                      </span>
-                    </span>
-                  </label>
-                  <label
-                    className={`flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 transition-all ${
-                      allowMultipleCorrect ? "hover:border-slate-300/80 cursor-pointer" : "opacity-50 cursor-not-allowed"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={requireAllCorrect}
-                      onChange={(e) => setRequireAllCorrect(e.target.checked)}
-                      disabled={!allowMultipleCorrect}
-                      className={`mt-1 h-4 w-4 accent-slate-800 focus:ring-0 ${
-                        allowMultipleCorrect ? "cursor-pointer" : "cursor-not-allowed"
-                      }`}
-                    />
-                    <span className="text-left text-sm text-slate-700">
-                      Require all correct answers
-                      <span className="block text-xs text-slate-500 mt-1">
-                        Mark correct only if the selection matches the full correct set.
+                        You can go back to review, but answers cannot be changed.
                       </span>
                     </span>
                   </label>
                 </div>
               </div>
-              <div className="lg:col-span-2">
-                <label className="block text-slate-600 font-medium mb-2 text-sm">
-                  Answer lock
-                </label>
-                <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 hover:border-slate-300/80 transition-all cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={lockAnswers}
-                    onChange={(e) => setLockAnswers(e.target.checked)}
-                    className="mt-1 h-4 w-4 accent-slate-800 focus:ring-0 cursor-pointer"
-                  />
-                  <span className="text-left text-sm text-slate-700">
-                    Lock answers after Next
-                    <span className="block text-xs text-slate-500 mt-1">
-                      You can go back to review, but answers cannot be changed.
-                    </span>
-                  </span>
-                </label>
-              </div>
             </div>
-          </div>
-          <div className="space-y-6">
-            {questions.map((q, qIndex) => {
-              return (
-                <div
-                  key={q._id || qIndex}
-                  className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm relative overflow-hidden"
-                >
+            <div className="space-y-6">
+              {questions.map((q, qIndex) => {
+                return (
                   <div
-                    className={`-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 px-6 sm:px-8 py-2 rounded-t-2xl sm:rounded-t-3xl flex items-center justify-between text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-700 ${questionBarClass}`}
+                    key={q._id || qIndex}
+                    className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm relative overflow-hidden"
                   >
-                    <span>Question {qIndex + 1}</span>
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-slate-600 font-medium uppercase truncate max-w-[160px] sm:max-w-[220px]">
-                        {quizTitleLabel}
-                      </span>
+                    <div
+                      className={`-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 px-6 sm:px-8 py-2 rounded-t-2xl sm:rounded-t-3xl flex items-center justify-between text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-700 ${questionBarClass}`}
+                    >
+                      <span>Question {qIndex + 1}</span>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-slate-600 font-medium uppercase truncate max-w-[160px] sm:max-w-[220px]">
+                          {quizTitleLabel}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-6">
-                  <div className="mb-6">
-                    <div className="flex items-center justify-center mb-2">
-                      <label className="block text-slate-600 font-medium text-sm text-center">
-                      Question Text
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="text"
-                        placeholder="Enter your question..."
-                        value={q.text}
-                        onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
-                        required
-                        className="flex-1 bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
-                      />
-                      {questions.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeQuestion(qIndex)}
-                          className="h-[46px] w-[46px] rounded-xl border border-rose-200 bg-rose-100 text-rose-700 hover:bg-rose-200 transition-colors flex items-center justify-center"
-                          title="Remove question"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <label className="block text-slate-600 font-medium mb-3 text-sm">
-                      Answer Options (select the correct {allowMultipleCorrect ? "answers" : "answer"})
-                    </label>
-                    {q.answers.map((a, aIndex) => (
-                      <div
-                        key={a._id || `${qIndex}-${aIndex}`}
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                          a.is_correct
-                            ? "bg-emerald-100/70 border-emerald-300/70"
-                            : "bg-white/60 border-slate-200/80 hover:border-slate-300/80"
-                        }`}
-                        onClick={(event) => {
-                          if (event.target.closest('input[type="checkbox"], input[type="radio"]')) return;
-                          const input = document.getElementById(`answer-${qIndex}-${aIndex}`);
-                          if (input) input.focus();
-                        }}
-                        style={{ cursor: "text" }}
-                      >
-                        <label className="inline-flex items-center p-2.5 -m-2.5 cursor-pointer">
-                          <input
-                            type={allowMultipleCorrect ? "checkbox" : "radio"}
-                            name={`correct-${qIndex}`}
-                            checked={a.is_correct}
-                            onChange={() => setCorrectAnswer(qIndex, aIndex)}
-                            className="w-5 h-5 accent-slate-800 focus:ring-0 cursor-pointer"
-                          />
-                        </label>
-                        <label className="flex-1 flex items-center cursor-text">
+                    <div className="mt-6">
+                      <div className="mb-6">
+                        <div className="flex items-center justify-center mb-2">
+                          <label className="block text-slate-600 font-medium text-sm text-center">
+                            Question Text
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-3">
                           <input
                             type="text"
-                            placeholder={`Answer ${aIndex + 1}`}
-                            value={a.text}
-                            onChange={(e) => handleAnswerChange(qIndex, aIndex, e.target.value)}
+                            placeholder="Enter your question..."
+                            value={q.text}
+                            onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
                             required
-                            id={`answer-${qIndex}-${aIndex}`}
-                            className="w-full bg-transparent border-none text-slate-800 placeholder:text-slate-400 focus:outline-none"
+                            className="flex-1 bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
                           />
-                        </label>
-                        {a.is_correct && (
-                          <span className="text-emerald-600 text-sm font-medium pointer-events-none">Correct</span>
-                        )}
+                          {questions.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeQuestion(qIndex)}
+                              className="h-[46px] w-[46px] rounded-xl border border-rose-200 dark:border-none bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-800/60 dark:hover:text-white transition-colors flex items-center justify-center"
+                              title="Remove question"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    ))}
+                      <div className="space-y-3">
+                        <label className="block text-slate-600 font-medium mb-3 text-sm">
+                          Answer Options (select the correct {allowMultipleCorrect ? "answers" : "answer"})
+                        </label>
+                        {q.answers.map((a, aIndex) => (
+                          <div
+                            key={a._id || `${qIndex}-${aIndex}`}
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${a.is_correct
+                              ? "bg-emerald-100/70 border-emerald-300/70 dark:bg-emerald-900/40 dark:border-emerald-800/60"
+                              : "bg-white/60 border-slate-200/80 dark:bg-slate-800/40 dark:border-slate-800/60 hover:border-slate-300/80 dark:hover:border-slate-700/80"
+                              }`}
+                            onClick={(event) => {
+                              if (event.target.closest('input[type="checkbox"], input[type="radio"]')) return;
+                              const input = document.getElementById(`answer-${qIndex}-${aIndex}`);
+                              if (input) input.focus();
+                            }}
+                            style={{ cursor: "text" }}
+                          >
+                            <label className="inline-flex items-center p-2.5 -m-2.5 cursor-pointer">
+                              <input
+                                type={allowMultipleCorrect ? "checkbox" : "radio"}
+                                name={`correct-${qIndex}`}
+                                checked={a.is_correct}
+                                onChange={() => setCorrectAnswer(qIndex, aIndex)}
+                                className="w-5 h-5 appearance-none rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[7px] after:top-[3px] after:w-[5px] after:h-[9px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
+                              />
+                            </label>
+                            <label className="flex-1 flex items-center cursor-text">
+                              <input
+                                type="text"
+                                placeholder={`Answer ${aIndex + 1}`}
+                                value={a.text}
+                                onChange={(e) => handleAnswerChange(qIndex, aIndex, e.target.value)}
+                                required
+                                id={`answer-${qIndex}-${aIndex}`}
+                                className="w-full bg-transparent border-none text-slate-800 placeholder:text-slate-400 focus:outline-none"
+                              />
+                            </label>
+                            {a.is_correct && (
+                              <span className="text-emerald-600 dark:text-emerald-500 text-sm font-medium pointer-events-none">Correct</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          {resetWarning && (
-            <div className="rounded-2xl border border-rose-200/80 bg-rose-100/80 px-4 py-3 text-rose-700 text-sm">
-              Saving changes will reset all users&apos; attempts history for this quiz.
+                );
+              })}
             </div>
-          )}
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button
-              type="button"
-              onClick={addQuestion}
-              className="flex-1 bg-white/70 hover:bg-white/90 backdrop-blur-lg text-slate-700 px-6 py-3 rounded-xl font-semibold border border-slate-200/80 hover:border-slate-300/80 transition-colors flex items-center justify-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Question
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="flex-1 bg-white/70 border border-slate-200/80 text-slate-700 px-6 py-3 rounded-xl font-semibold hover:bg-white/90 transition-colors"
-            >
-              {hasChanges ? "Discard Changes" : "Cancel"}
-            </button>
-            <button
-              type="submit"
-              disabled={!hasChanges}
-              className={`flex-1 bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold transition-colors hover:bg-slate-700 flex items-center justify-center gap-2 ${
-                hasChanges
+            {resetWarning && (
+              <div className="rounded-2xl border border-rose-200/80 bg-rose-100/80 px-4 py-3 text-rose-700 text-sm">
+                Saving changes will reset all users&apos; attempts history for this quiz.
+              </div>
+            )}
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <button
+                type="button"
+                onClick={addQuestion}
+                className="flex-1 bg-white/70 hover:bg-white/90 dark:bg-slate-800/40 dark:border-slate-800/80 dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:text-slate-100 backdrop-blur-lg text-slate-700 px-6 py-3 rounded-xl font-semibold border border-slate-200/80 hover:border-slate-300/80 transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Question
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="flex-1 bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 px-6 py-3 rounded-xl font-semibold hover:bg-white/90 dark:hover:bg-slate-700/60 dark:hover:text-slate-100 transition-colors"
+              >
+                {hasChanges ? "Discard Changes" : "Cancel"}
+              </button>
+              <button
+                type="submit"
+                disabled={!hasChanges}
+                className={`flex-1 bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold transition-colors hover:bg-slate-700 flex items-center justify-center gap-2 ${hasChanges
                   ? ""
                   : "opacity-50 cursor-not-allowed"
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Save Changes
-            </button>
-          </div>
-        </form>
+                  }`}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Save Changes
+              </button>
+            </div>
+          </form>
         </main>
       </div>
     </>
