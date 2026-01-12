@@ -786,7 +786,7 @@ export default function ProfilePage() {
                         className={`sorting-button ${isActive ? 'isActive' : ''} w-20 py-1.5 rounded-xl text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1 ${isAccountLocked
                           ? "opacity-50 text-slate-400"
                           : isActive
-                            ? 'bg-white dark:bg-slate-500 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-400'
+                            ? 'bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-300 dark:border-slate-500'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                           }`}
                         style={{ WebkitTapHighlightColor: 'transparent' }}
@@ -1276,7 +1276,7 @@ export default function ProfilePage() {
                           className={`sorting-button ${isActive ? 'isActive' : ''} w-20 py-1.5 rounded-xl text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1 ${isAccountLocked
                             ? "opacity-50 text-slate-400"
                             : isActive
-                              ? 'bg-white dark:bg-slate-500 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-400'
+                              ? 'bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-300 dark:border-slate-500'
                               : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                             }`}
                           style={{ WebkitTapHighlightColor: 'transparent' }}

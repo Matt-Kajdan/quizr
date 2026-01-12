@@ -403,11 +403,13 @@ button.sorting-button.isActive {
 }
 
 .dark button.sorting-button.isActive {
-  color: #f1f5f9 !important;
-  /* slate-100 */
-  background-color: rgba(15, 23, 42, 0.85) !important;
-  /* Darker and colder (slate-900) */
-  border: 1px solid rgba(51, 65, 85, 0.6) !important;
+  color: #f8fafc !important;
+  /* slate-50 */
+  background-color: rgba(51, 65, 85, 0.9) !important;
+  /* slate-700 with high opacity */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  /* slate-400 border */
 }
 
 button.sorting-button {
