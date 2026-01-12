@@ -36,13 +36,8 @@ export default function LeaderboardPage() {
     return avatarGradients[hash];
   };
   const opalBackdropStyle = {
-    backgroundColor: "#f7f5f1",
-    backgroundImage: `
-      radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-      radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-      radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-      radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-    `
+    backgroundColor: "var(--opal-bg-color)",
+    backgroundImage: "var(--opal-backdrop-image)"
   };
 
   useEffect(() => {
@@ -218,7 +213,7 @@ export default function LeaderboardPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200/70 text-slate-700 text-left">
+                  <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/50 text-slate-700 text-left">
                     {sortedRows.length === 0 ? (
                       <tr>
                         <td className="px-3 sm:px-4 py-4 text-center text-slate-500" colSpan={columns.length}>
@@ -253,15 +248,24 @@ export default function LeaderboardPage() {
                                   <span>{(entry.user_data?.username || "?").charAt(0).toUpperCase()}</span>
                                 )}
                               </div>
-                              <span className="truncate">{entry.user_data?.username}</span>
+                              <span className="truncate text-slate-800 dark:text-slate-200">{entry.user_data?.username}</span>
                             </Link>
                           </td>
-                          <td className="px-3 sm:px-4 py-3 text-left">{entry.totalCorrect}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left">{Math.round(entry.avgPercent)}%</td>
-                          <td className="px-3 sm:px-4 py-3 text-left">{entry.attemptsCount}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left">{entry.quizzesTaken}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left">{entry.attemptsOnTheirQuizzes || 0}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left">{entry.quizzesCreated}</td>
+                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.totalCorrect}</td>
+                          <td className="px-3 sm:px-4 py-3 text-left">
+                            <span
+                              className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-xs font-semibold ${entry.avgPercent >= 70
+                                ? "border-emerald-200/80 bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/60 dark:border-emerald-800/80 dark:!text-white"
+                                : "border-rose-200/80 bg-rose-100/80 text-rose-700 dark:bg-rose-900/60 dark:border-rose-800/80 dark:!text-white"
+                                }`}
+                            >
+                              {Math.round(entry.avgPercent)}%
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.attemptsCount}</td>
+                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.quizzesTaken}</td>
+                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.attemptsOnTheirQuizzes || 0}</td>
+                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.quizzesCreated}</td>
                         </tr>
                       ))
                     )}

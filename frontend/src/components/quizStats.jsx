@@ -1,8 +1,6 @@
 import { useCallback, useEffect } from "react";
 
 export function QuizStats({ quiz, onClose }) {
-  if (!quiz) return null;
-
   const closeModal = useCallback(() => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -20,6 +18,8 @@ export function QuizStats({ quiz, onClose }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [closeModal]);
+
+  if (!quiz) return null;
 
   const attempts = quiz.attempts || [];
   const totalAttempts = attempts.length;

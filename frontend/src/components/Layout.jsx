@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "./navBar";
+import { useAuth } from "../hooks/useAuth";
 import { Outlet } from "react-router-dom";
-import { useAuth } from "./Auth";
 import { apiFetch } from "../services/api";
 
 function Layout() {

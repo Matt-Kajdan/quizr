@@ -76,19 +76,14 @@ export default function SettingsPage() {
         <div
           className="fixed inset-0"
           style={{
-            backgroundColor: "#f7f5f1",
-            backgroundImage: `
-              radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-              radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-              radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-              radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-            `
+            backgroundColor: "var(--opal-bg-color)",
+            backgroundImage: "var(--opal-backdrop-image)"
           }}
         ></div>
         <div className="fixed inset-0 flex items-center justify-center">
           <div className="relative flex flex-col items-center">
-            <div className="w-16 h-16 border-4 border-slate-200 border-t-slate-500 rounded-full animate-spin"></div>
-            <p className="mt-4 text-slate-600 font-medium">Please log in...</p>
+            <div className="w-16 h-16 border-4 border-slate-200 dark:border-slate-700 border-t-slate-500 dark:border-t-slate-200 rounded-full animate-spin"></div>
+            <p className="mt-4 text-slate-600 dark:text-slate-300 font-medium">Please log in...</p>
           </div>
         </div>
       </>
@@ -240,19 +235,14 @@ export default function SettingsPage() {
         <div
           className="fixed inset-0"
           style={{
-            backgroundColor: "#f7f5f1",
-            backgroundImage: `
-              radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-              radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-              radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-              radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-            `
+            backgroundColor: "var(--opal-bg-color)",
+            backgroundImage: "var(--opal-backdrop-image)"
           }}
         ></div>
         <div className="fixed inset-0 flex items-center justify-center">
           <div className="relative flex flex-col items-center">
-            <div className="w-16 h-16 border-4 border-slate-200 border-t-slate-500 rounded-full animate-spin"></div>
-            <p className="mt-4 text-slate-600 font-medium">Loading settings...</p>
+            <div className="w-16 h-16 border-4 border-slate-200 dark:border-slate-700 border-t-slate-500 dark:border-t-slate-200 rounded-full animate-spin"></div>
+            <p className="mt-4 text-slate-600 dark:text-slate-300 font-medium">Loading settings...</p>
           </div>
         </div>
       </>
@@ -264,13 +254,8 @@ export default function SettingsPage() {
       <div
         className="fixed inset-0"
         style={{
-          backgroundColor: "#f7f5f1",
-          backgroundImage: `
-            radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-            radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-            radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-            radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-          `
+          backgroundColor: "var(--opal-bg-color)",
+          backgroundImage: "var(--opal-backdrop-image)"
         }}
       ></div>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -290,7 +275,7 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => navigate(`/users/${profile?.user_data?.username}`)}
-                  className="px-6 py-3 rounded-xl bg-white/70 text-slate-700 font-semibold border border-slate-200/80 hover:bg-white transition-colors"
+                  className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors"
                 >
                   Go to My Profile
                 </button>
@@ -317,7 +302,7 @@ export default function SettingsPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/70 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                   required
                 />
               </div>
@@ -329,7 +314,7 @@ export default function SettingsPage() {
                   onChange={(e) => setProfilePic(e.target.value)}
                   placeholder="https://example.com/image.jpg"
                   disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/70 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                 />
               </div>
               {profilePic && (
@@ -352,7 +337,7 @@ export default function SettingsPage() {
               </button>
             </form>
           </div>
-          <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 shadow-sm">
+          <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800/60 mb-6 shadow-sm">
             <h2 className="text-2xl font-semibold text-slate-800 mb-6">Email Address</h2>
             <form onSubmit={handleUpdateEmail} className="space-y-4">
               <div>
@@ -362,7 +347,7 @@ export default function SettingsPage() {
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/70 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                   required
                 />
               </div>
@@ -374,7 +359,7 @@ export default function SettingsPage() {
                   onChange={(e) => setCurrentEmailPassword(e.target.value)}
                   placeholder="Enter current password"
                   disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/70 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                   required
                 />
               </div>
@@ -387,7 +372,7 @@ export default function SettingsPage() {
               </button>
             </form>
           </div>
-          <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
+          <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800/60 shadow-sm">
             <h2 className="text-2xl font-semibold text-slate-800 mb-6">Change Password</h2>
             <form onSubmit={handleUpdatePassword} className="space-y-4">
               <div>
@@ -398,7 +383,7 @@ export default function SettingsPage() {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
                   disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/70 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                   required
                 />
               </div>
@@ -410,7 +395,7 @@ export default function SettingsPage() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter new password"
                   disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/70 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                   minLength={6}
                 />
               </div>
@@ -422,7 +407,7 @@ export default function SettingsPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm new password"
                   disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/70 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                   minLength={6}
                 />
               </div>
@@ -436,7 +421,7 @@ export default function SettingsPage() {
             </form>
           </div>
           {!isAccountLocked && (
-            <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mt-6 shadow-sm min-h-[240px] flex flex-col justify-center">
+            <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800/60 mt-6 shadow-sm min-h-[240px] flex flex-col justify-center">
               <h2 className="text-2xl font-semibold text-slate-800 mb-4">{deletionHeader}</h2>
               {deletionStep === "intro" && (
                 <>
@@ -471,7 +456,7 @@ export default function SettingsPage() {
                       type="button"
                       onClick={() => setDeletionStep("intro")}
                       disabled={deletionSaving}
-                      className="px-6 py-3 rounded-xl bg-white/70 text-slate-700 font-semibold border border-slate-200/80 hover:bg-white transition-colors disabled:opacity-50"
+                      className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
                     >
                       Cancel
                     </button>
@@ -479,7 +464,7 @@ export default function SettingsPage() {
                       type="button"
                       onClick={() => handleChooseDeletion("delete_quizzes")}
                       disabled={deletionSaving}
-                      className="px-6 py-3 rounded-xl bg-white/70 text-slate-700 font-semibold border border-slate-200/80 hover:bg-white transition-colors disabled:opacity-50"
+                      className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
                     >
                       Delete My Quizzes
                     </button>
@@ -487,7 +472,7 @@ export default function SettingsPage() {
                       type="button"
                       onClick={() => handleChooseDeletion("preserve_quizzes")}
                       disabled={deletionSaving}
-                      className="px-6 py-3 rounded-xl bg-white/70 text-slate-700 font-semibold border border-slate-200/80 hover:bg-white transition-colors disabled:opacity-50"
+                      className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
                     >
                       Preserve My Quizzes
                     </button>

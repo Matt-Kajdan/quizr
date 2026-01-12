@@ -11,12 +11,6 @@ const BACKEND_URL = NORMALIZED_BASE
   ? (NORMALIZED_BASE.endsWith("/api") ? NORMALIZED_BASE : `${NORMALIZED_BASE}/api`)
   : "/api";
 
-const IconPalette=()=>(<svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none"><path d="M12 3a9 9 0 0 0 0 18h2.2a2.8 2.8 0 0 0 0-5.6H13.5a1 1 0 0 1 0-2h2.8A4.7 4.7 0 0 0 21 8.7C21 5.55 16.95 3 12 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.8 10.2h.01M10.3 7.9h.01M13 10.2h.01M15.6 11.7h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>);
-const IconLandmark=()=>(<svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none"><path d="M12 4 3.5 8.5V11h17V8.5L12 4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M5.8 11v8M9.3 11v8M12.8 11v8M16.3 11v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M4.5 19.5h15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>);
-const IconMusic=()=>(<svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none"><path d="M18 3v12.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M18 5.2 9 7.5v10.7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.2 20.2a2.7 2.7 0 1 0 0-5.4c-1.5 0-2.7 1.2-2.7 2.7s1.2 2.7 2.7 2.7Z" stroke="currentColor" strokeWidth="2"/><path d="M16.2 18.2a2.7 2.7 0 1 0 0-5.4c-1.5 0-2.7 1.2-2.7 2.7s1.2 2.7 2.7 2.7Z" stroke="currentColor" strokeWidth="2"/></svg>);
-const IconUser=()=>(<svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M20 20a8 8 0 0 0-16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>);
-const IconStar=()=>(<svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none"><path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/></svg>);
-
 export function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,13 +71,8 @@ export function Signup() {
       <div
         className="fixed inset-0"
         style={{
-          backgroundColor: "#f7f5f1",
-          backgroundImage: `
-            radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-            radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-            radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-            radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-          `
+          backgroundColor: "var(--opal-bg-color)",
+          backgroundImage: "var(--opal-backdrop-image)"
         }}
       ></div>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

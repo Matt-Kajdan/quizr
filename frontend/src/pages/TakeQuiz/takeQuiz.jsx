@@ -42,13 +42,8 @@ function TakeQuizPage() {
         direction: "desc"
     });
     const opalBackdropStyle = {
-        backgroundColor: "#f7f5f1",
-        backgroundImage: `
-        radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-        radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-        radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-        radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-      `
+        backgroundColor: "var(--opal-bg-color)",
+        backgroundImage: "var(--opal-backdrop-image)"
     };
 
     const loadQuiz = useCallback(async () => {
@@ -209,8 +204,8 @@ function TakeQuizPage() {
             render: (entry) => (
                 <span
                     className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-xs font-semibold ${entry.isPassing
-                        ? "border-emerald-200/80 bg-emerald-100/80 text-emerald-700"
-                        : "border-rose-200/80 bg-rose-100/80 text-rose-700"
+                        ? "border-emerald-200/80 bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/60 dark:border-emerald-800/80 dark:!text-white"
+                        : "border-rose-200/80 bg-rose-100/80 text-rose-700 dark:bg-rose-900/60 dark:border-rose-800/80 dark:!text-white"
                         }`}
                 >
                     {entry.scorePercent}
@@ -309,24 +304,24 @@ function TakeQuizPage() {
 
     const categoryStyles = {
         art: {
-            header: "bg-gradient-to-r from-pink-50/90 via-rose-50/80 to-pink-50/90",
-            badge: "bg-white/50 border border-pink-200 text-pink-700"
+            header: "bg-gradient-to-r from-pink-50/90 via-rose-50/80 to-pink-50/90 dark:from-pink-900/30 dark:via-rose-900/20 dark:to-pink-900/30",
+            badge: "bg-white/50 dark:bg-pink-900/40 border border-pink-200 dark:border-pink-700/50 text-pink-700 dark:text-pink-300"
         },
         history: {
-            header: "bg-gradient-to-r from-amber-50/90 via-orange-50/80 to-amber-50/90",
-            badge: "bg-white/50 border border-amber-200 text-amber-700"
+            header: "bg-gradient-to-r from-amber-50/90 via-orange-50/80 to-amber-50/90 dark:from-amber-900/30 dark:via-orange-900/20 dark:to-amber-900/30",
+            badge: "bg-white/50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700/50 text-amber-700 dark:text-amber-300"
         },
         music: {
-            header: "bg-gradient-to-r from-purple-50/90 via-indigo-50/80 to-purple-50/90",
-            badge: "bg-white/50 border border-purple-200 text-purple-700"
+            header: "bg-gradient-to-r from-purple-50/90 via-indigo-50/80 to-purple-50/90 dark:from-purple-900/30 dark:via-indigo-900/20 dark:to-purple-900/30",
+            badge: "bg-white/50 dark:bg-purple-900/40 border border-purple-200 dark:border-purple-700/50 text-purple-700 dark:text-purple-300"
         },
         science: {
-            header: "bg-gradient-to-r from-sky-50/90 via-cyan-50/80 to-blue-50/90",
-            badge: "bg-white/50 border border-sky-200 text-sky-700"
+            header: "bg-gradient-to-r from-sky-50/90 via-cyan-50/80 to-blue-50/90 dark:from-sky-900/30 dark:via-cyan-900/20 dark:to-blue-900/30",
+            badge: "bg-white/50 dark:bg-sky-900/40 border border-sky-200 dark:border-sky-700/50 text-sky-700 dark:text-sky-300"
         },
         other: {
-            header: "bg-slate-100/90",
-            badge: "bg-white/50 border border-slate-200 text-slate-600"
+            header: "bg-slate-100/90 dark:bg-slate-800/50",
+            badge: "bg-white/50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600/50 text-slate-600 dark:text-slate-300"
         }
     };
 
@@ -541,13 +536,13 @@ function TakeQuizPage() {
                         <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
                             <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 sm:px-8 ${activeCategoryStyle.header}`}>
                                 <div className="inline-flex items-center gap-2 text-slate-700 font-semibold text-sm uppercase tracking-wide">
-                                    <span className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold ${activeCategoryStyle.badge}`}>
+                                    <span className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold dark:bg-slate-900/60 dark:border-slate-800/80 ${activeCategoryStyle.badge}`}>
                                         <svg className="w-4 h-4 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             {categoryIcons[quiz.category] || categoryIcons.other}
                                         </svg>
                                         <span className="capitalize">{quiz.category}</span>
                                     </span>
-                                    <span className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold normal-case border border-slate-200/80 bg-white/40 text-slate-700">
+                                    <span className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold normal-case border border-slate-200/80 bg-white/40 text-slate-700 dark:bg-slate-900/60 dark:border-slate-800/80 dark:text-slate-300">
                                         <svg
                                             className="h-4 w-4 text-current"
                                             viewBox="0 0 24 24"
@@ -570,7 +565,7 @@ function TakeQuizPage() {
                                             onClick={() => {
                                                 navigate(`/users/${authorName}`);
                                             }}
-                                            className="self-start sm:self-auto rounded-full px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-white/70"
+                                            className="self-start sm:self-auto rounded-full px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-white/70 dark:text-slate-300 dark:hover:bg-white/5"
                                         >
                                             Created by {isQuizOwner ? "you" : authorName}
                                         </button>
@@ -582,7 +577,7 @@ function TakeQuizPage() {
                                     {isQuizOwner && (
                                         <>
                                             <button
-                                                className="rounded-xl border border-slate-200/80 bg-white/40 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-white/80 hover:border-slate-200/80 flex items-center justify-center gap-2"
+                                                className="rounded-xl border border-slate-200/80 bg-white/40 dark:bg-slate-950/40 dark:border-slate-900/60 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors hover:bg-white/80 dark:hover:bg-slate-950/60 hover:border-slate-200/80 flex items-center justify-center gap-2"
                                                 type="button"
                                                 onClick={() => navigate(`/quiz/${id}/edit`, { state: { from: "quiz", returnTo: `/quiz/${id}` } })}
                                             >
@@ -602,7 +597,7 @@ function TakeQuizPage() {
                                                 <span>Edit</span>
                                             </button>
                                             <button
-                                                className="rounded-xl border border-slate-200/80 bg-white/40 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-white/80 hover:border-slate-200/80 flex items-center justify-center gap-2"
+                                                className="rounded-xl border border-slate-200/80 bg-white/40 dark:bg-slate-950/40 dark:border-slate-900/60 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors hover:bg-white/80 dark:hover:bg-slate-950/60 hover:border-slate-200/80 flex items-center justify-center gap-2"
                                                 type="button"
                                                 onClick={() => setShowDeleteConfirm(true)}
                                             >
@@ -627,70 +622,70 @@ function TakeQuizPage() {
                             </div>
                             <div className="p-6 sm:p-8">
                                 <div className="grid gap-4 sm:grid-cols-2 text-slate-700 text-sm sm:text-base">
-                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 px-4 py-3">
-                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 border border-slate-200/80">
-                                            <svg className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
+                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
+                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </span>
                                         <div className="text-left pl-1">
-                                            <div className="text-xs uppercase tracking-wide text-slate-500">Questions</div>
-                                            <div className="text-lg font-semibold text-slate-800">{quiz.questions.length}</div>
+                                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Questions</div>
+                                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">{quiz.questions.length}</div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 px-4 py-3">
-                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 border border-slate-200/80">
-                                            <svg className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
+                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
+                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h10M7 12h10M7 17h10" />
                                             </svg>
                                         </span>
                                         <div className="text-left pl-1">
-                                            <div className="text-xs uppercase tracking-wide text-slate-500">Options per question</div>
-                                            <div className="text-lg font-semibold text-slate-800">{optionsPerQuestion}</div>
+                                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Options per question</div>
+                                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">{optionsPerQuestion}</div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 px-4 py-3">
-                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 border border-slate-200/80">
-                                            <svg className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
+                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
+                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
                                         </span>
                                         <div className="text-left pl-1">
-                                            <div className="text-xs uppercase tracking-wide text-slate-500">Pass threshold</div>
-                                            <div className="text-lg font-semibold text-slate-800">
+                                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Pass threshold</div>
+                                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
                                                 {Math.round((quiz.req_to_pass / quiz.questions.length) * 100)}% to pass
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 px-4 py-3">
-                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 border border-slate-200/80">
-                                            <svg className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
+                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
+                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h7l-1.5-1.5m0 0L10 6m-1.5 2.5H21M21 14h-7l1.5 1.5m0 0L14 18m1.5-2.5H3" />
                                             </svg>
                                         </span>
                                         <div className="text-left pl-1">
-                                            <div className="text-xs uppercase tracking-wide text-slate-500">Multiple correct</div>
-                                            <div className="text-lg font-semibold text-slate-800">
+                                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Multiple correct</div>
+                                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
                                                 {quiz.allow_multiple_correct ? "Allowed" : "Single answer"}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 px-4 py-3">
-                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 border border-slate-200/80">
-                                            <svg className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
+                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
+                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />
                                             </svg>
                                         </span>
                                         <div className="text-left pl-1">
-                                            <div className="text-xs uppercase tracking-wide text-slate-500">Select all correct</div>
-                                            <div className="text-lg font-semibold text-slate-800">
+                                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Select all correct</div>
+                                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
                                                 {quiz.require_all_correct ? "Required" : "Not required"}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 px-4 py-3">
-                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 border border-slate-200/80">
-                                            <svg className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
+                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
+                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 {lockAnswers ? (
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 10V8a4 4 0 00-8 0v2m-1 0h10a2 2 0 012 2v5a2 2 0 01-2 2H7a2 2 0 01-2-2v-5a2 2 0 012-2z" />
                                                 ) : (
@@ -699,8 +694,8 @@ function TakeQuizPage() {
                                             </svg>
                                         </span>
                                         <div className="text-left pl-1">
-                                            <div className="text-xs uppercase tracking-wide text-slate-500">Answer lock</div>
-                                            <div className="text-lg font-semibold text-slate-800">
+                                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Answer lock</div>
+                                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
                                                 {lockAnswers ? "Locked after Next" : "Can change answers"}
                                             </div>
                                         </div>
@@ -708,7 +703,7 @@ function TakeQuizPage() {
                                 </div>
                                 <div className="mt-6 grid gap-4 sm:grid-cols-3 w-full items-stretch">
                                     <button
-                                        className="w-full h-full rounded-2xl bg-white/70 border border-slate-200/80 text-slate-700 font-semibold hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 px-6 py-5 text-lg leading-tight"
+                                        className="w-full h-full rounded-2xl bg-white/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors flex items-center justify-center gap-2 px-6 py-5 text-lg leading-tight"
                                         type="button"
                                         onClick={() => navigate(returnTo || -1)}
                                     >
@@ -729,13 +724,13 @@ function TakeQuizPage() {
                                         <span>Exit</span>
                                     </button>
                                     <button
-                                        className="w-full h-full rounded-2xl bg-slate-800 text-white font-semibold hover:bg-slate-700 transition-colors flex items-center justify-center px-6 py-5 text-xl leading-tight"
+                                        className="w-full h-full rounded-2xl bg-slate-800 dark:bg-slate-900/85 text-white font-semibold hover:bg-slate-700 dark:hover:bg-slate-900 transition-colors flex items-center justify-center px-6 py-5 text-xl leading-tight"
                                         onClick={startQuiz}
                                     >
                                         Take the quiz
                                     </button>
                                     <button
-                                        className="w-full h-full rounded-2xl bg-white/70 border border-slate-200/80 text-slate-700 font-semibold hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 px-6 py-5 text-lg leading-tight"
+                                        className="w-full h-full rounded-2xl bg-white/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors flex items-center justify-center gap-2 px-6 py-5 text-lg leading-tight"
                                         type="button"
                                         onClick={handleToggleFavourite}
                                     >
@@ -832,7 +827,7 @@ function TakeQuizPage() {
                                                     ))}
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-slate-200/70 text-slate-700">
+                                            <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/50 text-slate-700">
                                                 {sortedQuizLeaderboard.length === 0 ? (
                                                     <tr>
                                                         <td className="px-4 py-4 text-center text-slate-500" colSpan={quizColumns.length}>
@@ -1059,11 +1054,11 @@ function TakeQuizPage() {
                                         ) : (
                                             filteredSummaryItems.map((item, index) => {
                                                 const statusClasses = item.isCorrect
-                                                    ? "border-emerald-300/90 bg-emerald-100/90"
-                                                    : "border-rose-300/90 bg-rose-100/90";
+                                                    ? "border-emerald-300/90 bg-emerald-100/90 dark:bg-emerald-900/40 dark:border-emerald-800/60"
+                                                    : "border-rose-300/90 bg-rose-100/90 dark:bg-rose-900/40 dark:border-rose-800/60";
                                                 const statusBadge = item.isCorrect
-                                                    ? "bg-emerald-200/90 text-emerald-800 border-emerald-300/90"
-                                                    : "bg-rose-200/90 text-rose-800 border-rose-300/90";
+                                                    ? "bg-emerald-200/90 text-emerald-800 border-emerald-300/90 dark:bg-emerald-800/60 dark:text-white dark:border-emerald-700/50"
+                                                    : "bg-rose-200/90 text-rose-800 border-rose-300/90 dark:bg-rose-800/60 dark:text-white dark:border-rose-700/50";
                                                 return (
                                                     <div
                                                         key={item.question._id || index}

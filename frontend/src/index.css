@@ -3,12 +3,209 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CRITICAL: Global reset to kill ALL focus indicators that cause flashing */
+*:focus,
+*:active,
+*:focus-visible,
+*:focus-within,
+button,
+button:focus,
+button:active,
+button:focus-visible,
+button:focus-within,
+[role="button"]:focus,
+[role="button"]:active,
+[role="button"]:focus-visible {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-width: 0px !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-color: transparent !important;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --logo-hover-brightness: 1.06;
+  --logo-base-brightness: 0.9;
   --scrollbar-track: rgba(241, 245, 249, 0.16);
   --scrollbar-thumb: rgba(148, 163, 184, 0.35);
   --scrollbar-thumb-hover: rgba(100, 116, 139, 0.5);
   --scrollbar-border: rgba(241, 245, 249, 0.2);
+  --opal-bg-color: #f7f5f1;
+  --opal-backdrop-image:
+    radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
+    radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
+    radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
+    radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%);
+}
+
+html.dark {
+  --logo-hover-brightness: 0.7;
+  --logo-base-brightness: 0.4;
+  --scrollbar-track: rgba(15, 23, 42, 0.22);
+  --scrollbar-thumb: rgba(148, 163, 184, 0.24);
+  --scrollbar-thumb-hover: rgba(226, 232, 240, 0.28);
+  --scrollbar-border: rgba(15, 23, 42, 0.35);
+  --opal-bg-color: #05070a;
+  --opal-backdrop-image:
+    radial-gradient(1200px 800px at 5% 0%, rgba(245, 158, 11, 0.015), transparent 90%),
+    radial-gradient(900px 700px at 85% 10%, rgba(236, 72, 153, 0.015), transparent 85%),
+    radial-gradient(1000px 800px at 15% 90%, rgba(56, 189, 248, 0.015), transparent 90%),
+    radial-gradient(900px 800px at 85% 85%, rgba(16, 185, 129, 0.015), transparent 90%);
+}
+
+html.dark .animate-pulse {
+  animation: none !important;
+  opacity: 0.05 !important;
+}
+
+html.dark [class~="bg-white/95"] {
+  background-color: rgba(2, 6, 23, 0.82);
+}
+
+html.dark [class~="bg-white/90"] {
+  background-color: rgba(2, 6, 23, 0.74);
+}
+
+html.dark [class~="bg-white/80"] {
+  background-color: rgba(2, 6, 23, 0.64);
+}
+
+html.dark [class~="bg-white/70"] {
+  background-color: rgba(2, 6, 23, 0.56);
+}
+
+html.dark [class~="bg-white/60"] {
+  background-color: rgba(2, 6, 23, 0.48);
+}
+
+html.dark [class~="bg-white/50"] {
+  background-color: rgba(2, 6, 23, 0.40);
+}
+
+html.dark [class~="bg-slate-100/70"] {
+  background-color: rgba(15, 23, 42, 0.55);
+}
+
+html.dark [class~="bg-slate-100"] {
+  background-color: rgba(15, 23, 42, 0.62);
+}
+
+html.dark [class~="bg-slate-200/80"] {
+  background-color: rgba(30, 41, 59, 0.72);
+}
+
+html.dark [class~="bg-slate-200"] {
+  background-color: rgba(30, 41, 59, 0.86);
+}
+
+html.dark [class~="bg-slate-200/70"] {
+  background-color: rgba(75, 85, 99, 1.0);
+}
+
+html.dark [class~="border-slate-200/80"] {
+  border-color: rgba(51, 65, 85, 0.72);
+}
+
+html.dark [class~="border-slate-200/70"] {
+  border-color: rgba(51, 65, 85, 0.62);
+}
+
+html.dark [class~="border-slate-200"] {
+  border-color: rgba(51, 65, 85, 0.68);
+}
+
+html.dark [class~="border-slate-300"] {
+  border-color: rgba(71, 85, 105, 0.75);
+}
+
+html.dark [class~="border-slate-300/80"] {
+  border-color: rgba(71, 85, 105, 0.62);
+}
+
+html.dark [class~="divide-slate-200/80"] {
+  border-color: rgba(51, 65, 85, 0.72);
+}
+
+html.dark [class~="divide-slate-200/70"] {
+  border-color: rgba(51, 65, 85, 0.62);
+}
+
+html.dark [class~="text-slate-900"] {
+  color: #f8fafc;
+}
+
+html.dark [class~="text-slate-800"] {
+  color: #f1f5f9;
+}
+
+html.dark [class~="text-slate-700"] {
+  color: #e2e8f0;
+}
+
+html.dark [class~="text-slate-600"] {
+  color: #cbd5e1;
+}
+
+html.dark [class~="text-slate-500"] {
+  color: #94a3b8;
+}
+
+html.dark [class~="text-slate-400"] {
+  color: #64748b;
+}
+
+html.dark [class~="placeholder:text-slate-400"]::placeholder {
+  color: #64748b;
+}
+
+html.dark [class~="placeholder:text-slate-500"]::placeholder {
+  color: #475569;
+}
+
+html.dark [class~="bg-amber-200/30"] {
+  background-color: rgba(245, 158, 11, 0.12);
+}
+
+html.dark [class~="bg-rose-200/30"] {
+  background-color: rgba(236, 72, 153, 0.10);
+}
+
+html.dark [class~="bg-sky-200/25"] {
+  background-color: rgba(56, 189, 248, 0.10);
+}
+
+html.dark [class~="bg-amber-100"] {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+html.dark [class~="text-amber-700"] {
+  color: #f59e0b;
+}
+
+html.dark [class~="bg-emerald-100"] {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+html.dark [class~="text-emerald-700"] {
+  color: #10b981;
+}
+
+html.dark [class~="bg-rose-100"] {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: #fb7185;
+}
+
+html.dark [class~="text-rose-700"] {
+  color: #f43f5e;
 }
 
 html {
@@ -56,6 +253,136 @@ select:-webkit-autofill:focus {
   -webkit-text-fill-color: #6b7280;
   -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.7) inset;
   transition: background-color 9999s ease-in-out 0s;
+}
+
+html.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill:hover,
+html.dark input:-webkit-autofill:focus,
+html.dark textarea:-webkit-autofill,
+html.dark textarea:-webkit-autofill:hover,
+html.dark textarea:-webkit-autofill:focus,
+html.dark select:-webkit-autofill,
+html.dark select:-webkit-autofill:hover,
+html.dark select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #cbd5e1;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(2, 6, 23, 0.55) inset;
+}
+
+/* Dark mode text shadow for logo */
+.dark [data-theme-text="true"] {
+  text-shadow: 1.5px 0 0 rgba(203, 213, 225, 0.3), -1.5px 0 0 rgba(203, 213, 225, 0.3), 0 1.5px 0 rgba(203, 213, 225, 0.3), 0 -1.5px 0 rgba(203, 213, 225, 0.3) !important;
+  color: rgb(203 213 225 / 0.6) !important;
+}
+
+/* NUCLEAR OPTION TO KILL BUTTON FLASH */
+[data-no-flash="true"],
+[data-no-flash="true"]:focus,
+[data-no-flash="true"]:active,
+[data-no-flash="true"]:focus-visible,
+[data-no-flash="true"]:focus-within,
+button.sorting-button,
+button.sorting-button:focus,
+button.sorting-button:active,
+button.sorting-button:focus-visible,
+button.sorting-button:hover,
+.dark button.sorting-button,
+.dark button.sorting-button:focus,
+.dark button.sorting-button:active,
+.dark button.sorting-button:focus-visible,
+.dark button.sorting-button:hover {
+  outline: 0 none transparent !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-width: 0px !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-color: transparent !important;
+  text-shadow: none !important;
+  transition: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  -webkit-user-modify: read-only !important;
+}
+
+/* Explicit colors for sorting buttons to ensure visibility in light mode */
+button.sorting-button {
+  color: #1e293b !important;
+  /* slate-800 */
+}
+
+button.sorting-button:hover {
+  color: #1e293b !important;
+  /* slate-800 (same as default) */
+  background-color: #f3f4f6 !important;
+  /* gray-100 (neutral gray) */
+}
+
+button.sorting-button.isActive {
+  color: #0f172a !important;
+  /* slate-900 */
+  background-color: #ffffff !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark button.sorting-button {
+  color: #94a3b8 !important;
+  /* slate-400 */
+  background-color: transparent !important;
+}
+
+.dark button.sorting-button:hover {
+  color: #cbd5e1 !important;
+  /* slate-300 (lighter for visibility) */
+  background-color: rgba(51, 65, 85, 0.3) !important;
+  /* subtle hover background */
+}
+
+.dark button.sorting-button.isActive {
+  color: #f1f5f9 !important;
+  /* slate-100 */
+  background-color: rgba(15, 23, 42, 0.85) !important;
+  /* Darker and colder (slate-900) */
+  border: 1px solid rgba(51, 65, 85, 0.6) !important;
+}
+
+button.sorting-button {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* Dark mode separator line fix */
+.dark .h-px.bg-slate-200\/70 {
+  background-color: #334155 !important;
+}
+
+/* Cleanup duplicate dark rule */
+
+/* Also reset the category dropdown button and total quizzes card */
+.category-dropdown-button,
+.category-dropdown-button:focus,
+.category-dropdown-button:active,
+.total-quizzes-card,
+.total-quizzes-card:focus,
+.total-quizzes-card:active {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  -webkit-user-modify: read-only !important;
+}
+
+button::-moz-focus-inner {
+  border: 0 !important;
 }
 
 a {

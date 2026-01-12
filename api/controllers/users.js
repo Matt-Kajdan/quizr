@@ -103,6 +103,34 @@ async function showUser(req, res) {
   }
 }
 
+async function updateThemePreference(req, res) {
+  try {
+    const { theme } = req.body || {};
+    const allowedThemes = new Set(["light", "dark", "system"]);
+
+    if (!allowedThemes.has(theme)) {
+      return res.status(400).json({ message: "Invalid theme" });
+    }
+
+    const user = await User.findOne({ authId: req.user.uid }).select("authId preferences");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.authId === PLACEHOLDER_AUTH_ID) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    user.preferences = user.preferences || {};
+    user.preferences.theme = theme;
+    await user.save();
+
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to update theme", error: error.message });
+  }
+}
+
 // Search users by partial username for navbar search dropdown
 // Returns minimal fields only to keep responses light
 async function searchUsers(req, res) {
@@ -323,6 +351,7 @@ const UsersController = {
   checkUsernameAvailability: checkUsernameAvailability,
   updateUser: updateUser,
   showUser: showUser,
+  updateThemePreference: updateThemePreference,
   searchUsers: searchUsers, //used by navbar user search dropdown
   getUserById: getUserById,
   getUserIdByUsername: getUserIdByUsername,

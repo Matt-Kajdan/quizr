@@ -62,7 +62,7 @@ function shouldResetAttempts(originalQuiz, updatedData) {
 }
 
 export default function EditQuiz() {
-  const ANSWER_COUNT_OPTIONS = [2, 3, 4, 5, 6];
+  const ANSWER_COUNT_OPTIONS = useMemo(() => [2, 3, 4, 5, 6], []);
   const DEFAULT_ANSWERS_PER_QUESTION = 4;
   const { id } = useParams();
   const navigate = useNavigate();
@@ -95,13 +95,8 @@ export default function EditQuiz() {
   const [ignoreBlocker, setIgnoreBlocker] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(false);
   const opalBackdropStyle = {
-    backgroundColor: "#f7f5f1",
-    backgroundImage: `
-      radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-      radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-      radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-      radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-    `
+    backgroundColor: "var(--opal-bg-color)",
+    backgroundImage: "var(--opal-backdrop-image)"
   };
 
   useEffect(() => {
@@ -169,7 +164,7 @@ export default function EditQuiz() {
             };
           }),
         }));
-        const resolvedQuestions = normalizedQuestions.length ? normalizedQuestions : questions;
+        const resolvedQuestions = normalizedQuestions.length ? normalizedQuestions : [];
         const resolvedReqToPass = Number.isFinite(quiz.req_to_pass)
           ? Math.min(quiz.req_to_pass, normalizedQuestions.length || 1)
           : 1;
@@ -201,7 +196,7 @@ export default function EditQuiz() {
     return () => {
       mounted = false;
     };
-  }, [id, navigate, user]);
+  }, [id, navigate, user, returnTo, ANSWER_COUNT_OPTIONS]);
 
   useEffect(() => {
     const currentCount = questions.length;
@@ -314,7 +309,7 @@ export default function EditQuiz() {
     } else {
       blocker.reset();
     }
-  }, [blocker.state, blocker.proceed, blocker.reset]);
+  }, [blocker]);
 
   const handleCancel = useCallback(() => {
     navigate(returnTo);

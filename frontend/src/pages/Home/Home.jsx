@@ -16,13 +16,8 @@ export function Home() {
   const location = useLocation();
   const returnTo = `${location.pathname}${location.search || ""}`;
   const opalBackdropStyle = {
-    backgroundColor: "#f7f5f1",
-    backgroundImage: `
-      radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-      radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-      radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-      radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-    `
+    backgroundColor: "var(--opal-bg-color)",
+    backgroundImage: "var(--opal-backdrop-image)"
   };
   const logoBaseGradient = `
     radial-gradient(160px 120px at 15% 30%, rgba(255, 190, 70, 1), transparent 65%),
@@ -59,7 +54,7 @@ export function Home() {
         const res = await apiFetch("/users/me");
         const body = await res.json();
         if (!mounted) return;
-        const favs = Array.isArray(body.user?.favourites) ? body.user.favourites : [];
+        const favs = Array.isArray(body.user?.preferences?.favourites) ? body.user.preferences.favourites : [];
         const ids = favs.map((q) => (typeof q === "string" ? q : q._id));
         setFavouriteIds(ids);
       } catch (error) {
@@ -87,23 +82,23 @@ export function Home() {
 
   const categoryGradients = {
     art: {
-      className: "from-pink-500 to-rose-500",
+      className: "from-pink-500 to-rose-500 dark:bg-pink-500/10 dark:border-pink-500/30 dark:text-pink-400 dark:border",
       hover: { primary: "236 72 153", secondary: "244 63 94" }
     },
     history: {
-      className: "from-amber-500 to-orange-500",
-      hover: { primary: "245 158 11", secondary: "249 115 22" }
+      className: "from-orange-500 to-amber-500 dark:bg-orange-500/10 dark:border-orange-500/30 dark:text-orange-400 dark:border",
+      hover: { primary: "249 115 22", secondary: "245 158 11" }
     },
     music: {
-      className: "from-purple-500 to-indigo-500",
+      className: "from-purple-500 to-indigo-500 dark:bg-indigo-500/10 dark:border-indigo-500/30 dark:text-indigo-400 dark:border",
       hover: { primary: "168 85 247", secondary: "99 102 241" }
     },
     science: {
-      className: "from-blue-500 to-cyan-500",
+      className: "from-blue-500 to-cyan-500 dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-400 dark:border",
       hover: { primary: "59 130 246", secondary: "6 182 212" }
     },
     other: {
-      className: "from-gray-500 to-slate-500",
+      className: "from-gray-500 to-slate-500 dark:bg-slate-500/10 dark:border-slate-500/30 dark:text-slate-400 dark:border",
       hover: { primary: "107 114 128", secondary: "100 116 139" }
     }
   };
@@ -266,10 +261,10 @@ export function Home() {
                 <span aria-hidden="true" className="absolute" style={{ inset: "-9rem" }}></span>
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 text-transparent bg-clip-text blur-[20px] opacity-65"
+                  className="pointer-events-none absolute inset-0 text-transparent bg-clip-text blur-[20px] opacity-65 dark:opacity-30"
                   style={{
                     backgroundImage: logoBaseGradient,
-                    filter: "blur(18px) saturate(1.08) brightness(0.9)",
+                    filter: "blur(18px) saturate(1.08) brightness(var(--logo-base-brightness, 0.9))",
                     transform: "translateY(4px) scale(1.03)"
                   }}
                 >
@@ -278,20 +273,22 @@ export function Home() {
                 <span
                   className="relative z-10 text-slate-800"
                   style={{
-                    textShadow: "1.5px 0 0 rgba(203, 213, 225, 0.75), -1.5px 0 0 rgba(203, 213, 225, 0.75), 0 1.5px 0 rgba(203, 213, 225, 0.75), 0 -1.5px 0 rgba(203, 213, 225, 0.75)"
+                    textShadow: "1.5px 0 0 rgba(203, 213, 225, 0.75), -1.5px 0 0 rgba(203, 213, 225, 0.75), 0 1.5px 0 rgba(203, 213, 225, 0.75), 0 -1.5px 0 rgba(203, 213, 225, 0.75)",
+                    WebkitTextStroke: "0.5px rgba(255,255,255,0.1)"
                   }}
+                  data-theme-text="true"
                 >
                   Quizr.fun
                 </span>
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 text-transparent bg-clip-text opacity-0 group-hover:opacity-95 transition-opacity duration-200 z-20"
+                  className="pointer-events-none absolute inset-0 text-transparent bg-clip-text opacity-0 group-hover:opacity-95 dark:group-hover:opacity-75 transition-opacity duration-200 z-20"
                   style={{
                     backgroundImage: logoHoverGradient,
                     backgroundSize: "220% 220%",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "var(--logo-x, 50%) var(--logo-y, 50%)",
-                    filter: "saturate(1.55) brightness(1.06)",
+                    filter: "saturate(1.55) brightness(var(--logo-hover-brightness, 1.06))",
                     mixBlendMode: "normal",
                     WebkitMaskImage: "radial-gradient(180px 120px at var(--logo-x, 50%) calc(var(--logo-y, 50%) + 18%), rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.85) 32%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0) 78%)",
                     maskImage: "radial-gradient(180px 120px at var(--logo-x, 50%) calc(var(--logo-y, 50%) + 18%), rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.85) 32%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0) 78%)"
@@ -307,7 +304,7 @@ export function Home() {
             <div className="mb-6 sm:mb-8 max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 [padding-left:calc(1rem+var(--removed-body-scroll-width,0px))] [padding-right:calc(1rem+var(--removed-body-scroll-width,0px))]">
               <div className="flex items-center gap-4 w-full sm:w-auto">
                 {/* Total Quizzes Card */}
-                <div className="bg-white/70 backdrop-blur-lg rounded-xl sm:rounded-2xl px-4 border border-slate-200/80 flex flex-col justify-center min-w-[160px] h-[72px] flex-1 sm:flex-none cursor-default">
+                <div className="total-quizzes-card bg-white/70 backdrop-blur-lg rounded-xl sm:rounded-2xl px-4 border border-slate-200/80 flex flex-col justify-center min-w-[160px] h-[72px] flex-1 sm:flex-none cursor-default focus:outline-none">
                   <div className="text-xl sm:text-2xl font-bold text-slate-900">{filteredQuizzes.length}</div>
                   <div className="text-slate-500 text-xs sm:text-sm whitespace-nowrap">{countLabel}</div>
                 </div>
@@ -322,7 +319,7 @@ export function Home() {
                       const dropdown = document.getElementById('category-dropdown');
                       dropdown.classList.toggle('hidden');
                     }}
-                    className="w-full h-[72px] bg-white/70 text-slate-800 rounded-2xl border border-slate-200/80 backdrop-blur text-left focus:outline-none focus:ring-0 appearance-none transition-all duration-200 hover:bg-white/90 hover:border-slate-300 hover:shadow-sm text-xs sm:text-sm font-semibold cursor-pointer flex items-center relative"
+                    className="category-dropdown-button w-full h-[72px] bg-white/70 text-slate-800 rounded-2xl border border-slate-200/80 backdrop-blur text-left focus:outline-none focus:ring-0 appearance-none transition-all duration-200 hover:bg-white/90 hover:border-slate-300 hover:shadow-sm text-xs sm:text-sm font-semibold cursor-pointer flex items-center relative"
                   >
                     <span className="truncate text-center w-full px-8">
                       {selectedCategory === "all"
@@ -344,11 +341,10 @@ export function Home() {
                           const dropdown = document.getElementById('category-dropdown');
                           dropdown.classList.add('hidden');
                         }}
-                        className={`w-full text-left px-4 py-3 text-xs sm:text-sm font-semibold transition-colors hover:bg-slate-100/50 first:rounded-t-2xl last:rounded-b-2xl ${
-                          selectedCategory === category
-                            ? 'bg-slate-100/80 text-slate-900'
-                            : 'text-slate-700'
-                        }`}
+                        className={`w-full text-left px-4 py-3 text-xs sm:text-sm font-semibold transition-colors hover:bg-slate-100/30 dark:hover:bg-slate-700/30 first:rounded-t-2xl last:rounded-b-2xl ${selectedCategory === category
+                          ? 'bg-slate-50/60 dark:bg-slate-700/40 text-slate-900 dark:text-slate-100'
+                          : 'text-slate-700 dark:text-slate-300'
+                          }`}
                       >
                         {category === "all"
                           ? "All Categories"
@@ -362,12 +358,12 @@ export function Home() {
               </div>
 
               {/* Sorting Bar */}
-              <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 backdrop-blur-lg rounded-2xl border border-slate-200/80 h-[72px] w-full sm:w-auto overflow-x-auto no-scrollbar">
+              <div className="sorting-bar-container flex items-center gap-1.5 p-1 bg-white/70 dark:bg-slate-800/40 backdrop-blur-lg rounded-2xl border border-slate-200/80 dark:border-slate-800/60 h-[72px] w-full sm:w-auto overflow-x-auto no-scrollbar">
                 {[
-                  { id: 'newest', label: 'Date', options: { desc: 'Newest', asc: 'Oldest' } },
-                  { id: 'stars', label: 'Stars' },
-                  { id: 'questions', label: 'Questions' },
-                  { id: 'difficulty', label: 'Difficulty' }
+                  { id: 'newest', label: 'Date', options: { desc: 'Newest', asc: 'Oldest' }, width: 'w-[120px]' },
+                  { id: 'stars', label: 'Stars', width: 'w-[100px]' },
+                  { id: 'questions', label: 'Questions', width: 'w-[140px]' },
+                  { id: 'difficulty', label: 'Difficulty', width: 'w-[130px]' }
                 ].map((option) => {
                   const isActive = sortBy === option.id;
                   const isAsc = isActive && sortDirection === "asc";
@@ -382,15 +378,15 @@ export function Home() {
                           setSortDirection("desc");
                         }
                       }}
-                      className={`w-24 sm:w-28 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1.5 whitespace-nowrap h-full ${isActive
-                        ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
-                        : 'text-slate-500 hover:text-slate-900 hover:bg-white/80 hover:shadow-sm'
-                        }`}
-                      style={{ WebkitTapHighlightColor: 'transparent' }}
+                      className={`sorting-button h-full ${option.width} px-4 rounded-xl text-sm font-semibold flex items-center justify-center relative transition-[background-color,color,transform,shadow] duration-200 [outline:none] [box-shadow:none] [ring:none] [-webkit-tap-highlight-color:transparent] ${isActive ? 'bg-white/90 dark:bg-slate-700/90 text-slate-900 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-700/50 isActive' : 'text-slate-900 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 border border-transparent hover:bg-slate-100/50 dark:hover:bg-transparent'}`}
                     >
-                      <span>{option.id === 'newest' ? (isAsc ? option.options.asc : option.options.desc) : option.label}</span>
+                      <span className="truncate">
+                        {option.id === 'newest'
+                          ? (isActive ? option.options[sortDirection] : 'Date')
+                          : option.label}
+                      </span>
                       {isActive && (
-                        <span className="inline-flex w-3 justify-center">
+                        <span className="absolute right-2 flex items-center justify-center w-4">
                           {isAsc ? (
                             <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                               <path d="M10 5l4 6H6l4-6z" />
@@ -399,8 +395,7 @@ export function Home() {
                             <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                               <path d="M10 15l-4-6h8l-4 6z" />
                             </svg>
-                          )
-                          }
+                          )}
                         </span>
                       )}
                     </button>
@@ -471,11 +466,17 @@ export function Home() {
                       <div className="relative z-10 flex-1 flex flex-col">
                         <div className="flex items-center justify-between mb-3 sm:mb-4">
                           <div className="flex flex-wrap items-center gap-2">
-                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${gradient.className} text-white text-xs font-semibold`}>
-                              <img
-                                src={categoryIcon}
-                                alt={categoryLabel}
-                                className="w-4 h-4"
+                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r dark:bg-none ${gradient.className} text-white text-xs font-semibold`}>
+                              <span
+                                className="w-4 h-4 bg-current"
+                                style={{
+                                  WebkitMaskImage: `url(${categoryIcon})`,
+                                  maskImage: `url(${categoryIcon})`,
+                                  WebkitMaskSize: 'contain',
+                                  maskSize: 'contain',
+                                  WebkitMaskRepeat: 'no-repeat',
+                                  maskRepeat: 'no-repeat'
+                                }}
                               />
                               <span className="capitalize">{categoryLabel}</span>
                             </div>
@@ -505,7 +506,9 @@ export function Home() {
                               event.stopPropagation();
                               handleToggleFavourite(quiz._id, isFavourited);
                             }}
-                            className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-all duration-150 ease-out ${isFavourited ? "text-amber-500" : "text-slate-500 hover:text-amber-400"
+                            className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-all duration-150 ease-out group-hover:border-white/30 ${isFavourited
+                              ? "text-amber-500 hover:text-amber-400 group-hover:text-amber-500"
+                              : "text-slate-500 hover:text-amber-500 group-hover:text-white/90"
                               }`}
                           >
                             <svg
@@ -528,7 +531,7 @@ export function Home() {
                         </div>
                         <div className="mt-auto -mx-5 sm:-mx-6">
                           <div className="h-px w-full bg-slate-200/70 mb-2"></div>
-                          <div className="flex items-center justify-between gap-2 py-0.5 px-4 sm:px-5 text-xs sm:text-sm text-slate-600">
+                          <div className="flex items-center justify-between gap-2 py-0.5 px-4 sm:px-5 text-xs sm:text-sm text-slate-600 dark:group-hover:text-white/90">
                             <div className="flex items-center gap-1.5 leading-none text-slate-600">
                               <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-[10px] font-semibold select-none">?</span>
                               <span>{quiz?.questions?.length || 0} questions</span>
@@ -541,7 +544,7 @@ export function Home() {
                                   event.stopPropagation();
                                   navigate(`/users/${authorName}`);
                                 }}
-                                className="rounded-lg px-3 py-1.5 transition-colors hover:[background-color:rgb(var(--shadow-color)/0.12)] hover:text-slate-800"
+                                className="rounded-lg px-3 py-1.5 transition-colors dark:group-hover:text-white hover:[background-color:rgb(var(--shadow-color)/0.2)]"
                               >
                                 <span>By {authorName}</span>
                               </button>

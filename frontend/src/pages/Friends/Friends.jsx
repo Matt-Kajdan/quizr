@@ -35,7 +35,7 @@ export default function FriendsPage() {
     return friendDoc.user1._id.toString() === profile._id.toString()
       ? friendDoc.user2 : friendDoc.user1;
   }
-  const isIncoming = (request) => profile && request.user2?._id === profile._id
+  const isIncoming = useCallback((request) => profile && request.user2?._id === profile._id, [profile]);
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
       // setUser(currentUser);
@@ -56,13 +56,8 @@ export default function FriendsPage() {
   }
 
   const opalBackdropStyle = {
-    backgroundColor: "#f7f5f1",
-    backgroundImage: `
-      radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-      radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-      radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-      radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-    `
+    backgroundColor: "var(--opal-bg-color)",
+    backgroundImage: "var(--opal-backdrop-image)"
   };
 
   const avatarGradients = [
@@ -99,11 +94,11 @@ export default function FriendsPage() {
   }, [pending, pendingSort]);
   const incomingPending = useMemo(
     () => sortedPending.filter((request) => isIncoming(request)),
-    [sortedPending, profile]
+    [sortedPending, isIncoming]
   );
   const outgoingPending = useMemo(
     () => sortedPending.filter((request) => !isIncoming(request)),
-    [sortedPending, profile]
+    [sortedPending, isIncoming]
   );
 
   if (loading) {

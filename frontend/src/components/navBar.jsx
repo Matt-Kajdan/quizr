@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../services/firebase";
-import { useAuth } from "./Auth";
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 import UserSearchBar from "./UserSearchBar";
 
 function NavBar({ accountStatus, accountUsername }) {
   const user = useAuth();
+  const { theme, toggleTheme, isLoading } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const username = accountUsername;
@@ -25,9 +27,14 @@ function NavBar({ accountStatus, accountUsername }) {
       navigate("/login");
     }
   }, [user, navigate]);
+  
+  // Don't render until theme is loaded
+  if (isLoading) {
+    return null;
+  }
 
   return (
-    <nav className="fixed top-0 left-0 z-50 w-screen bg-white/70 backdrop-blur-lg border-b border-slate-200/80">
+    <nav className="fixed top-0 left-0 z-50 w-screen bg-white/70 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-0">
@@ -43,8 +50,8 @@ function NavBar({ accountStatus, accountUsername }) {
                   }}
                   className={({ isActive }) =>
                     `text-sm transition-colors h-16 px-5 inline-flex items-center ${isActive
-                      ? "text-slate-900 font-semibold hover:text-slate-800"
-                      : "text-slate-700 hover:text-slate-500"
+                      ? "text-slate-900 dark:text-slate-100 font-semibold hover:text-slate-800 dark:hover:text-slate-200"
+                      : "text-slate-700 dark:text-slate-300 hover:text-slate-500 dark:hover:text-slate-200"
                     }`
                   }
                 >
@@ -60,8 +67,8 @@ function NavBar({ accountStatus, accountUsername }) {
                   state={{ returnTo: location.pathname }}
                   className={({ isActive }) =>
                     `text-sm transition-colors h-16 px-5 inline-flex items-center ${isActive
-                      ? "text-slate-900 font-semibold hover:text-slate-800"
-                      : "text-slate-700 hover:text-slate-500"
+                      ? "text-slate-900 dark:text-slate-100 font-semibold hover:text-slate-800 dark:hover:text-slate-200"
+                      : "text-slate-700 dark:text-slate-300 hover:text-slate-500 dark:hover:text-slate-200"
                     }`
                   }
                 >
@@ -77,8 +84,8 @@ function NavBar({ accountStatus, accountUsername }) {
                     to="/friends"
                     className={({ isActive }) =>
                       `text-sm transition-colors h-16 px-5 inline-flex items-center ${isActive
-                        ? "text-slate-900 font-semibold hover:text-slate-800"
-                        : "text-slate-700 hover:text-slate-500"
+                        ? "text-slate-900 dark:text-slate-100 font-semibold hover:text-slate-800 dark:hover:text-slate-200"
+                        : "text-slate-700 dark:text-slate-300 hover:text-slate-500 dark:hover:text-slate-200"
                       }`
                     }
                   >
@@ -95,8 +102,8 @@ function NavBar({ accountStatus, accountUsername }) {
                     to="/leaderboard"
                     className={({ isActive }) =>
                       `text-sm transition-colors h-16 px-5 inline-flex items-center ${isActive
-                        ? "text-slate-900 font-semibold hover:text-slate-800"
-                        : "text-slate-700 hover:text-slate-500"
+                        ? "text-slate-900 dark:text-slate-100 font-semibold hover:text-slate-800 dark:hover:text-slate-200"
+                        : "text-slate-700 dark:text-slate-300 hover:text-slate-500 dark:hover:text-slate-200"
                       }`
                     }
                   >
@@ -123,8 +130,8 @@ function NavBar({ accountStatus, accountUsername }) {
                 to={`/users/${username}`}
                 className={({ isActive }) =>
                   `${profileSizeClass} transition-colors h-16 px-5 inline-flex items-center ${isActive
-                    ? "text-slate-900 font-semibold hover:text-slate-800"
-                    : "text-slate-700 hover:text-slate-500"
+                    ? "text-slate-900 dark:text-slate-100 font-semibold hover:text-slate-800 dark:hover:text-slate-200"
+                    : "text-slate-700 dark:text-slate-300 hover:text-slate-500 dark:hover:text-slate-200"
                   }`
                 }
               >
@@ -136,14 +143,60 @@ function NavBar({ accountStatus, accountUsername }) {
                 </span>
               </NavLink>
             )}
+          <div className="flex items-center gap-2 p-1 bg-transparent dark:bg-slate-800/40 rounded-2xl border border-transparent dark:border-slate-800/40">
+            {user && (
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                className="h-10 w-10 inline-flex items-center justify-center rounded-xl text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
+              >
+                {theme === "dark" ? (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 3a6.5 6.5 0 1 0 0 13a6.5 6.5 0 0 0 0-13Z" />
+                    <path d="M12 1v2" />
+                    <path d="M12 21v2" />
+                    <path d="M4.22 4.22l1.42 1.42" />
+                    <path d="M18.36 18.36l1.42 1.42" />
+                    <path d="M1 12h2" />
+                    <path d="M21 12h2" />
+                    <path d="M4.22 19.78l1.42-1.42" />
+                    <path d="M18.36 5.64l1.42-1.42" />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 12.8A8.5 8.5 0 0 1 11.2 3a6.8 6.8 0 1 0 9.8 9.8Z" />
+                  </svg>
+                )}
+              </button>
+            )}
             {user && (
               <button
                 onClick={() => signOut(auth)}
-                className="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-colors hover:bg-slate-700"
+                className="bg-slate-800 dark:bg-slate-700 text-white dark:text-slate-100 px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-colors hover:bg-slate-700 dark:hover:bg-slate-600"
               >
                 Sign out
               </button>
             )}
+          </div>
           </div>
         </div>
       </div>

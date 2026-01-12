@@ -402,13 +402,8 @@ export default function ProfilePage() {
         <div
           className="fixed inset-0"
           style={{
-            backgroundColor: "#f7f5f1",
-            backgroundImage: `
-              radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-              radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-              radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-              radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-            `
+            backgroundColor: "var(--opal-bg-color)",
+            backgroundImage: "var(--opal-backdrop-image)"
           }}
         ></div>
         <div className="fixed inset-0 flex items-center justify-center">
@@ -427,13 +422,8 @@ export default function ProfilePage() {
         <div
           className="fixed inset-0"
           style={{
-            backgroundColor: "#f7f5f1",
-            backgroundImage: `
-              radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-              radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-              radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-              radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-            `
+            backgroundColor: "var(--opal-bg-color)",
+            backgroundImage: "var(--opal-backdrop-image)"
           }}
         ></div>
         <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -457,13 +447,8 @@ export default function ProfilePage() {
         <div
           className="fixed inset-0"
           style={{
-            backgroundColor: "#f7f5f1",
-            backgroundImage: `
-              radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-              radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-              radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-              radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-            `
+            backgroundColor: "var(--opal-bg-color)",
+            backgroundImage: "var(--opal-backdrop-image)"
           }}
         ></div>
         <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -482,11 +467,11 @@ export default function ProfilePage() {
   }
 
   const categoryColors = {
-    art: "from-pink-500 to-rose-500",
-    history: "from-amber-500 to-orange-500",
-    music: "from-purple-500 to-indigo-500",
-    science: "from-blue-500 to-cyan-500",
-    other: "from-gray-500 to-slate-500"
+    art: "border-pink-400/40 bg-pink-500/20 text-pink-700 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-400 hover:border-pink-200/80 hover:bg-pink-100/70 hover:text-pink-700 dark:hover:border-pink-400/50 dark:hover:bg-pink-500/20",
+    history: "border-amber-400/40 bg-amber-500/20 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700 dark:hover:border-amber-400/50 dark:hover:bg-amber-500/20",
+    music: "border-indigo-400/40 bg-indigo-500/20 text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-400 hover:border-indigo-200/80 hover:bg-indigo-100/70 hover:text-indigo-700 dark:hover:border-indigo-400/50 dark:hover:bg-indigo-500/20",
+    science: "border-emerald-400/40 bg-emerald-500/20 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400 hover:border-emerald-200/80 hover:bg-emerald-100/70 hover:text-emerald-700 dark:hover:border-emerald-400/50 dark:hover:bg-emerald-500/20",
+    other: "border-slate-400/40 bg-slate-500/20 text-slate-700 dark:border-slate-500/30 dark:bg-slate-500/10 dark:text-slate-400 hover:border-slate-200/80 hover:bg-slate-100/70 hover:text-slate-700 dark:hover:border-slate-400/50 dark:hover:bg-slate-500/20"
   };
   const categoryGradients = {
     art: {
@@ -511,11 +496,11 @@ export default function ProfilePage() {
     }
   };
   const categoryStripeColors = {
-    art: "bg-rose-200/80 text-rose-700",
-    history: "bg-amber-200/80 text-amber-700",
-    music: "bg-sky-200/80 text-sky-700",
-    science: "bg-emerald-200/80 text-emerald-700",
-    other: "bg-slate-200/80 text-slate-700"
+    art: "bg-pink-500/15 text-pink-700 border-b border-pink-500/20 dark:bg-pink-900/40 dark:text-pink-300 dark:border-pink-800/40",
+    history: "bg-amber-500/15 text-amber-700 border-b border-amber-500/20 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800/40",
+    music: "bg-indigo-500/15 text-indigo-700 border-b border-indigo-500/20 dark:bg-indigo-900/40 dark:text-indigo-300 dark:border-indigo-800/40",
+    science: "bg-emerald-500/15 text-emerald-700 border-b border-emerald-500/20 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800/40",
+    other: "bg-slate-500/15 text-slate-700 border-b border-slate-500/20 dark:bg-slate-900/40 dark:text-slate-300 dark:border-slate-800/40"
   };
 
   const categoryIcons = {
@@ -538,17 +523,17 @@ export default function ProfilePage() {
   const difficultyChips = {
     easy: {
       label: "Easy",
-      className: "border-emerald-300/50 bg-emerald-400/25 text-emerald-700 hover:border-emerald-200/80 hover:bg-emerald-100/70 hover:text-emerald-700",
+      className: "border-emerald-300/50 bg-emerald-400/25 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400 hover:border-emerald-200/80 hover:bg-emerald-100/70 hover:text-emerald-700 dark:hover:border-emerald-400/50 dark:hover:bg-emerald-500/20",
       icon: "/easy.svg"
     },
     medium: {
       label: "Medium",
-      className: "border-amber-400/40 bg-amber-500/20 text-amber-700 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700",
+      className: "border-amber-400/40 bg-amber-500/20 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700 dark:hover:border-amber-400/50 dark:hover:bg-amber-500/20",
       icon: "/medium.svg"
     },
     hard: {
       label: "Hard",
-      className: "border-rose-400/40 bg-rose-500/20 text-rose-700 hover:border-rose-200/80 hover:bg-rose-100/70 hover:text-rose-700",
+      className: "border-rose-400/40 bg-rose-500/20 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400 hover:border-rose-200/80 hover:bg-rose-100/70 hover:text-rose-700 dark:hover:border-rose-400/50 dark:hover:bg-rose-500/20",
       icon: "/hard.svg"
     }
   };
@@ -575,13 +560,8 @@ export default function ProfilePage() {
       <div
         className="fixed inset-0"
         style={{
-          backgroundColor: "#f7f5f1",
-          backgroundImage: `
-            radial-gradient(1200px 800px at 5% 0%, rgba(255, 227, 170, 0.28), transparent 60%),
-            radial-gradient(900px 700px at 85% 10%, rgba(255, 190, 220, 0.24), transparent 55%),
-            radial-gradient(1000px 800px at 15% 90%, rgba(180, 220, 255, 0.24), transparent 60%),
-            radial-gradient(900px 800px at 85% 85%, rgba(190, 235, 210, 0.24), transparent 60%)
-          `
+          backgroundColor: "var(--opal-bg-color)",
+          backgroundImage: "var(--opal-backdrop-image)"
         }}
       ></div>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -611,8 +591,8 @@ export default function ProfilePage() {
                   {profile.user_data?.created_at && (
                     <div className="flex items-center justify-center sm:justify-start gap-2 text-slate-500 text-sm mb-4">
                       {isOwnProfile && (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
-                          <svg className="w-3.5 h-3.5 text-amber-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-xs font-semibold">
+                          <svg className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.45a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.45a1 1 0 00-1.175 0l-3.37 2.45c-.784.57-1.84-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.963 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.05 2.927z" />
                           </svg>
                           You
@@ -747,50 +727,50 @@ export default function ProfilePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
               <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes created</h2>
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80 h-[38px]">
+                <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 dark:bg-slate-800/40 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 h-[38px]">
                   {['date', 'stars'].map((option) => {
-                      const isActive = sortBy === option;
-                      const isAsc = isActive && sortDirection === "asc";
-                      return (
-                        <button
-                          key={option}
-                          disabled={isAccountLocked}
-                          onClick={() => {
-                            if (isActive) {
-                              setSortDirection(prev => prev === "desc" ? "asc" : "desc");
-                            } else {
-                              setSortBy(option);
-                              setSortDirection("desc");
-                            }
-                          }}
-                          className={`w-20 py-1.5 rounded-xl text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1 ${isAccountLocked
-                            ? "opacity-50 text-slate-400"
-                            : isActive
-                              ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
-                              : 'text-slate-500 hover:text-slate-700'
-                            }`}
-                          style={{ WebkitTapHighlightColor: 'transparent' }}
-                        >
-                          {option === 'date' ? (isAsc ? 'Oldest' : 'Newest') : 'Stars'}
-                          {isActive && (
-                            <span className="inline-flex w-3 justify-center">
-                              {isAsc ? (
-                                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 5l4 6H6l4-6z" />
-                                </svg>
-                              ) : (
-                                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 15l-4-6h8l-4 6z" />
-                                </svg>
-                              )}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
+                    const isActive = sortBy === option;
+                    const isAsc = isActive && sortDirection === "asc";
+                    return (
+                      <button
+                        key={option}
+                        disabled={isAccountLocked}
+                        onClick={() => {
+                          if (isActive) {
+                            setSortDirection(prev => prev === "desc" ? "asc" : "desc");
+                          } else {
+                            setSortBy(option);
+                            setSortDirection("desc");
+                          }
+                        }}
+                        className={`w-20 py-1.5 rounded-xl text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1 ${isAccountLocked
+                          ? "opacity-50 text-slate-400"
+                          : isActive
+                            ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-600'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                          }`}
+                        style={{ WebkitTapHighlightColor: 'transparent' }}
+                      >
+                        {option === 'date' ? (isAsc ? 'Oldest' : 'Newest') : 'Stars'}
+                        {isActive && (
+                          <span className="inline-flex w-3 justify-center">
+                            {isAsc ? (
+                              <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 5l4 6H6l4-6z" />
+                              </svg>
+                            ) : (
+                              <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 15l-4-6h8l-4 6z" />
+                              </svg>
+                            )}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-                <div className={`px-4 py-2.5 rounded-2xl border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60' : 'bg-slate-100/80 border-slate-200/80'}`}>
-                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400' : 'text-slate-700'}`}>
+                <div className={`px-4 py-2.5 rounded-2xl border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
+                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
                     {createdQuizzes.length} quiz{createdQuizzes.length !== 1 ? 'zes' : ''}
                   </span>
                 </div>
@@ -881,160 +861,160 @@ export default function ProfilePage() {
                           }}
                         ></div>
                         <div className="relative z-10">
-                        <div className={`flex items-center justify-between px-4 py-2 ${categoryStripeColors[quiz.category] || categoryStripeColors.other}`}>
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              {categoryIcons[quiz.category] || categoryIcons.other}
-                            </svg>
-                            <span className="text-xs font-semibold capitalize">{quiz.category}</span>
-                          </div>
-                          <span className="text-xs font-semibold">
-                            {quiz.questions.length} Question{quiz.questions.length !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                        <div className="px-6 pt-4 pb-3">
-                          <div className="flex items-center justify-between mb-4">
-                            <span className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficultyChips[quiz.difficulty || "medium"].className}`}>
-                              <span
-                                aria-hidden="true"
-                                className="h-4 w-4"
-                                style={{
-                                  backgroundColor: "currentColor",
-                                  maskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
-                                  WebkitMaskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
-                                  maskRepeat: "no-repeat",
-                                  WebkitMaskRepeat: "no-repeat",
-                                  maskPosition: "center",
-                                  WebkitMaskPosition: "center",
-                                  maskSize: "contain",
-                                  WebkitMaskSize: "contain"
-                                }}
-                              ></span>
-                              <span className="capitalize">{quiz.difficulty || "medium"}</span>
+                          <div className={`flex items-center justify-between px-4 py-2 ${categoryStripeColors[quiz.category] || categoryStripeColors.other}`}>
+                            <div className="flex items-center gap-2">
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                {categoryIcons[quiz.category] || categoryIcons.other}
+                              </svg>
+                              <span className="text-xs font-semibold capitalize">{quiz.category}</span>
+                            </div>
+                            <span className="text-xs font-semibold">
+                              {quiz.questions.length} Question{quiz.questions.length !== 1 ? 's' : ''}
                             </span>
-                            {isOwnProfile && !isAccountLocked && (
-                              <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const isFavourited = myFavourites.some((item) => {
-                                      const itemId = typeof item === "string" ? item : item._id;
-                                      return itemId === quiz._id;
-                                    });
-                                    handleToggleFavourite(quiz, isFavourited);
+                          </div>
+                          <div className="px-6 pt-4 pb-3">
+                            <div className="flex items-center justify-between mb-4">
+                              <span className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficultyChips[quiz.difficulty || "medium"].className}`}>
+                                <span
+                                  aria-hidden="true"
+                                  className="h-4 w-4"
+                                  style={{
+                                    backgroundColor: "currentColor",
+                                    maskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
+                                    WebkitMaskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
+                                    maskRepeat: "no-repeat",
+                                    WebkitMaskRepeat: "no-repeat",
+                                    maskPosition: "center",
+                                    WebkitMaskPosition: "center",
+                                    maskSize: "contain",
+                                    WebkitMaskSize: "contain"
                                   }}
-                                  className="h-10 px-3 rounded-xl bg-white/70 border border-slate-200/80 backdrop-blur text-slate-500 transition-all duration-100 ease-out hover:text-amber-500 hover:bg-white hover:scale-105 active:scale-95 flex items-center gap-2"
-                                  aria-label="Toggle favourite"
-                                  title="Toggle favourite"
-                                >
-                                  <svg
-                                    viewBox="0 0 24 24"
-                                    className="h-4 w-4"
-                                    fill={myFavourites.some((item) => {
-                                      const itemId = typeof item === "string" ? item : item._id;
-                                      return itemId === quiz._id;
-                                    }) ? "currentColor" : "none"}
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
+                                ></span>
+                                <span className="capitalize">{quiz.difficulty || "medium"}</span>
+                              </span>
+                              {isOwnProfile && !isAccountLocked && (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const isFavourited = myFavourites.some((item) => {
+                                        const itemId = typeof item === "string" ? item : item._id;
+                                        return itemId === quiz._id;
+                                      });
+                                      handleToggleFavourite(quiz, isFavourited);
+                                    }}
+                                    className="h-10 px-3 rounded-xl bg-white/70 border border-slate-200/80 backdrop-blur text-slate-500 transition-all duration-100 ease-out hover:text-amber-500 hover:bg-white active:scale-95 flex items-center gap-2"
+                                    aria-label="Toggle favourite"
+                                    title="Toggle favourite"
                                   >
-                                    <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                  </svg>
-                                  <span className="text-sm font-semibold">
-                                    {quiz.favourited_count ?? (Array.isArray(quiz.favourites) ? quiz.favourites.length : (quiz.favouritesCount ?? 0))}
-                                  </span>
-                                </button>
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      className="h-4 w-4"
+                                      fill={myFavourites.some((item) => {
+                                        const itemId = typeof item === "string" ? item : item._id;
+                                        return itemId === quiz._id;
+                                      }) ? "currentColor" : "none"}
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                    </svg>
+                                    <span className="text-sm font-semibold">
+                                      {quiz.favourited_count ?? (Array.isArray(quiz.favourites) ? quiz.favourites.length : (quiz.favouritesCount ?? 0))}
+                                    </span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setQuizToDelete(quiz);
+                                      setShowDeleteConfirm(true);
+                                    }}
+                                    className="h-10 w-10 rounded-xl bg-white/70 border border-slate-200/80 backdrop-blur text-rose-500 transition-all duration-100 ease-out hover:bg-rose-100/70 active:scale-95"
+                                    aria-label="Delete quiz"
+                                    title="Delete quiz"
+                                  >
+                                    <svg className="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                            <div className="mb-3 h-16 w-full">
+                              <h3
+                                className={`${titleSizeClass} font-semibold text-slate-800 transition-colors line-clamp-2 text-center h-full w-full flex items-center justify-center`}
+                              >
+                                {quiz.title}
+                              </h3>
+                            </div>
+                            <div className="mb-3 text-xs text-slate-600 divide-y divide-slate-200/80">
+                              <div className="flex items-center justify-between py-2">
+                                <span>Answers per question</span>
+                                <span className="font-semibold text-slate-800">{answersPerQuestion}</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2">
+                                <span>Attempts</span>
+                                <span className="font-semibold text-slate-800">{totalAttempts}</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2">
+                                <span>Pass Rate</span>
+                                <span className="font-semibold text-slate-800">{passRate}%</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2">
+                                <span>Avg Score</span>
+                                <span className="font-semibold text-slate-800">{avgScore}%</span>
+                              </div>
+                            </div>
+                            <div className={`grid gap-2 ${isOwnProfile ? "sm:grid-cols-2" : "grid-cols-1"}`}>
+                              {isOwnProfile && !isAccountLocked && (
                                 <button
-                                  type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setQuizToDelete(quiz);
-                                    setShowDeleteConfirm(true);
+                                    navigate(`/quiz/${quiz._id}/edit`, {
+                                      state: { from: "profile", returnTo: `/users/${routeUsername}` }
+                                    });
                                   }}
-                                  className="h-10 w-10 rounded-xl bg-white/70 border border-slate-200/80 backdrop-blur text-rose-500 transition-all duration-100 ease-out hover:bg-rose-100/70 hover:scale-105 active:scale-95"
-                                  aria-label="Delete quiz"
-                                  title="Delete quiz"
+                                  className="w-full px-4 py-2.5 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 text-sm font-bold transition-all duration-100 ease-out hover:bg-slate-100/80 active:scale-95 flex items-center justify-center gap-2"
                                 >
-                                  <svg className="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
                                   </svg>
+                                  Edit Quiz
                                 </button>
-                              </div>
-                            )}
-                          </div>
-                          <div className="mb-3 h-16 w-full">
-                            <h3
-                              className={`${titleSizeClass} font-semibold text-slate-800 ${isAccountLocked ? "" : "group-hover:text-slate-900"} transition-colors line-clamp-2 text-center h-full w-full flex items-center justify-center`}
-                            >
-                              {quiz.title}
-                            </h3>
-                          </div>
-                          <div className="mb-3 text-xs text-slate-600 divide-y divide-slate-200/80">
-                            <div className="flex items-center justify-between py-2">
-                              <span>Answers per question</span>
-                              <span className="font-semibold text-slate-800">{answersPerQuestion}</span>
-                            </div>
-                            <div className="flex items-center justify-between py-2">
-                              <span>Attempts</span>
-                              <span className="font-semibold text-slate-800">{totalAttempts}</span>
-                            </div>
-                            <div className="flex items-center justify-between py-2">
-                              <span>Pass Rate</span>
-                              <span className="font-semibold text-slate-800">{passRate}%</span>
-                            </div>
-                            <div className="flex items-center justify-between py-2">
-                              <span>Avg Score</span>
-                              <span className="font-semibold text-slate-800">{avgScore}%</span>
-                            </div>
-                          </div>
-                          <div className={`grid gap-2 ${isOwnProfile ? "sm:grid-cols-2" : "grid-cols-1"}`}>
-                            {isOwnProfile && !isAccountLocked && (
+                              )}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  navigate(`/quiz/${quiz._id}/edit`, {
-                                    state: { from: "profile", returnTo: `/users/${routeUsername}` }
-                                  });
+                                  if (isAccountLocked) return;
+                                  handleViewStats(quiz._id);
                                 }}
-                                className="w-full px-4 py-2.5 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 text-sm font-bold transition-all duration-100 ease-out hover:bg-slate-100/80 active:scale-95 flex items-center justify-center gap-2"
+                                disabled={isAccountLocked}
+                                className={`w-full px-4 py-2.5 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 text-sm font-bold transition-all duration-100 ease-out flex items-center justify-center gap-2 ${isAccountLocked ? "opacity-50" : "hover:bg-slate-100/80 active:scale-95"
+                                  }`}
                               >
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
-                                Edit Quiz
+                                View Stats
                               </button>
-                            )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (isAccountLocked) return;
-                                handleViewStats(quiz._id);
-                              }}
-                              disabled={isAccountLocked}
-                              className={`w-full px-4 py-2.5 bg-white/70 border border-slate-200/80 rounded-xl text-slate-700 text-sm font-bold transition-all duration-100 ease-out flex items-center justify-center gap-2 ${isAccountLocked ? "opacity-50" : "hover:bg-slate-100/80 active:scale-95"
-                                }`}
-                            >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </div>
+                            <div className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
+                              <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
-                              View Stats
-                            </button>
+                              <span>
+                                Created {new Date(quiz.created_at).toLocaleDateString("en-GB", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric"
+                                })}
+                              </span>
+                            </div>
                           </div>
-                          <div className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-500">
-                            <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span>
-                              Created {new Date(quiz.created_at).toLocaleDateString("en-GB", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric"
-                              })}
-                            </span>
-                          </div>
-                        </div>
                         </div>
                       </div>
                     );
@@ -1047,8 +1027,8 @@ export default function ProfilePage() {
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Favourites</h2>
-                <div className={`px-4 py-2.5 rounded-2xl border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60' : 'bg-slate-100/80 border-slate-200/80'}`}>
-                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400' : 'text-slate-700'}`}>
+                <div className={`px-4 py-2.5 rounded-2xl border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
+                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
                     {myFavourites.length} quiz{myFavourites.length !== 1 ? 'zes' : ''}
                   </span>
                 </div>
@@ -1107,7 +1087,7 @@ export default function ProfilePage() {
                             </button>
                           </div>
                           <div className="flex flex-wrap items-center gap-2 mb-3">
-                            <div className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r ${categoryColors[quizCategory] || categoryColors.other} px-3 py-1.5 text-xs font-semibold text-white`}>
+                            <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${categoryColors[quizCategory] || categoryColors.other}`}>
                               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 {categoryIcons[quizCategory] || categoryIcons.other}
                               </svg>
@@ -1133,7 +1113,7 @@ export default function ProfilePage() {
                             </div>
                             {creatorName && (
                               creatorIsDeleted || isAccountLocked || isMyOwnQuiz ? (
-                                <span className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 border border-slate-200/80 bg-white/70">
+                                <span className={`rounded-full px-3 py-1.5 text-xs font-bold border border-slate-200/80 bg-white/70 ${creatorIsDeleted ? "text-slate-400" : "text-slate-600 dark:group-hover:text-white"}`}>
                                   {isMyOwnQuiz ? 'Created by you' : `Created by ${creatorIsDeleted ? "deleted user" : creatorName}`}
                                 </span>
                               ) : (
@@ -1144,14 +1124,14 @@ export default function ProfilePage() {
                                     event.stopPropagation();
                                     navigate(`/users/${creatorName}`);
                                   }}
-                                  className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-200/80 hover:text-slate-900 bg-white/70 border border-slate-200/80 active:scale-95"
+                                  className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 dark:group-hover:text-white transition-all hover:bg-white/20 bg-white/70 border border-slate-200/80 active:scale-95"
                                 >
                                   Created by {creatorName}
                                 </button>
                               )
                             )}
                           </div>
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:group-hover:text-white/80">
                             <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
                               <span className="font-semibold text-slate-800">{questionCount}</span>
                               <span className="text-slate-500">Questions</span>
@@ -1181,8 +1161,8 @@ export default function ProfilePage() {
                       }`;
 
                     return isAccountLocked ? (
-                      <div 
-                        key={quizId} 
+                      <div
+                        key={quizId}
                         className={cardClass}
                         style={{ "--shadow-color": (categoryGradients[quizCategory] || categoryGradients.other).hover.primary }}
                       >
@@ -1235,7 +1215,7 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes Taken</h2>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80 h-[38px]">
+                  <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 dark:bg-slate-800/40 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 h-[38px]">
                     {['highest_score', 'category', 'difficulty', 'questions', 'taken_on'].map((option) => {
                       const isActive = takenSortBy === option;
                       const isAsc = isActive && takenSortDirection === "asc";
@@ -1254,8 +1234,8 @@ export default function ProfilePage() {
                           className={`w-20 py-1.5 rounded-xl text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1 ${isAccountLocked
                             ? "opacity-50 text-slate-400"
                             : isActive
-                              ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
-                              : 'text-slate-500 hover:text-slate-700'
+                              ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-600'
+                              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                             }`}
                           style={{ WebkitTapHighlightColor: 'transparent' }}
                         >
@@ -1277,8 +1257,8 @@ export default function ProfilePage() {
                       );
                     })}
                   </div>
-                  <div className={`px-4 py-2.5 rounded-2xl border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60' : 'bg-slate-100/80 border-slate-200/80'}`}>
-                    <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400' : 'text-slate-700'}`}>
+                  <div className={`px-4 py-2.5 rounded-2xl border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
+                    <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
                       {takenQuizzes.length} quiz{takenQuizzes.length !== 1 ? 'zes' : ''}
                     </span>
                   </div>
@@ -1287,9 +1267,9 @@ export default function ProfilePage() {
 
               {takenQuizzes.length > 0 && (
                 <div className="grid grid-cols-4 gap-4 mb-8">
-                  <div className="bg-white/50 rounded-2xl p-4 border border-slate-200/60 text-center">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Favorite Topic</div>
-                    <div className="text-lg font-bold text-slate-800 capitalize">
+                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Favorite Topic</div>
+                    <div className="text-lg font-bold text-slate-800 dark:text-slate-100 capitalize">
                       <span className={(() => {
                         if (takenQuizzes.length === 0) return "text-slate-800";
                         const counts = {};
@@ -1299,11 +1279,11 @@ export default function ProfilePage() {
                         });
                         const favoriteCat = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
                         const categoryColors = {
-                          art: "text-pink-600",
-                          history: "text-amber-600", 
-                          music: "text-purple-600",
-                          science: "text-blue-600",
-                          other: "text-slate-600"
+                          art: "text-pink-600 dark:text-pink-400",
+                          history: "text-amber-600 dark:text-amber-400",
+                          music: "text-purple-600 dark:text-purple-400",
+                          science: "text-blue-600 dark:text-blue-400",
+                          other: "text-slate-600 dark:text-slate-400"
                         };
                         return categoryColors[favoriteCat] || categoryColors.other;
                       })()}>
@@ -1319,21 +1299,21 @@ export default function ProfilePage() {
                       </span>
                     </div>
                   </div>
-                  <div className="bg-white/50 rounded-2xl p-4 border border-slate-200/60 text-center">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Average Score</div>
-                    <div className="text-lg font-bold text-slate-800">
+                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Average Score</div>
+                    <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
                       {Math.round(takenQuizzes.reduce((acc, q) => acc + (q.correct / q.totalQuestions) * 100, 0) / takenQuizzes.length)}%
                     </div>
                   </div>
-                  <div className="bg-white/50 rounded-2xl p-4 border border-slate-200/60 text-center">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Quizzes Mastered</div>
-                    <div className="text-lg font-bold text-amber-600">
+                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Quizzes Mastered</div>
+                    <div className="text-lg font-bold text-amber-600 dark:text-amber-400">
                       {takenQuizzes.filter(q => q.correct === q.totalQuestions).length}
                     </div>
                   </div>
-                  <div className="bg-white/50 rounded-2xl p-4 border border-slate-200/60 text-center">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Correct Answers</div>
-                    <div className="text-lg font-bold text-slate-800">
+                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Correct Answers</div>
+                    <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
                       {takenQuizzes.reduce((sum, q) => sum + q.correct, 0)}
                     </div>
                   </div>
@@ -1413,7 +1393,7 @@ export default function ProfilePage() {
                     };
 
                     const quizCategory = quiz.category || "other";
-                    
+
                     const takenClass = `group block bg-white/80 backdrop-blur rounded-2xl p-5 border shadow-sm transition-all duration-200 ease-out ${isAccountLocked ? "opacity-60" : `hover:border-slate-300 hover:bg-white hover:scale-[1.005] ${isMastered ? 'border-amber-300/60 hover:border-amber-400/80' : 'border-slate-200/80'}`
                       }`;
                     const difficultyKey = difficultyChips[quiz.difficulty] ? quiz.difficulty : "medium";
@@ -1424,7 +1404,7 @@ export default function ProfilePage() {
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <h3 className="text-lg font-bold text-slate-800 mb-1 line-clamp-1">{quiz.title}</h3>
-                            <div className="text-xs font-medium text-slate-500 text-left">
+                            <div className="text-xs font-medium text-slate-500 dark:group-hover:text-white/80 text-left">
                               Took on {new Date(quiz.attempted_at).toLocaleDateString("en-GB", {
                                 day: "numeric",
                                 month: "short",
@@ -1435,8 +1415,8 @@ export default function ProfilePage() {
                           {isMastered && (
                             <div className="flex-shrink-0 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700 border border-amber-200">
                               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
-                                <path d="M5 16h14l-1 7H6l-1-7z"/>
+                                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                                <path d="M5 16h14l-1 7H6l-1-7z" />
                               </svg>
                               <span>Mastered</span>
                             </div>
@@ -1444,7 +1424,7 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                          <div className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r ${categoryColors[quizCategory] || categoryColors.other} px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all duration-300 ease-out`}>
+                          <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${categoryColors[quizCategory] || categoryColors.other}`}>
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                               {categoryIcons[quizCategory] || categoryIcons.other}
                             </svg>
@@ -1481,7 +1461,7 @@ export default function ProfilePage() {
                           <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-100">
                             <div
                               className="h-full transition-all duration-500 ease-out rounded-r-full"
-                              style={{ 
+                              style={{
                                 width: `${percentage}%`,
                                 ...getGradientStyle()
                               }}
@@ -1492,8 +1472,8 @@ export default function ProfilePage() {
                     );
 
                     return isAccountLocked ? (
-                      <div 
-                        key={quiz._id} 
+                      <div
+                        key={quiz._id}
                         className={takenClass}
                         onMouseMove={isAccountLocked ? undefined : handleCardMouseMove}
                         onMouseLeave={isAccountLocked ? undefined : handleCardMouseLeave}
