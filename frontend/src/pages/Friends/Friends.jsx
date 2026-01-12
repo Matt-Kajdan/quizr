@@ -157,7 +157,7 @@ export default function FriendsPage() {
                   <option value="oldest">Oldest first</option>
                 </select>
               </div>
-              <div className="divide-y divide-slate-200/80 sm:divide-y-0 sm:divide-x sm:grid sm:grid-cols-2">
+              <div className="divide-y divide-slate-200/80 dark:divide-slate-800/90 sm:divide-y-0 sm:divide-x sm:grid sm:grid-cols-2">
                 <div className="pb-5 sm:pb-0 sm:pr-5">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xs sm:text-sm font-semibold text-slate-600 uppercase tracking-wide">
@@ -209,13 +209,13 @@ export default function FriendsPage() {
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => handleAccept(r._id)}
-                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs sm:text-sm font-semibold transition-colors"
+                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 dark:hover:bg-emerald-500/25 text-emerald-800 text-xs sm:text-sm font-semibold transition-colors"
                                 >
                                   Accept
                                 </button>
                                 <button
                                   onClick={() => handleRemove(other._id)}
-                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs sm:text-sm font-semibold transition-colors"
+                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 hover:bg-rose-200 dark:hover:bg-rose-500/25 text-rose-800 text-xs sm:text-sm font-semibold transition-colors"
                                 >
                                   Decline
                                 </button>
@@ -278,7 +278,7 @@ export default function FriendsPage() {
                               </Link>
                               <button
                                 onClick={() => handleRemove(other._id)}
-                                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs sm:text-sm font-semibold transition-colors"
+                                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-100 hover:bg-amber-200 dark:hover:bg-amber-500/25 text-amber-800 text-xs sm:text-sm font-semibold transition-colors"
                               >
                                 Cancel
                               </button>
@@ -364,7 +364,7 @@ export default function FriendsPage() {
                                     setConfirmRemoveId(null);
                                   }
                                 }}
-                                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs sm:text-sm font-semibold transition-colors"
+                                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 hover:bg-rose-200 dark:hover:bg-rose-500/25 text-rose-800 text-xs sm:text-sm font-semibold transition-colors"
                               >
                                 Confirm
                               </button>
@@ -406,7 +406,7 @@ export default function FriendsPage() {
                             </Link>
                             <button
                               onClick={() => setConfirmRemoveId(f._id)}
-                              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs sm:text-sm font-semibold transition-colors"
+                              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 hover:bg-rose-200 dark:hover:bg-rose-500/25 text-rose-800 text-xs sm:text-sm font-semibold transition-colors"
                             >
                               Remove
                             </button>
@@ -419,8 +419,8 @@ export default function FriendsPage() {
               )}
             </section>
           </div>
-        </main>
-      </div>
+        </main >
+      </div >
     </>
   );
 }
