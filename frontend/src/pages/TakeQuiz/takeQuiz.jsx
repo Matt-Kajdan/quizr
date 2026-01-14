@@ -604,8 +604,17 @@ function TakeQuizPage() {
                                 <div className="grid gap-4 sm:grid-cols-2 text-slate-700 text-sm sm:text-base">
                                     <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
                                         <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
-                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="h-5 w-5 text-slate-600 dark:text-slate-400"
+                                            >
+                                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                                <rect x="3" y="7" width="12" height="14" rx="2" />
                                             </svg>
                                         </span>
                                         <div className="text-left pl-1">

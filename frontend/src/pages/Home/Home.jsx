@@ -50,12 +50,28 @@ export function Home() {
     setFavouriteIds((prev) =>
       next ? [...prev, quizId] : prev.filter((id) => id !== quizId)
     );
+    setQuizzes((prev) =>
+      prev.map((quiz) => {
+        if (quiz._id !== quizId) return quiz;
+        const currentCount = getFavouriteCount(quiz);
+        const updatedCount = next ? currentCount + 1 : Math.max(0, currentCount - 1);
+        return { ...quiz, favourited_count: updatedCount };
+      })
+    );
     try {
       await toggleFavourite(quizId, isFavourited);
     } catch (error) {
       console.error("Failed to update favourite", error);
       setFavouriteIds((prev) =>
         next ? prev.filter((id) => id !== quizId) : [...prev, quizId]
+      );
+      setQuizzes((prev) =>
+        prev.map((quiz) => {
+          if (quiz._id !== quizId) return quiz;
+          const currentCount = getFavouriteCount(quiz);
+          const updatedCount = next ? Math.max(0, currentCount - 1) : currentCount + 1;
+          return { ...quiz, favourited_count: updatedCount };
+        })
       );
     }
   }
@@ -135,6 +151,12 @@ export function Home() {
 
   const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
 
+  const getFavouriteCount = (quiz) => Math.max(
+    0,
+    quiz.favourited_count ??
+    (Array.isArray(quiz.favourites) ? quiz.favourites.length : (quiz.favouritesCount ?? 0))
+  );
+
   const filteredQuizzes = (selectedCategory === "all"
     ? quizzes
     : selectedCategory === "favourites"
@@ -142,8 +164,9 @@ export function Home() {
       : quizzes.filter((quiz) => quiz.category === selectedCategory)
   ).sort((a, b) => {
     if (sortBy === "stars") {
-      const getStars = (q) => q.favourited_count ?? (Array.isArray(q.favourites) ? q.favourites.length : (q.favouritesCount ?? 0));
-      return sortDirection === "desc" ? getStars(b) - getStars(a) : getStars(a) - getStars(b);
+      return sortDirection === "desc"
+        ? getFavouriteCount(b) - getFavouriteCount(a)
+        : getFavouriteCount(a) - getFavouriteCount(b);
     }
     if (sortBy === "questions") {
       const getCount = (q) => q.questions?.length || 0;
@@ -299,7 +322,7 @@ export function Home() {
 
                 {/* Category filter drop down */}
                 <div className="relative flex-1 sm:w-64">
-                    <button
+                  <button
                     type="button"
                     aria-haspopup="true"
                     aria-expanded="false"
@@ -332,7 +355,7 @@ export function Home() {
                         className={`w-full text-left px-4 py-3 text-xs sm:text-sm font-semibold transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-600/50 first:rounded-t-2xl last:rounded-b-2xl ${selectedCategory === category
                           ? 'bg-slate-50/60 dark:bg-slate-600/60 text-slate-900 dark:text-white'
                           : 'text-slate-700 dark:text-slate-200'
-                        }`}
+                          }`}
                       >
                         {category === "all"
                           ? "All Categories"
@@ -420,6 +443,7 @@ export function Home() {
                 const difficultyKey = difficultyChips[quiz?.difficulty] ? quiz.difficulty : "medium";
                 const difficulty = difficultyChips[difficultyKey];
                 const isFavourited = favouriteIds.includes(quiz._id);
+                const favouriteCount = getFavouriteCount(quiz);
                 const authorUsername = quiz?.created_by?.user_data?.username;
                 const authorIsDeleted = quiz?.created_by?.authId === "deleted-user"
                   || authorUsername === "__deleted__"
@@ -488,31 +512,36 @@ export function Home() {
                               <span>{difficulty.label}</span>
                             </div>
                           </div>
-                          <button
-                            type="button"
-                            aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
-                            onClick={(event) => {
-                              event.preventDefault();
-                              event.stopPropagation();
-                              handleToggleFavourite(quiz._id, isFavourited);
-                            }}
-                            className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-all duration-150 ease-out group-hover:border-white/30 ${isFavourited
-                              ? "text-amber-500 hover:text-slate-700 dark:hover:text-white"
-                              : "text-slate-500 hover:text-amber-500 dark:hover:text-amber-500"
-                              }`}
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              className="h-4 w-4"
-                              fill={isFavourited ? "currentColor" : "none"}
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+                          <div className="inline-flex items-center gap-2">
+                            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+                              {favouriteCount}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                handleToggleFavourite(quiz._id, isFavourited);
+                              }}
+                              className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-all duration-150 ease-out group-hover:border-white/30 ${isFavourited
+                                ? "text-amber-500 hover:text-slate-700 dark:hover:text-white"
+                                : "text-slate-500 hover:text-amber-500 dark:hover:text-amber-500"
+                                }`}
                             >
-                              <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                            </svg>
-                          </button>
+                              <svg
+                                viewBox="0 0 24 24"
+                                className="h-4 w-4"
+                                fill={isFavourited ? "currentColor" : "none"}
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                         <div className="flex-1 flex items-center -translate-y-2">
                           <h3 className="text-lg sm:text-xl font-bold text-slate-800 line-clamp-2 transition-all text-center w-full leading-tight">
@@ -523,7 +552,18 @@ export function Home() {
                           <div className="h-px w-full bg-slate-200/70 mb-2"></div>
                           <div className="flex items-center justify-between gap-2 py-0.5 px-4 sm:px-5 text-xs sm:text-sm text-slate-600 dark:group-hover:text-white/90">
                             <div className="flex items-center gap-1.5 leading-none text-slate-600">
-                              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-[10px] font-semibold select-none">?</span>
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="h-3.5 w-3.5"
+                              >
+                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                <rect x="3" y="7" width="12" height="14" rx="2" />
+                              </svg>
                               <span>{quiz?.questions?.length || 0} questions</span>
                             </div>
                             {canNavigateToAuthor ? (

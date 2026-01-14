@@ -56,6 +56,11 @@ export default function ProfilePage() {
   };
 
   const returnTo = location.pathname;
+  const getFavouriteCount = (quiz) => Math.max(
+    0,
+    quiz?.favourited_count ??
+    (Array.isArray(quiz?.favourites) ? quiz.favourites.length : (quiz?.favouritesCount ?? 0))
+  );
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
@@ -216,6 +221,14 @@ export default function ProfilePage() {
               category: quiz.category,
               difficulty: quiz.difficulty,
               req_to_pass: quiz.req_to_pass,
+              questions: quiz.questions,
+              created_by: quiz.created_by,
+              allow_multiple_correct: quiz.allow_multiple_correct,
+              require_all_correct: quiz.require_all_correct,
+              lock_answers: quiz.lock_answers,
+              favourited_count: quiz.favourited_count,
+              favourites: quiz.favourites,
+              favouritesCount: quiz.favouritesCount,
               correct: bestAttempt.correct,
               attempted_at: bestAttempt.attempted_at,
               totalQuestions: quiz.questions.length,
@@ -281,7 +294,16 @@ export default function ProfilePage() {
     setCreatedQuizzes((prev) =>
       prev.map((q) => {
         if (q._id === quizId) {
-          const currentCount = q.favourited_count ?? (Array.isArray(q.favourites) ? q.favourites.length : (q.favouritesCount ?? 0));
+          const currentCount = getFavouriteCount(q);
+          return { ...q, favourited_count: Math.max(0, currentCount - 1) };
+        }
+        return q;
+      })
+    );
+    setTakenQuizzes((prev) =>
+      prev.map((q) => {
+        if (q._id === quizId) {
+          const currentCount = getFavouriteCount(q);
           return { ...q, favourited_count: Math.max(0, currentCount - 1) };
         }
         return q;
@@ -296,7 +318,16 @@ export default function ProfilePage() {
       setCreatedQuizzes((prev) =>
         prev.map((q) => {
           if (q._id === quizId) {
-            const currentCount = q.favourited_count ?? (Array.isArray(q.favourites) ? q.favourites.length : (q.favouritesCount ?? 0));
+            const currentCount = getFavouriteCount(q);
+            return { ...q, favourited_count: currentCount + 1 };
+          }
+          return q;
+        })
+      );
+      setTakenQuizzes((prev) =>
+        prev.map((q) => {
+          if (q._id === quizId) {
+            const currentCount = getFavouriteCount(q);
             return { ...q, favourited_count: currentCount + 1 };
           }
           return q;
@@ -309,6 +340,8 @@ export default function ProfilePage() {
     const quizId = quiz._id;
     const previous = myFavourites;
     const previousIds = favouriteIds;
+    const currentCount = getFavouriteCount(quiz);
+    const updatedCount = isFavourited ? Math.max(0, currentCount - 1) : currentCount + 1;
     setMyFavourites((prev) => {
       if (isFavourited) {
         return prev.filter((item) => {
@@ -316,7 +349,7 @@ export default function ProfilePage() {
           return itemId !== quizId;
         });
       }
-      return [...prev, quiz];
+      return [...prev, { ...quiz, favourited_count: updatedCount }];
     });
     setFavouriteIds((prev) => {
       if (isFavourited) {
@@ -329,7 +362,16 @@ export default function ProfilePage() {
     setCreatedQuizzes((prev) =>
       prev.map((q) => {
         if (q._id === quizId) {
-          const currentCount = q.favourited_count ?? (Array.isArray(q.favourites) ? q.favourites.length : (q.favouritesCount ?? 0));
+          const currentCount = getFavouriteCount(q);
+          return { ...q, favourited_count: isFavourited ? Math.max(0, currentCount - 1) : currentCount + 1 };
+        }
+        return q;
+      })
+    );
+    setTakenQuizzes((prev) =>
+      prev.map((q) => {
+        if (q._id === quizId) {
+          const currentCount = getFavouriteCount(q);
           return { ...q, favourited_count: isFavourited ? Math.max(0, currentCount - 1) : currentCount + 1 };
         }
         return q;
@@ -345,7 +387,16 @@ export default function ProfilePage() {
       setCreatedQuizzes((prev) =>
         prev.map((q) => {
           if (q._id === quizId) {
-            const currentCount = q.favourited_count ?? (Array.isArray(q.favourites) ? q.favourites.length : (q.favouritesCount ?? 0));
+            const currentCount = getFavouriteCount(q);
+            return { ...q, favourited_count: isFavourited ? currentCount + 1 : Math.max(0, currentCount - 1) };
+          }
+          return q;
+        })
+      );
+      setTakenQuizzes((prev) =>
+        prev.map((q) => {
+          if (q._id === quizId) {
+            const currentCount = getFavouriteCount(q);
             return { ...q, favourited_count: isFavourited ? currentCount + 1 : Math.max(0, currentCount - 1) };
           }
           return q;
@@ -927,7 +978,19 @@ export default function ProfilePage() {
                               </svg>
                               <span className="text-xs font-semibold capitalize">{quiz.category}</span>
                             </div>
-                            <span className="text-xs font-semibold">
+                            <span className="text-xs font-semibold flex items-center gap-1">
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="h-3.5 w-3.5"
+                              >
+                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                <rect x="3" y="7" width="12" height="14" rx="2" />
+                              </svg>
                               {quiz.questions.length} Question{quiz.questions.length !== 1 ? 's' : ''}
                             </span>
                           </div>
@@ -1108,6 +1171,7 @@ export default function ProfilePage() {
                     const quizId = typeof quiz === "string" ? quiz : quiz._id;
                     const quizTitle = typeof quiz === "string" ? "Quiz" : quiz.title;
                     const quizCategory = typeof quiz === "string" ? null : quiz.category;
+                    const favouriteCount = typeof quiz === "string" ? 0 : getFavouriteCount(quiz);
                     const creatorName = typeof quiz === "string" ? null : quiz.created_by?.user_data?.username;
                     const creatorAuthId = typeof quiz === "string" ? null : quiz.created_by?.authId;
                     const creatorId = typeof quiz === "string" ? null : quiz.created_by?._id;
@@ -1131,19 +1195,27 @@ export default function ProfilePage() {
                             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
                               <h3 className="text-base font-semibold text-slate-800 truncate">{quizTitle}</h3>
                             </div>
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                if (isAccountLocked) return;
-                                handleRemoveFavourite(quizId);
-                              }}
-                              disabled={isAccountLocked}
-                              className={`px-3 py-1.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 backdrop-blur text-rose-600 dark:text-rose-400 text-xs font-bold transition-all duration-100 ease-out ${isAccountLocked ? "opacity-50" : "hover:bg-rose-100/80 dark:hover:bg-rose-900/50 active:scale-95"}`}
-                            >
-                              Remove
-                            </button>
+                            <div className="flex items-center gap-3">
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 dark:text-slate-500">
+                                <span>{favouriteCount}</span>
+                                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                  <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                </svg>
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  if (isAccountLocked) return;
+                                  handleRemoveFavourite(quizId);
+                                }}
+                                disabled={isAccountLocked}
+                                className={`px-3 py-1.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 backdrop-blur text-rose-600 dark:text-rose-400 text-xs font-bold transition-all duration-100 ease-out ${isAccountLocked ? "opacity-50" : "hover:bg-rose-100/80 dark:hover:bg-rose-900/50 active:scale-95"}`}
+                              >
+                                Remove
+                              </button>
+                            </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-2 mb-3">
                             <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${categoryColors[quizCategory] || categoryColors.other}`}>
@@ -1192,6 +1264,18 @@ export default function ProfilePage() {
                           </div>
                           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:group-hover:text-white/80">
                             <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="h-3.5 w-3.5"
+                              >
+                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                <rect x="3" y="7" width="12" height="14" rx="2" />
+                              </svg>
                               <span className="font-semibold text-slate-800">{questionCount}</span>
                               <span className="text-slate-500">Questions</span>
                             </span>
@@ -1434,6 +1518,8 @@ export default function ProfilePage() {
                   }).map((quiz) => {
                     const percentage = Math.round((quiz.correct / quiz.totalQuestions) * 100);
                     const isMastered = percentage === 100;
+                    const isFavourited = favouriteIds.includes(quiz._id);
+                    const favouriteCount = getFavouriteCount(quiz);
                     const getGradientStyle = () => {
                       if (percentage === 100) {
                         return { background: 'linear-gradient(to right, rgb(245 158 11), rgb(217 119 6))' };
@@ -1473,15 +1559,32 @@ export default function ProfilePage() {
                               })}
                             </div>
                           </div>
-                          {isMastered && (
-                            <div className="flex-shrink-0 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700 border border-amber-200">
-                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
-                                <path d="M5 16h14l-1 7H6l-1-7z" />
-                              </svg>
-                              <span>Mastered</span>
-                            </div>
-                          )}
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              if (isAccountLocked) return;
+                              handleToggleFavourite(quiz, isFavourited);
+                            }}
+                            disabled={isAccountLocked}
+                            className="h-10 px-3 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 backdrop-blur text-slate-500 dark:text-slate-400 transition-all duration-100 ease-out hover:text-amber-500 dark:hover:text-amber-400 hover:bg-white dark:hover:bg-slate-700/80 active:scale-95 flex items-center gap-2 disabled:opacity-50"
+                            aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                            title={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="h-4 w-4"
+                              fill={isFavourited ? "currentColor" : "none"}
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                            </svg>
+                            <span className="text-sm font-semibold">{favouriteCount}</span>
+                          </button>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
@@ -1510,6 +1613,15 @@ export default function ProfilePage() {
                             ></span>
                             <span>{difficulty.label}</span>
                           </div>
+                          {isMastered && (
+                            <div className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700 border border-amber-200 dark:bg-amber-900/40 dark:text-amber-200 dark:border-amber-800/60">
+                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                                <path d="M5 16h14l-1 7H6l-1-7z" />
+                              </svg>
+                              <span>Mastered</span>
+                            </div>
+                          )}
                         </div>
 
                         <div className="space-y-2">
