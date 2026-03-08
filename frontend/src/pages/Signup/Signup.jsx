@@ -40,6 +40,12 @@ export function Signup() {
     try {
       if (!username.trim()) {
         setError("Username is required");
+        setIsSigningUp(false);
+        return;
+      }
+      if (password.length < 12) {
+        setError("Password must be at least 12 characters long");
+        setIsSigningUp(false);
         return;
       }
       const availabilityRes = await fetch(
@@ -123,7 +129,9 @@ export function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-2 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70"
+                minLength={12}
               />
+              <p className="text-xs text-slate-500 mt-1 pl-1">Must be at least 12 characters long.</p>
               <input
                 role="submit-button"
                 id="submit"
