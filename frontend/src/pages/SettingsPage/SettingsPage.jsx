@@ -404,6 +404,7 @@ export default function SettingsPage() {
                   className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
                   minLength={12}
                 />
+                <p className="text-xs text-slate-500 mt-1 pl-1">Must be at least 12 characters long.</p>
               </div>
               <div>
                 <label className="block text-slate-600 mb-2">Confirm Password</label>
