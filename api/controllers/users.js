@@ -111,6 +111,24 @@ async function updateUser(req, res) {
   }
 }
 
+async function resolveUsername(req, res) {
+  const { username } = req.query;
+  if (!username || username !== username.trim()) {
+    return res.status(404).json({ message: "Not found" });
+  }
+  try {
+    const user = await User.findOne({ "user_data.username": username, authId: { $ne: PLACEHOLDER_AUTH_ID } })
+      .select("user_data.email");
+    if (!user) {
+      return res.status(404).json({ message: "Not found" });
+    }
+    return res.status(200).json({ email: user.user_data.email });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error resolving username" });
+  }
+}
+
 async function checkUsernameAvailability(req, res) {
   const { username } = req.query;
   if (!username) {
@@ -441,6 +459,7 @@ async function removeFavourite(req, res) {
 const UsersController = {
   createUser: createUser,
   checkUsernameAvailability: checkUsernameAvailability,
+  resolveUsername: resolveUsername,
   updateUser: updateUser,
   showUser: showUser,
   updateThemePreference: updateThemePreference,

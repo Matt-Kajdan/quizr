@@ -58,10 +58,9 @@ export const ThemeProvider = ({ children }) => {
     };
 
     const unsub = onAuthStateChanged(auth, (user) => {
-      // If the user logs out, clean up local storage and reset the theme immediately
+      // If the user logs out, keep the current theme in localStorage
+      // so the auth pages retain whatever theme was last active.
       if (!user) {
-        setTheme("light");
-        localStorage.removeItem("theme");
         return;
       }
       loadTheme();
