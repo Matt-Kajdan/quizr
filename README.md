@@ -4,7 +4,7 @@
 
 <div align="center">
   <img
-    src="./frontend/src/assets/brain-logo.png"
+    src="./frontend/src/assets/quizr.png"
     alt="Quiz.app logo"
     width="400"
      style="margin-bottom: 18px;"
