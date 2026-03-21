@@ -159,7 +159,7 @@ async function showUser(req, res) {
       .select("user_data preferences")
       .populate({
         path: "preferences.favourites",
-        select: "title category created_by questions req_to_pass allow_multiple_correct require_all_correct lock_answers difficulty favourited_count",
+        select: "title category created_by questions req_to_pass allow_multiple_correct require_all_correct lock_answers random_question_order difficulty favourited_count",
         populate: { path: "created_by", select: "user_data.username authId" }
       })
 

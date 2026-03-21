@@ -20,6 +20,7 @@ const QuizSchema = new mongoose.Schema({
     }],
     req_to_pass: { type: Number },
     lock_answers: { type: Boolean, default: false },
+    random_question_order: { type: Boolean, default: false },
     allow_multiple_correct: { type: Boolean, default: false },
     require_all_correct: { type: Boolean, default: false },
     created_at: { type: Date, default: Date.now }

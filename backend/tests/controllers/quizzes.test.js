@@ -165,7 +165,7 @@ describe("/quizzes", () => {
       expect(response.status).toEqual(404);
       expect(response.body.message).toEqual("User not found");
     });
-    test("creates quiz with allow_multiple_correct and require_all_correct flags", async () => {
+    test("creates quiz with allow_multiple_correct, require_all_correct, and random_question_order flags", async () => {
       await request(app)
         .post("/api/quizzes")
         .send({
@@ -174,11 +174,13 @@ describe("/quizzes", () => {
           req_to_pass: 80,
           allow_multiple_correct: true,
           require_all_correct: true,
+          random_question_order: true,
           questions: []
         });
       const quizzes = await Quiz.find();
       expect(quizzes[0].allow_multiple_correct).toEqual(true);
       expect(quizzes[0].require_all_correct).toEqual(true);
+      expect(quizzes[0].random_question_order).toEqual(true);
     });
   });
 
@@ -220,6 +222,125 @@ describe("/quizzes", () => {
       const response = await request(app).get("/api/quizzes/507f1f77bcf86cd799439011");
       expect(response.status).toEqual(404);
       expect(response.body.message).toEqual("Quiz not found");
+    });
+  });
+
+  describe("PUT /api/quizzes/:id", () => {
+    function buildQuestion(text, answers) {
+      return {
+        text,
+        answers: answers.map(([answerText, isCorrect]) => ({
+          text: answerText,
+          is_correct: isCorrect,
+        })),
+      };
+    }
+
+    test("does not reset attempts when only the question order changes", async () => {
+      const quiz = new Quiz({
+        title: "Reorder test",
+        category: "science",
+        created_by: testUser._id,
+        req_to_pass: 1,
+        questions: [
+          buildQuestion("Question A", [["A1", true], ["A2", false]]),
+          buildQuestion("Question B", [["B1", false], ["B2", true]]),
+        ],
+        attempts: [{ user_id: testUser._id, correct: 2, attempted_at: new Date() }],
+      });
+      await quiz.save();
+
+      const response = await request(app)
+        .put(`/api/quizzes/${quiz._id}`)
+        .send({
+          title: quiz.title,
+          category: quiz.category,
+          difficulty: quiz.difficulty,
+          allow_multiple_correct: quiz.allow_multiple_correct,
+          require_all_correct: quiz.require_all_correct,
+          lock_answers: quiz.lock_answers,
+          random_question_order: quiz.random_question_order,
+          req_to_pass: quiz.req_to_pass,
+          questions: [quiz.questions[1].toObject(), quiz.questions[0].toObject()],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(response.body.attempts_reset).toEqual(false);
+
+      const updatedQuiz = await Quiz.findById(quiz._id);
+      expect(updatedQuiz.attempts).toHaveLength(1);
+    });
+
+    test("does not reset attempts when only answer count changes and original correct answer still overlaps", async () => {
+      const quiz = new Quiz({
+        title: "Answer count test",
+        category: "science",
+        created_by: testUser._id,
+        req_to_pass: 1,
+        questions: [
+          buildQuestion("Question A", [["A1", true], ["A2", false]]),
+        ],
+        attempts: [{ user_id: testUser._id, correct: 1, attempted_at: new Date() }],
+      });
+      await quiz.save();
+
+      const response = await request(app)
+        .put(`/api/quizzes/${quiz._id}`)
+        .send({
+          title: quiz.title,
+          category: quiz.category,
+          difficulty: quiz.difficulty,
+          allow_multiple_correct: quiz.allow_multiple_correct,
+          require_all_correct: quiz.require_all_correct,
+          lock_answers: quiz.lock_answers,
+          random_question_order: quiz.random_question_order,
+          req_to_pass: quiz.req_to_pass,
+          questions: [
+            buildQuestion("Question A", [["A1", true], ["A2", false], ["A3", false]]),
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(response.body.attempts_reset).toEqual(false);
+
+      const updatedQuiz = await Quiz.findById(quiz._id);
+      expect(updatedQuiz.attempts).toHaveLength(1);
+    });
+
+    test("resets attempts when the original correct answer no longer overlaps", async () => {
+      const quiz = new Quiz({
+        title: "Correct overlap test",
+        category: "science",
+        created_by: testUser._id,
+        req_to_pass: 1,
+        questions: [
+          buildQuestion("Question A", [["A1", true], ["A2", false]]),
+        ],
+        attempts: [{ user_id: testUser._id, correct: 1, attempted_at: new Date() }],
+      });
+      await quiz.save();
+
+      const response = await request(app)
+        .put(`/api/quizzes/${quiz._id}`)
+        .send({
+          title: quiz.title,
+          category: quiz.category,
+          difficulty: quiz.difficulty,
+          allow_multiple_correct: quiz.allow_multiple_correct,
+          require_all_correct: quiz.require_all_correct,
+          lock_answers: quiz.lock_answers,
+          random_question_order: quiz.random_question_order,
+          req_to_pass: quiz.req_to_pass,
+          questions: [
+            buildQuestion("Question A", [["A1", false], ["A2", true], ["A3", false]]),
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(response.body.attempts_reset).toEqual(true);
+
+      const updatedQuiz = await Quiz.findById(quiz._id);
+      expect(updatedQuiz.attempts).toHaveLength(0);
     });
   });
 
