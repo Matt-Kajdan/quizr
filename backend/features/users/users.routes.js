@@ -1,0 +1,23 @@
+const express = require("express");
+const requireAuth = require("../../lib/middleware/requireAuth");
+const requireActiveUser = require("../../lib/middleware/requireActiveUser");
+const router = express.Router();
+
+const UsersController = require("./users.controller");
+
+router.get("/availability", UsersController.checkUsernameAvailability);
+router.get("/resolve", UsersController.resolveUsername);
+router.post("/", requireAuth, UsersController.createUser);
+router.get("/me", requireAuth, UsersController.showUser);
+router.post("/me/deletion", requireAuth, UsersController.scheduleDeletion);
+router.post("/me/deletion/cancel", requireAuth, UsersController.cancelDeletion);
+router.post("/me/deletion/execute", requireAuth, UsersController.executeDeletion);
+router.get("/search", requireAuth, UsersController.searchUsers);  //user search bar
+router.get("/username/:username", requireAuth, UsersController.getUserIdByUsername);
+router.patch("/:userId", requireAuth, requireActiveUser, UsersController.updateUser);
+router.get("/:userId", requireAuth, UsersController.getUserById);
+router.delete("/:userId", requireAuth, UsersController.deleteUser);
+router.post("/me/favourites/:quizId", requireAuth, requireActiveUser, UsersController.addFavourite);
+router.delete("/me/favourites/:quizId", requireAuth, requireActiveUser, UsersController.removeFavourite);
+
+module.exports = router;
