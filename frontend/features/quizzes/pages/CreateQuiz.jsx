@@ -2,6 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "firebase/auth";
 import { useLocation, useNavigate, useBlocker } from "react-router-dom";
 import { createQuiz } from "@features/quizzes/api/quizzes";
+import { SortableQuestionList } from "@features/quizzes/components/SortableQuestionList";
+import {
+  stripEditorQuestionIds,
+  withEditorQuestionId,
+} from "@features/quizzes/components/questionEditorUtils";
 import { DIFFICULTY_ICONS } from "@shared/assets/icons";
 import { useAuth } from "@shared/auth/useAuth";
 import { auth } from "@shared/auth/firebase";
@@ -23,13 +28,13 @@ export default function CreateQuiz() {
   const [allowMultipleCorrect, setAllowMultipleCorrect] = useState(false);
   const [requireAllCorrect, setRequireAllCorrect] = useState(false);
   const [questions, setQuestions] = useState([
-    {
+    withEditorQuestionId({
       text: "",
       answers: Array.from({ length: DEFAULT_ANSWERS_PER_QUESTION }, () => ({
         text: "",
         is_correct: false,
       })),
-    },
+    }),
   ]);
   const [reqToPass, setReqToPass] = useState(1);
   const prevQuestionCountRef = useRef(questions.length);
@@ -218,13 +223,13 @@ export default function CreateQuiz() {
   function addQuestion() {
     setQuestions([
       ...questions,
-      {
+      withEditorQuestionId({
         text: "",
         answers: Array.from({ length: answersPerQuestion }, () => ({
           text: "",
           is_correct: false,
         })),
-      },
+      }),
     ]);
   }
 
@@ -261,12 +266,13 @@ export default function CreateQuiz() {
       return;
     }
     const safeReqToPass = Math.min(Math.max(reqToPass, 0), questions.length);
+    const payloadQuestions = stripEditorQuestionIds(questions);
     try {
       const data = await createQuiz({
         title,
         category,
         difficulty,
-        questions,
+        questions: payloadQuestions,
         allow_multiple_correct: allowMultipleCorrect,
         require_all_correct: allowMultipleCorrect ? requireAllCorrect : false,
         lock_answers: lockAnswers,
@@ -612,102 +618,17 @@ export default function CreateQuiz() {
                 </div>
               </div>
             </div>
-            <div className="space-y-6 pb-16 sm:pb-0">
-              {questions.map((q, qIndex) => {
-                return (
-                  <div
-                    key={qIndex}
-                    className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm relative overflow-hidden"
-                  >
-                    <div
-                      className={`-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 px-6 sm:px-8 py-2 rounded-t-2xl sm:rounded-t-3xl flex items-center justify-between text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-700 ${questionBarClass}`}
-                    >
-                      <span>Question {qIndex + 1}</span>
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-slate-600 font-medium uppercase truncate max-w-[160px] sm:max-w-[220px]">
-                          {quizTitleLabel}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-6">
-                      <div className="mb-6">
-                        <div className="flex items-center justify-center mb-2">
-                          <label className="block text-slate-600 font-medium text-sm text-center">
-                            Question Text
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="text"
-                            placeholder="Enter your question..."
-                            value={q.text}
-                            onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
-                            required
-                            className="flex-1 bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
-                          />
-                          {questions.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeQuestion(qIndex)}
-                              className="h-[46px] w-[46px] shrink-0 rounded-xl border border-rose-200 dark:border-none bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-800/60 dark:hover:text-white transition-colors flex items-center justify-center"
-                              title="Remove question"
-                            >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <label className="block text-slate-600 font-medium mb-3 text-sm">
-                          Answer Options (select the correct {allowMultipleCorrect ? "answers" : "answer"})
-                        </label>
-                        {q.answers.map((a, aIndex) => (
-                          <div
-                            key={aIndex}
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all focus-within:shadow-[0_0_12px_-2px_rgba(100,116,139,0.25)] dark:focus-within:shadow-[0_0_16px_-2px_rgba(255,255,255,0.15)] ${a.is_correct
-                              ? "bg-emerald-100/70 border-emerald-300/70 dark:bg-emerald-900/40 dark:border-emerald-800/60"
-                              : "bg-white/60 border-slate-200/80 dark:bg-slate-800/40 dark:border-slate-800/60 hover:border-slate-300/80 dark:hover:border-slate-700/80"
-                              }`}
-                            onClick={(event) => {
-                              if (event.target.closest('input[type="checkbox"], input[type="radio"]')) return;
-                              const input = document.getElementById(`answer-${qIndex}-${aIndex}`);
-                              if (input) input.focus();
-                            }}
-                            style={{ cursor: "text" }}
-                          >
-                            <label className="inline-flex items-center p-2.5 -m-2.5 cursor-pointer">
-                              <input
-                                type={allowMultipleCorrect ? "checkbox" : "radio"}
-                                name={`correct-${qIndex}`}
-                                checked={a.is_correct}
-                                onChange={() => setCorrectAnswer(qIndex, aIndex)}
-                                className="w-5 h-5 appearance-none rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[7px] after:top-[3px] after:w-[5px] after:h-[9px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
-                              />
-                            </label>
-                            <label className="flex-1 flex items-center cursor-text">
-                              <input
-                                type="text"
-                                placeholder={`Answer ${aIndex + 1}`}
-                                value={a.text}
-                                onChange={(e) => handleAnswerChange(qIndex, aIndex, e.target.value)}
-                                required
-                                id={`answer-${qIndex}-${aIndex}`}
-                                className="w-full bg-transparent border-none text-slate-800 placeholder:text-slate-400 focus:outline-none no-global-shadow"
-                              />
-                            </label>
-                            {a.is_correct && (
-                              <span className="text-emerald-600 dark:text-emerald-500 text-sm font-medium pointer-events-none">Correct</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <SortableQuestionList
+              questions={questions}
+              setQuestions={setQuestions}
+              quizTitleLabel={quizTitleLabel}
+              questionBarClass={questionBarClass}
+              allowMultipleCorrect={allowMultipleCorrect}
+              onQuestionChange={handleQuestionChange}
+              onAnswerChange={handleAnswerChange}
+              onSetCorrectAnswer={setCorrectAnswer}
+              onRemoveQuestion={removeQuestion}
+            />
             {questions.length > 0 && (
               <div className="sticky bottom-6 z-20 pt-4 hidden sm:block">
                 <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/70 backdrop-blur-lg shadow-lg px-4 py-4 sm:px-6">
