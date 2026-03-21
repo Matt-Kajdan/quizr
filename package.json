@@ -6,7 +6,7 @@
     "frontend"
   ],
   "scripts": {
-    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev": "node -e \"const { spawn } = require('child_process'); const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm'; const children = []; let shuttingDown = false; const shutdown = (code) => { if (shuttingDown) return; shuttingDown = true; for (const child of children) { if (!child.killed) child.kill('SIGTERM'); } process.exit(code); }; for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => shutdown(0)); const start = (script) => { const child = spawn(npmCmd, ['run', script], { stdio: 'inherit', env: process.env }); child.on('error', (error) => { console.error('Failed to start', script, error); shutdown(1); }); child.on('exit', (code, signal) => { if (shuttingDown) return; if (signal) console.error(script + ' exited due to signal ' + signal); shutdown(code ?? 1); }); children.push(child); }; start('dev:backend'); start('dev:frontend');\"",
     "dev:backend": "npm run --workspace backend dev",
     "dev:frontend": "npm run --workspace frontend dev",
     "test": "npm run test:backend && npm run test:frontend",

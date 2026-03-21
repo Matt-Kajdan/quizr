@@ -8,6 +8,13 @@ const { connectToDatabase } = require("../../lib/db/connectToDatabase");
 
 let mongoProcess;
 let mongoDataDir;
+let spawnedMongoUrl;
+const originalMongoUrl = process.env.MONGODB_URL;
+const originalMongoUri = process.env.MONGODB_URI;
+
+function isLocalMongoUrl(mongoUrl) {
+  return /^mongodb:\/\/(127\.0\.0\.1|localhost):\d+\//.test(mongoUrl);
+}
 
 function getFreePort() {
   return new Promise((resolve, reject) => {
@@ -52,10 +59,24 @@ function waitForExit(child, signal) {
 }
 
 beforeAll(async () => {
+  const configuredMongoUrl = process.env.MONGODB_URL || process.env.MONGODB_URI;
+
+  if (configuredMongoUrl) {
+    try {
+      await connectToDatabase();
+      return;
+    } catch (error) {
+      if (!isLocalMongoUrl(configuredMongoUrl)) {
+        throw error;
+      }
+    }
+  }
+
   mongoDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "quizr-mongo-"));
   const mongoPort = await getFreePort();
   const mongoUrl = `mongodb://127.0.0.1:${mongoPort}/quizr_test`;
   const mongoLogPath = path.join(mongoDataDir, "mongod.log");
+  spawnedMongoUrl = mongoUrl;
 
   process.env.MONGODB_URL = mongoUrl;
   process.env.MONGODB_URI = mongoUrl;
@@ -104,5 +125,19 @@ afterAll(async () => {
 
   if (mongoDataDir) {
     fs.rmSync(mongoDataDir, { recursive: true, force: true });
+  }
+
+  if (spawnedMongoUrl) {
+    if (originalMongoUrl === undefined) {
+      delete process.env.MONGODB_URL;
+    } else {
+      process.env.MONGODB_URL = originalMongoUrl;
+    }
+
+    if (originalMongoUri === undefined) {
+      delete process.env.MONGODB_URI;
+    } else {
+      process.env.MONGODB_URI = originalMongoUri;
+    }
   }
 }, 30000);
