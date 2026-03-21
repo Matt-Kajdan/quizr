@@ -146,11 +146,11 @@ describe("quiz question reordering", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /start mock drag/i }));
 
-    expect(screen.getAllByRole("button", { name: /reorder question/i })).toHaveLength(3);
+    expect(screen.getAllByDisplayValue("First prompt")).toHaveLength(2);
 
     fireEvent.click(screen.getByRole("button", { name: /cancel mock drag/i }));
 
-    expect(screen.getAllByRole("button", { name: /reorder question/i })).toHaveLength(2);
+    expect(screen.getAllByDisplayValue("First prompt")).toHaveLength(1);
     expect(screen.getByText(/question move cancelled/i)).toBeTruthy();
   });
 

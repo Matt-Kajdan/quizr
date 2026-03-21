@@ -47,26 +47,22 @@ function QuestionCardFrame({
       } ${isOverlay ? "shadow-2xl scale-[1.01] opacity-95" : ""}`}
     >
       <div
-        className={`-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 px-6 sm:px-8 py-2 rounded-t-2xl sm:rounded-t-3xl flex items-center justify-between text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-700 ${questionBarClass}`}
+        className={`-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 px-6 sm:px-8 py-2 rounded-t-2xl sm:rounded-t-3xl relative flex items-center justify-between text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-700 touch-none ${isOverlay ? "" : "cursor-grab active:cursor-grabbing"} ${questionBarClass}`}
+        role={isOverlay ? undefined : "button"}
+        aria-label={isOverlay ? undefined : `Reorder question ${questionIndex + 1}`}
+        {...dragHandleProps}
       >
         <div className="flex min-w-0 items-center gap-2">
-          <button
-            type="button"
-            className="h-9 w-9 shrink-0 rounded-lg border border-slate-300/70 bg-white/70 text-slate-600 transition-colors hover:bg-white hover:text-slate-800 active:cursor-grabbing touch-none"
-            title={`Reorder question ${questionIndex + 1}`}
-            aria-label={`Reorder question ${questionIndex + 1}`}
-            {...dragHandleProps}
-          >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              className="mx-auto h-4 w-4"
-              fill="currentColor"
-            >
-              <path d="M7 4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm9-12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
-            </svg>
-          </button>
           <span>Question {questionIndex + 1}</span>
+        </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 flex h-10 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center text-slate-500 transition-colors"
+        >
+          <span aria-hidden="true" className="flex flex-col items-center gap-1">
+            <span className="block h-0.5 w-12 rounded-full bg-current" />
+            <span className="block h-0.5 w-12 rounded-full bg-current" />
+          </span>
         </div>
         <div className="flex items-center gap-3 min-w-0">
           <span className="text-slate-600 font-medium uppercase truncate max-w-[160px] sm:max-w-[220px]">
@@ -83,9 +79,14 @@ function QuestionCardFrame({
           </div>
           <div className="flex items-center gap-3">
             {isOverlay ? (
-              <div className="flex-1 rounded-xl border border-slate-200/80 dark:border-slate-700/60 bg-white/75 dark:bg-slate-900/75 px-4 py-3 text-left text-slate-800 dark:text-slate-100">
-                {question.text || "Untitled question"}
-              </div>
+              <input
+                type="text"
+                value={question.text}
+                readOnly
+                tabIndex={-1}
+                placeholder="Enter your question..."
+                className="flex-1 bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
+              />
             ) : (
               <input
                 type="text"
@@ -149,9 +150,16 @@ function QuestionCardFrame({
                 />
               </label>
               {isOverlay ? (
-                <div className="flex-1 text-left text-slate-800 dark:text-slate-100">
-                  {answer.text || `Answer ${answerIndex + 1}`}
-                </div>
+                <label className="flex-1 flex items-center">
+                  <input
+                    type="text"
+                    value={answer.text}
+                    readOnly
+                    tabIndex={-1}
+                    placeholder={`Answer ${answerIndex + 1}`}
+                    className="w-full bg-transparent border-none text-slate-800 placeholder:text-slate-400 focus:outline-none no-global-shadow"
+                  />
+                </label>
               ) : (
                 <label className="flex-1 flex items-center cursor-text">
                   <input
@@ -225,8 +233,6 @@ function SortableQuestionCard({
           ...attributes,
           ...listeners,
           ref: setActivatorNodeRef,
-          className:
-            "h-9 w-9 shrink-0 rounded-lg border border-slate-300/70 bg-white/70 text-slate-600 transition-colors hover:bg-white hover:text-slate-800 cursor-grab active:cursor-grabbing touch-none",
         }}
       />
     </div>
