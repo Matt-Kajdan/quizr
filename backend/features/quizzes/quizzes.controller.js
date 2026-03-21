@@ -5,6 +5,44 @@ function normalizeText(value) {
   return value == null ? "" : String(value);
 }
 
+function getQuestionMatchKey(question) {
+  return normalizeText(question?.text);
+}
+
+function questionsMatchForAttemptPreservation(originalQuestion, updatedQuestion) {
+  if (normalizeText(originalQuestion?.text) !== normalizeText(updatedQuestion?.text)) {
+    return false;
+  }
+
+  const originalAnswers = Array.isArray(originalQuestion?.answers)
+    ? originalQuestion.answers
+    : [];
+  const updatedAnswers = Array.isArray(updatedQuestion?.answers)
+    ? updatedQuestion.answers
+    : [];
+  const sharedCount = Math.min(originalAnswers.length, updatedAnswers.length);
+
+  for (let index = 0; index < sharedCount; index += 1) {
+    if (normalizeText(originalAnswers[index]?.text) !== normalizeText(updatedAnswers[index]?.text)) {
+      return false;
+    }
+  }
+
+  const originalCorrectIndices = originalAnswers
+    .map((answer, index) => (answer?.is_correct ? index : null))
+    .filter((index) => index !== null);
+
+  if (originalCorrectIndices.length === 0) {
+    return true;
+  }
+
+  const remainingOriginalCorrect = originalCorrectIndices.filter(
+    (index) => index < updatedAnswers.length
+  );
+
+  return remainingOriginalCorrect.some((index) => Boolean(updatedAnswers[index]?.is_correct));
+}
+
 function shouldResetAttempts(originalQuiz, updatedData) {
   const originalQuestions = Array.isArray(originalQuiz?.questions)
     ? originalQuiz.questions
@@ -15,42 +53,36 @@ function shouldResetAttempts(originalQuiz, updatedData) {
 
   if (originalQuestions.length !== updatedQuestions.length) return true;
 
-  for (let i = 0; i < originalQuestions.length; i += 1) {
-    const originalQuestion = originalQuestions[i];
-    const updatedQuestion = updatedQuestions[i];
-    if (!updatedQuestion) return true;
+  const updatedBuckets = new Map();
+  updatedQuestions.forEach((question) => {
+    const key = getQuestionMatchKey(question);
+    const bucket = updatedBuckets.get(key);
+    if (bucket) {
+      bucket.push(question);
+    } else {
+      updatedBuckets.set(key, [question]);
+    }
+  });
 
-    if (normalizeText(originalQuestion?.text) !== normalizeText(updatedQuestion?.text)) {
+  for (let index = 0; index < originalQuestions.length; index += 1) {
+    const originalQuestion = originalQuestions[index];
+    const bucketKey = getQuestionMatchKey(originalQuestion);
+    const candidateQuestions = updatedBuckets.get(bucketKey);
+    if (!candidateQuestions || candidateQuestions.length === 0) {
       return true;
     }
 
-    const originalAnswers = Array.isArray(originalQuestion?.answers)
-      ? originalQuestion.answers
-      : [];
-    const updatedAnswers = Array.isArray(updatedQuestion?.answers)
-      ? updatedQuestion.answers
-      : [];
-    const sharedCount = Math.min(originalAnswers.length, updatedAnswers.length);
+    const matchIndex = candidateQuestions.findIndex((updatedQuestion) =>
+      questionsMatchForAttemptPreservation(originalQuestion, updatedQuestion)
+    );
 
-    for (let j = 0; j < sharedCount; j += 1) {
-      if (normalizeText(originalAnswers[j]?.text) !== normalizeText(updatedAnswers[j]?.text)) {
-        return true;
-      }
+    if (matchIndex === -1) {
+      return true;
     }
 
-    const originalCorrectIndices = originalAnswers
-      .map((answer, index) => (answer?.is_correct ? index : null))
-      .filter((index) => index !== null);
-    if (originalCorrectIndices.length > 0) {
-      const remainingOriginalCorrect = originalCorrectIndices.filter(
-        (index) => index < updatedAnswers.length
-      );
-      const hasOverlap = remainingOriginalCorrect.some(
-        (index) => Boolean(updatedAnswers[index]?.is_correct)
-      );
-      if (!hasOverlap) {
-        return true;
-      }
+    candidateQuestions.splice(matchIndex, 1);
+    if (candidateQuestions.length === 0) {
+      updatedBuckets.delete(bucketKey);
     }
   }
 
