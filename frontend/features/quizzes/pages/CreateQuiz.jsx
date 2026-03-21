@@ -22,6 +22,7 @@ export default function CreateQuiz() {
   const [category, setCategory] = useState("other");
   const [difficulty, setDifficulty] = useState("medium");
   const [lockAnswers, setLockAnswers] = useState(false);
+  const [randomQuestionOrder, setRandomQuestionOrder] = useState(false);
   const [answersPerQuestion, setAnswersPerQuestion] = useState(
     DEFAULT_ANSWERS_PER_QUESTION
   );
@@ -70,6 +71,7 @@ export default function CreateQuiz() {
       category !== "other" ||
       difficulty !== "medium" ||
       lockAnswers ||
+      randomQuestionOrder ||
       answersPerQuestion !== DEFAULT_ANSWERS_PER_QUESTION ||
       allowMultipleCorrect ||
       requireAllCorrect ||
@@ -81,6 +83,7 @@ export default function CreateQuiz() {
     category,
     difficulty,
     lockAnswers,
+    randomQuestionOrder,
     answersPerQuestion,
     allowMultipleCorrect,
     requireAllCorrect,
@@ -277,6 +280,7 @@ export default function CreateQuiz() {
         allow_multiple_correct: allowMultipleCorrect,
         require_all_correct: allowMultipleCorrect ? requireAllCorrect : false,
         lock_answers: lockAnswers,
+        random_question_order: randomQuestionOrder,
         req_to_pass: safeReqToPass,
       });
       const quizId = data?.quiz?._id;
@@ -613,6 +617,25 @@ export default function CreateQuiz() {
                       Lock answers after Next
                       <span className="block text-xs text-slate-500 mt-1">
                         You can go back to review, but answers cannot be changed.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                <div className="lg:col-span-2">
+                  <label className="block text-slate-600 font-medium mb-2 text-sm">
+                    Question order
+                  </label>
+                  <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 hover:border-slate-300/80 transition-all cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={randomQuestionOrder}
+                      onChange={(e) => setRandomQuestionOrder(e.target.checked)}
+                      className="mt-1 h-4 w-4 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[2px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
+                    />
+                    <span className="text-left text-sm text-slate-700">
+                      Questions in random order
+                      <span className="block text-xs text-slate-500 mt-1">
+                        Shuffle the question order for each quiz attempt.
                       </span>
                     </span>
                   </label>

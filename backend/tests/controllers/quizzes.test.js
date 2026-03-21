@@ -165,7 +165,7 @@ describe("/quizzes", () => {
       expect(response.status).toEqual(404);
       expect(response.body.message).toEqual("User not found");
     });
-    test("creates quiz with allow_multiple_correct and require_all_correct flags", async () => {
+    test("creates quiz with allow_multiple_correct, require_all_correct, and random_question_order flags", async () => {
       await request(app)
         .post("/api/quizzes")
         .send({
@@ -174,11 +174,13 @@ describe("/quizzes", () => {
           req_to_pass: 80,
           allow_multiple_correct: true,
           require_all_correct: true,
+          random_question_order: true,
           questions: []
         });
       const quizzes = await Quiz.find();
       expect(quizzes[0].allow_multiple_correct).toEqual(true);
       expect(quizzes[0].require_all_correct).toEqual(true);
+      expect(quizzes[0].random_question_order).toEqual(true);
     });
   });
 

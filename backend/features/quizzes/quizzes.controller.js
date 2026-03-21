@@ -127,6 +127,7 @@ async function getAllQuizzes(req, res) {
           allow_multiple_correct: 1,
           require_all_correct: 1,
           lock_answers: 1,
+          random_question_order: 1,
           req_to_pass: 1,
           favourited_count: 1,
           created_at: 1
@@ -184,6 +185,7 @@ async function updateQuiz(req, res) {
       ? Boolean(req.body.require_all_correct)
       : false;
     quiz.lock_answers = Boolean(req.body.lock_answers);
+    quiz.random_question_order = Boolean(req.body.random_question_order);
     if (typeof req.body.req_to_pass === "number") {
       quiz.req_to_pass = req.body.req_to_pass;
     }

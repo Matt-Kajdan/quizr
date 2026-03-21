@@ -17,6 +17,18 @@ function formatScorePercentage(value) {
     return String(value);
 }
 
+function buildQuestionOrder(questions, shouldRandomize) {
+    const order = questions.map((_, index) => index);
+    if (!shouldRandomize) return order;
+
+    for (let index = order.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [order[index], order[swapIndex]] = [order[swapIndex], order[index]];
+    }
+
+    return order;
+}
+
 function TakeQuizPage() {
     const user = useAuth();
     //Getting the quiz id from the URL e.g. /quiz/:id
@@ -34,6 +46,7 @@ function TakeQuizPage() {
     //Storing the result returned after submitting the quiz
     const [result, setResult] = useState(null);
     const [lockedUntil, setLockedUntil] = useState(-1);
+    const [questionOrder, setQuestionOrder] = useState([]);
     const { favouriteIds, setFavouriteIds, currentUserId } = useUser();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [summaryFilter, setSummaryFilter] = useState("all");
@@ -56,6 +69,15 @@ function TakeQuizPage() {
         if (!user) return;
         loadQuiz();
     }, [loadQuiz, user]);
+
+    useEffect(() => {
+        if (!quiz || !Array.isArray(quiz.questions)) return;
+        setQuestionOrder((currentOrder) =>
+            currentOrder.length === quiz.questions.length
+                ? currentOrder
+                : quiz.questions.map((_, index) => index)
+        );
+    }, [quiz]);
 
     const isQuizOwner = useMemo(() => {
         if (!quiz || !currentUserId) return false;
@@ -230,9 +252,15 @@ function TakeQuizPage() {
         );
     }
 
-    const summaryItems = useMemo(() => {
+    const activeQuestions = useMemo(() => {
         if (!quiz || !Array.isArray(quiz.questions)) return [];
-        return quiz.questions.map((question, index) => {
+        if (questionOrder.length !== quiz.questions.length) return quiz.questions;
+        return questionOrder.map((index) => quiz.questions[index]);
+    }, [quiz, questionOrder]);
+
+    const summaryItems = useMemo(() => {
+        if (!quiz || activeQuestions.length === 0) return [];
+        return activeQuestions.map((question, index) => {
             const selection = answers?.[index];
             const selectedIds = Array.isArray(selection)
                 ? selection
@@ -263,7 +291,7 @@ function TakeQuizPage() {
                 missingCorrectIds
             };
         });
-    }, [answers, quiz]);
+    }, [activeQuestions, answers, quiz]);
 
     const filteredSummaryItems = useMemo(() => {
         if (summaryFilter === "correct") {
@@ -358,8 +386,8 @@ function TakeQuizPage() {
             </div>
         );
 
-    const question = quiz.questions[currentIndex];
-    const isLastQuestion = currentIndex === quiz.questions.length - 1;
+    const question = activeQuestions[currentIndex];
+    const isLastQuestion = currentIndex === activeQuestions.length - 1;
     const currentSelections = Array.isArray(answers[currentIndex])
         ? answers[currentIndex]
         : answers[currentIndex]
@@ -369,9 +397,10 @@ function TakeQuizPage() {
     const difficultyKey = difficultyMeta[quiz?.difficulty] ? quiz.difficulty : "medium";
     const difficulty = difficultyMeta[difficultyKey];
     const lockAnswers = Boolean(quiz.lock_answers);
+    const randomQuestionOrder = Boolean(quiz.random_question_order);
     const optionsPerQuestion = Math.max(
         0,
-        ...quiz.questions.map((item) => item.answers.length)
+        ...activeQuestions.map((item) => item.answers.length)
     );
     const isLocked = lockAnswers && currentIndex <= lockedUntil;
     const activeCategoryStyle = categoryStyles[quiz.category] || categoryStyles.other;
@@ -401,7 +430,7 @@ function TakeQuizPage() {
         if (lockAnswers) {
             setLockedUntil((prev) => Math.max(prev, currentIndex));
         }
-        setCurrentIndex((index) => Math.min(index + 1, quiz.questions.length - 1));
+        setCurrentIndex((index) => Math.min(index + 1, activeQuestions.length - 1));
     }
 
     function goBack() {
@@ -409,11 +438,16 @@ function TakeQuizPage() {
     }
 
     function startQuiz() {
+        setQuestionOrder(buildQuestionOrder(quiz.questions, randomQuestionOrder));
+        setAnswers([]);
+        setCurrentIndex(0);
+        setResult(null);
         setLockedUntil(-1);
         setPhase("inProgress");
     }
 
     function retakeQuiz() {
+        setQuestionOrder(buildQuestionOrder(quiz.questions, randomQuestionOrder));
         setAnswers([]);
         setCurrentIndex(0);
         setResult(null);
@@ -422,6 +456,7 @@ function TakeQuizPage() {
     }
 
     function returnToQuiz() {
+        setQuestionOrder(quiz.questions.map((_, index) => index));
         setAnswers([]);
         setCurrentIndex(0);
         setResult(null);
@@ -462,13 +497,19 @@ function TakeQuizPage() {
     async function submitQuiz() {
         //Making sure user is still logged in
         if (!user) return;
+        const remappedAnswers = questionOrder.length === quiz.questions.length
+            ? questionOrder.reduce((mappedAnswers, originalIndex, displayedIndex) => {
+                mappedAnswers[originalIndex] = answers[displayedIndex] ?? [];
+                return mappedAnswers;
+            }, Array.from({ length: quiz.questions.length }, () => []))
+            : answers;
         //Sending the user's answers to the backend
         const res = await apiFetch(`/quizzes/${id}/submit`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ answers })
+            body: JSON.stringify({ answers: remappedAnswers })
         });
         //Saving the quiz result (percentage, correct answers)
         const data = await res.json();
@@ -695,6 +736,19 @@ function TakeQuizPage() {
                                             <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Answer lock</div>
                                             <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
                                                 {lockAnswers ? "Locked after Next" : "Can change answers"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
+                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
+                                            <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h13M4 17h13M14 4l3 3-3 3M10 14l-3 3 3 3" />
+                                            </svg>
+                                        </span>
+                                        <div className="text-left pl-1">
+                                            <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Question order</div>
+                                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+                                                {randomQuestionOrder ? "Questions in random order" : "Order of questions set"}
                                             </div>
                                         </div>
                                     </div>

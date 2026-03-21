@@ -91,6 +91,7 @@ export default function EditQuiz() {
   const [category, setCategory] = useState("other");
   const [difficulty, setDifficulty] = useState("medium");
   const [lockAnswers, setLockAnswers] = useState(false);
+  const [randomQuestionOrder, setRandomQuestionOrder] = useState(false);
   const [answersPerQuestion, setAnswersPerQuestion] = useState(
     DEFAULT_ANSWERS_PER_QUESTION
   );
@@ -143,6 +144,7 @@ export default function EditQuiz() {
         setAllowMultipleCorrect(Boolean(quiz.allow_multiple_correct));
         setRequireAllCorrect(Boolean(quiz.require_all_correct));
         setLockAnswers(Boolean(quiz.lock_answers));
+        setRandomQuestionOrder(Boolean(quiz.random_question_order));
         const questionList = Array.isArray(quiz.questions) ? quiz.questions : [];
         const maxAnswersFromQuestions = Math.max(
           0,
@@ -181,6 +183,7 @@ export default function EditQuiz() {
             category: quiz.category || "other",
             difficulty: quiz.difficulty || "medium",
             lockAnswers: Boolean(quiz.lock_answers),
+            randomQuestionOrder: Boolean(quiz.random_question_order),
             allowMultipleCorrect: Boolean(quiz.allow_multiple_correct),
             requireAllCorrect: Boolean(quiz.require_all_correct),
             reqToPass: resolvedReqToPass,
@@ -289,6 +292,7 @@ export default function EditQuiz() {
       category: data.category || "other",
       difficulty: data.difficulty || "medium",
       lockAnswers: Boolean(data.lockAnswers),
+      randomQuestionOrder: Boolean(data.randomQuestionOrder),
       allowMultipleCorrect: Boolean(data.allowMultipleCorrect),
       requireAllCorrect: data.allowMultipleCorrect ? Boolean(data.requireAllCorrect) : false,
       reqToPass: Number.isFinite(data.reqToPass) ? data.reqToPass : 1,
@@ -303,6 +307,7 @@ export default function EditQuiz() {
         category,
         difficulty,
         lockAnswers,
+        randomQuestionOrder,
         allowMultipleCorrect,
         requireAllCorrect,
         reqToPass,
@@ -313,6 +318,7 @@ export default function EditQuiz() {
       category,
       difficulty,
       lockAnswers,
+      randomQuestionOrder,
       allowMultipleCorrect,
       requireAllCorrect,
       reqToPass,
@@ -469,6 +475,7 @@ export default function EditQuiz() {
         allow_multiple_correct: allowMultipleCorrect,
         require_all_correct: allowMultipleCorrect ? requireAllCorrect : false,
         lock_answers: lockAnswers,
+        random_question_order: randomQuestionOrder,
         req_to_pass: safeReqToPass,
       });
       setIgnoreBlocker(true);
@@ -807,6 +814,25 @@ export default function EditQuiz() {
                       Lock answers after Next
                       <span className="block text-xs text-slate-500 mt-1">
                         You can go back to review, but answers cannot be changed.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                <div className="lg:col-span-2">
+                  <label className="block text-slate-600 font-medium mb-2 text-sm">
+                    Question order
+                  </label>
+                  <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 hover:border-slate-300/80 transition-all cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={randomQuestionOrder}
+                      onChange={(e) => setRandomQuestionOrder(e.target.checked)}
+                      className="mt-1 h-4 w-4 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[2px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
+                    />
+                    <span className="text-left text-sm text-slate-700">
+                      Questions in random order
+                      <span className="block text-xs text-slate-500 mt-1">
+                        Shuffle the question order for each quiz attempt.
                       </span>
                     </span>
                   </label>
