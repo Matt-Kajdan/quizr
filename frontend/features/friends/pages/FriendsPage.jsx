@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getFriends, getPendingRequests, acceptFriendRequest, removeRequest } from "@features/friends/api/friends";
 import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
+import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 export default function FriendsPage() {
@@ -78,6 +79,7 @@ export default function FriendsPage() {
     }
     return avatarGradients[hash];
   };
+  const dateSortChip = [{ value: "date", label: "Newest", reverseLabel: "Oldest" }];
   const sortedFriends = useMemo(() => {
     const items = [...friends];
     items.sort((a, b) => {
@@ -146,26 +148,16 @@ export default function FriendsPage() {
             <section className="bg-white/70 backdrop-blur-lg rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <h2 className="text-xl sm:text-2xl font-semibold text-slate-800">Pending Requests</h2>
-                <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800/40 rounded-full">
-                  <button
-                    onClick={() => setPendingSort("newest")}
-                    className={`sorting-button h-8 min-w-[70px] sm:min-w-[85px] px-3 rounded-full text-[10px] sm:text-xs font-semibold transition-all flex items-center justify-center ${pendingSort === "newest"
-                      ? "isActive bg-white dark:bg-slate-900 shadow-sm border border-slate-200/80 dark:border-slate-800/80 text-slate-900 dark:text-slate-100"
-                      : "bg-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
-                      }`}
-                  >
-                    Newest
-                  </button>
-                  <button
-                    onClick={() => setPendingSort("oldest")}
-                    className={`sorting-button h-8 min-w-[70px] sm:min-w-[85px] px-3 rounded-full text-[10px] sm:text-xs font-semibold transition-all flex items-center justify-center ${pendingSort === "oldest"
-                      ? "isActive bg-white dark:bg-slate-900 shadow-sm border border-slate-200/80 dark:border-slate-800/80 text-slate-900 dark:text-slate-100"
-                      : "bg-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
-                      }`}
-                  >
-                    Oldest
-                  </button>
-                </div>
+                <SortingChipBar
+                  chips={dateSortChip}
+                  activeValue="date"
+                  direction={pendingSort === "oldest" ? "asc" : "desc"}
+                  ariaLabel="Sort pending requests"
+                  className="shrink-0"
+                  onChipClick={() => {
+                    setPendingSort((prev) => prev === "newest" ? "oldest" : "newest");
+                  }}
+                />
               </div>
               <div className="divide-y divide-slate-200/80 dark:divide-slate-800/90 sm:divide-y-0 sm:divide-x sm:grid sm:grid-cols-2">
                 <div className="pb-5 sm:pb-0 sm:pr-5">
@@ -317,26 +309,16 @@ export default function FriendsPage() {
                   <div className="shrink-0 rounded-full border border-slate-200/80 bg-white/60 px-3 py-1 text-xs sm:text-sm font-semibold text-slate-600">
                     {friends.length} total
                   </div>
-                  <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800/40 rounded-full">
-                    <button
-                      onClick={() => setFriendsSort("newest")}
-                      className={`sorting-button h-8 min-w-[70px] sm:min-w-[85px] px-3 rounded-full text-[10px] sm:text-xs font-semibold transition-all flex items-center justify-center ${friendsSort === "newest"
-                        ? "isActive bg-white dark:bg-slate-900 shadow-sm border border-slate-200/80 dark:border-slate-800/80 text-slate-900 dark:text-slate-100"
-                        : "bg-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
-                        }`}
-                    >
-                      Newest
-                    </button>
-                    <button
-                      onClick={() => setFriendsSort("oldest")}
-                      className={`sorting-button h-8 min-w-[70px] sm:min-w-[85px] px-3 rounded-full text-[10px] sm:text-xs font-semibold transition-all flex items-center justify-center ${friendsSort === "oldest"
-                        ? "isActive bg-white dark:bg-slate-900 shadow-sm border border-slate-200/80 dark:border-slate-800/80 text-slate-900 dark:text-slate-100"
-                        : "bg-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
-                        }`}
-                    >
-                      Oldest
-                    </button>
-                  </div>
+                  <SortingChipBar
+                    chips={dateSortChip}
+                    activeValue="date"
+                    direction={friendsSort === "oldest" ? "asc" : "desc"}
+                    ariaLabel="Sort friends"
+                    className="shrink-0"
+                    onChipClick={() => {
+                      setFriendsSort((prev) => prev === "newest" ? "oldest" : "newest");
+                    }}
+                  />
                 </div>
               </div>
               {friends.length === 0 ? (

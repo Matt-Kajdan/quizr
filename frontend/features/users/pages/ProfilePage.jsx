@@ -10,6 +10,7 @@ import { useAuth } from "@shared/auth/useAuth";
 import { getPendingRequests, sendFriendRequest, getFriends, removeRequest, acceptFriendRequest } from "@features/friends/api/friends";
 import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourites";
 import { QuizStats } from "@features/quizzes/components/QuizStats";
+import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -71,6 +72,17 @@ export default function ProfilePage() {
     quiz?.favourited_count ??
     (Array.isArray(quiz?.favourites) ? quiz.favourites.length : (quiz?.favouritesCount ?? 0))
   );
+  const createdSortChips = [
+    { value: "date", label: "Newest", reverseLabel: "Oldest" },
+    { value: "stars", label: "Likes" },
+  ];
+  const takenSortChips = [
+    { value: "highest_score", label: "Score" },
+    { value: "category", label: "Category" },
+    { value: "difficulty", label: "Difficulty" },
+    { value: "questions", label: "Questions" },
+    { value: "taken_on", label: "Taken on" },
+  ];
 
   useEffect(() => {
     if (!showRemoveFriendConfirm) return;
@@ -916,50 +928,22 @@ export default function ProfilePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
               <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes created</h2>
               <div className="flex flex-nowrap items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
-                <div className="relative w-fit max-w-[calc(100%-80px)] sm:max-w-none sm:w-auto min-w-0 overflow-hidden rounded-full border border-slate-200/80 dark:border-slate-800/60 bg-slate-100/80 dark:bg-slate-800/40 h-[40px]">
-                  <div className="flex items-center gap-1.5 p-1 h-full overflow-x-auto overflow-y-hidden no-scrollbar">
-                    {['date', 'stars'].map((option) => {
-                      const isActive = sortBy === option;
-                      const isAsc = isActive && sortDirection === "asc";
-                      return (
-                        <button
-                          key={option}
-                          disabled={isAccountLocked}
-                          onClick={() => {
-                            if (isActive) {
-                              setSortDirection(prev => prev === "desc" ? "asc" : "desc");
-                            } else {
-                              setSortBy(option);
-                              setSortDirection("desc");
-                            }
-                          }}
-                          className={`sorting-button ${isActive ? 'isActive' : ''} w-20 h-8 rounded-full text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1.5 shrink-0 ${isAccountLocked
-                            ? "opacity-50 text-slate-400"
-                            : isActive
-                              ? 'bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-300 dark:border-slate-500'
-                              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                            }`}
-                          style={{ WebkitTapHighlightColor: 'transparent' }}
-                        >
-                          <span className="leading-none">{option === 'date' ? (isAsc ? 'Oldest' : 'Newest') : 'Likes'}</span>
-                          {isActive && (
-                            <span className="flex items-center justify-center shrink-0">
-                              {isAsc ? (
-                                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 5l4 6H6l4-6z" />
-                                </svg>
-                              ) : (
-                                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 15l-4-6h8l-4 6z" />
-                                </svg>
-                              )}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                <SortingChipBar
+                  chips={createdSortChips}
+                  activeValue={sortBy}
+                  direction={sortDirection}
+                  disabled={isAccountLocked}
+                  ariaLabel="Sort created quizzes"
+                  className="w-fit max-w-[calc(100%-80px)] sm:max-w-none sm:w-auto"
+                  onChipClick={(value) => {
+                    if (sortBy === value) {
+                      setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                      return;
+                    }
+                    setSortBy(value);
+                    setSortDirection("desc");
+                  }}
+                />
                 <div className={`px-4 py-2.5 rounded-full border flex items-center h-[40px] cursor-default shrink-0 ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
                   <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
                     {createdQuizzes.length} quiz{createdQuizzes.length !== 1 ? 'zes' : ''}
@@ -1439,67 +1423,23 @@ export default function ProfilePage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                   <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes Taken</h2>
                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="relative flex-1 sm:flex-none bg-slate-100/80 dark:bg-slate-800/40 rounded-full border border-slate-200/80 dark:border-slate-800/60 overflow-hidden group/taken-sort h-[40px]">
-                      <div className="flex items-center gap-1.5 p-1 h-full overflow-x-auto overflow-y-hidden no-scrollbar relative w-full">
-                        {['highest_score', 'category', 'difficulty', 'questions', 'taken_on'].map((option) => {
-                          const isActive = takenSortBy === option;
-                          const isAsc = isActive && takenSortDirection === "asc";
-                          const labels = {
-                            highest_score: 'Score',
-                            questions: 'Questions',
-                            taken_on: 'Taken on',
-                            category: 'Category',
-                            difficulty: 'Difficulty'
-                          };
-                          const widths = {
-                            highest_score: 'w-20',
-                            questions: 'w-20',
-                            taken_on: 'w-[84px]',
-                            category: 'w-20',
-                            difficulty: 'w-20'
-                          };
-                          return (
-                            <button
-                              key={option}
-                              disabled={isAccountLocked}
-                              onClick={() => {
-                                if (isActive) {
-                                  setTakenSortDirection(prev => prev === "desc" ? "asc" : "desc");
-                                } else {
-                                  setTakenSortBy(option);
-                                  setTakenSortDirection("desc");
-                                }
-                              }}
-                              className={`sorting-button ${isActive ? 'isActive' : ''} ${widths[option]} h-8 rounded-full text-[10px] sm:text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1.5 shrink-0 ${isAccountLocked
-                                ? "opacity-50 text-slate-400"
-                                : isActive
-                                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200/80 dark:border-slate-500'
-                                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                                }`}
-                              style={{ WebkitTapHighlightColor: 'transparent' }}
-                            >
-                              <span className="leading-none">{labels[option] || option}</span>
-                              {isActive && (
-                                <span className="flex items-center justify-center shrink-0">
-                                  {isAsc ? (
-                                    <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M10 5l4 6H6l4-6z" />
-                                    </svg>
-                                  ) : (
-                                    <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M10 15l-4-6h8l-4 6z" />
-                                    </svg>
-                                  )}
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {/* Fixed Shadows for Mobile Scroll */}
-                      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-slate-100/95 dark:from-slate-800/95 to-transparent pointer-events-none sm:hidden z-10" />
-                      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-slate-100/95 dark:from-slate-800/95 to-transparent pointer-events-none sm:hidden z-10" />
-                    </div>
+                    <SortingChipBar
+                      chips={takenSortChips}
+                      activeValue={takenSortBy}
+                      direction={takenSortDirection}
+                      disabled={isAccountLocked}
+                      ariaLabel="Sort taken quizzes"
+                      className="flex-1 sm:flex-none"
+                      showMobileFade
+                      onChipClick={(value) => {
+                        if (takenSortBy === value) {
+                          setTakenSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                          return;
+                        }
+                        setTakenSortBy(value);
+                        setTakenSortDirection("desc");
+                      }}
+                    />
                     <div className={`px-4 py-2.5 rounded-full border flex items-center h-[40px] cursor-default shrink-0 ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
                       <span className={`font-semibold text-[10px] sm:text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
                         {takenQuizzes.length} {takenQuizzes.length === 1 ? 'quiz' : 'quizzes'}
