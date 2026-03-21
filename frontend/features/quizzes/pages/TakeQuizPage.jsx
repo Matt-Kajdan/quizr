@@ -207,7 +207,7 @@ function TakeQuizPage() {
                 </span>
             )
         },
-        { key: "bestCorrect", label: "Correct" },
+        { key: "bestCorrect", label: "Correct answers" },
         { key: "attemptsCount", label: "Attempts" }
     ];
 
