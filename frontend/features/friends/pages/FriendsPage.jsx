@@ -35,6 +35,14 @@ export default function FriendsPage() {
     return friendDoc.user1._id.toString() === profile._id.toString()
       ? friendDoc.user2 : friendDoc.user1;
   }
+  const getRequestTime = useCallback(
+    (friendDoc) => new Date(friendDoc.createdAt || friendDoc.created_at || friendDoc.updatedAt || friendDoc.updated_at || 0).getTime(),
+    []
+  );
+  const getFriendshipTime = useCallback(
+    (friendDoc) => new Date(friendDoc.updatedAt || friendDoc.updated_at || friendDoc.createdAt || friendDoc.created_at || 0).getTime(),
+    []
+  );
   const isIncoming = useCallback((request) => profile && request.user2?._id === profile._id, [profile]);
   useEffect(() => {
     if (user) {
@@ -73,21 +81,21 @@ export default function FriendsPage() {
   const sortedFriends = useMemo(() => {
     const items = [...friends];
     items.sort((a, b) => {
-      const aTime = new Date(a.createdAt || a.created_at || 0).getTime();
-      const bTime = new Date(b.createdAt || b.created_at || 0).getTime();
+      const aTime = getFriendshipTime(a);
+      const bTime = getFriendshipTime(b);
       return friendsSort === "newest" ? bTime - aTime : aTime - bTime;
     });
     return items;
-  }, [friends, friendsSort]);
+  }, [friends, friendsSort, getFriendshipTime]);
   const sortedPending = useMemo(() => {
     const items = [...pending];
     items.sort((a, b) => {
-      const aTime = new Date(a.createdAt || a.created_at || 0).getTime();
-      const bTime = new Date(b.createdAt || b.created_at || 0).getTime();
+      const aTime = getRequestTime(a);
+      const bTime = getRequestTime(b);
       return pendingSort === "newest" ? bTime - aTime : aTime - bTime;
     });
     return items;
-  }, [pending, pendingSort]);
+  }, [pending, pendingSort, getRequestTime]);
   const incomingPending = useMemo(
     () => sortedPending.filter((request) => isIncoming(request)),
     [sortedPending, isIncoming]
@@ -350,6 +358,7 @@ export default function FriendsPage() {
                   {sortedFriends.map((f) => {
                     const other = getOtherUser(f);
                     const gradient = getAvatarGradient(other?._id || other?.id || other?.user_id);
+                    const friendshipTime = getFriendshipTime(f);
                     return (
                       <Link
                         key={f._id}
@@ -413,9 +422,9 @@ export default function FriendsPage() {
                               </div>
                               <div className="min-w-0">
                                 <p className="font-semibold text-slate-800 dark:text-slate-100 text-base sm:text-lg truncate">{other.user_data?.username}</p>
-                                {other.user_data?.created_at && (
+                                {friendshipTime > 0 && (
                                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                                    Since {new Date(other.user_data.created_at).toLocaleDateString("en-GB", {
+                                    Since {new Date(friendshipTime).toLocaleDateString("en-GB", {
                                       day: "numeric",
                                       month: "short",
                                       year: "numeric"
