@@ -1,8 +1,11 @@
-# React + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This workspace contains the Quizr web app.
 
-Currently, two official plugins are available:
+Structure:
+- `app/`: router, app shell, bootstrap
+- `features/`: route-level and domain UI
+- `shared/`: reusable auth, state, hooks, components, and utilities
+- `tests/`: Vitest coverage for current client behavior
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Use the root [README](/home/matt/projects/quizr/README.md) for setup and workspace-level scripts.

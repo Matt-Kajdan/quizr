@@ -1,15 +1,21 @@
 {
-  "Note": "This is a dummy package.json file to prevent accidental installation or running of packages in the wrong location",
+  "name": "quizr",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "dev": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",
-    "start": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",
-    "build": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",
-    "lint": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",
-    "preview": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",
-    "test": "echo 'You are in the wrong directory. cd to api or frontend folder to run this command'",
-    "preinstall": "echo \"You are in the wrong directory. cd to api or frontend folder to run this command\" && exit 1"
-  },
-  "engines": {
-    "npm": "YOU ARE IN THE WRONG DIRECTORY! cd to api or frontend folder to run this command"
+    "dev": "node -e \"const { spawn } = require('child_process'); const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm'; const children = []; let shuttingDown = false; const shutdown = (code) => { if (shuttingDown) return; shuttingDown = true; for (const child of children) { if (!child.killed) child.kill('SIGTERM'); } process.exit(code); }; for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => shutdown(0)); const start = (script) => { const child = spawn(npmCmd, ['run', script], { stdio: 'inherit', env: process.env }); child.on('error', (error) => { console.error('Failed to start', script, error); shutdown(1); }); child.on('exit', (code, signal) => { if (shuttingDown) return; if (signal) console.error(script + ' exited due to signal ' + signal); shutdown(code ?? 1); }); children.push(child); }; start('dev:backend'); start('dev:frontend');\"",
+    "dev:backend": "npm run --workspace backend dev",
+    "dev:frontend": "npm run --workspace frontend dev",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "npm run --workspace backend test",
+    "test:frontend": "npm run --workspace frontend test",
+    "build": "npm run build:frontend",
+    "build:frontend": "npm run --workspace frontend build",
+    "lint": "npm run lint:frontend",
+    "lint:frontend": "npm run --workspace frontend lint",
+    "seed": "npm run --workspace backend seed"
   }
 }

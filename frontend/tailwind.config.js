@@ -5,7 +5,10 @@ export default {
   darkMode: "class",
   content: [
     "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./features/**/*.{js,jsx,ts,tsx}",
+    "./shared/**/*.{js,jsx,ts,tsx}",
+    "./tests/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {},
