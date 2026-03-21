@@ -3,8 +3,7 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
+  PointerSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -21,8 +20,6 @@ import { CSS } from "@dnd-kit/utilities";
 const AUTO_SCROLL_EDGE_PX = 96;
 const AUTO_SCROLL_MIN_PX = 6;
 const AUTO_SCROLL_MAX_PX = 22;
-const TOUCH_HOLD_DELAY_MS = 180;
-const TOUCH_TOLERANCE_PX = 6;
 
 function srOnlyClassName() {
   return "absolute h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 [-webkit-clip-path:inset(50%)] [clip-path:inset(50%)] [-webkit-clip-path:inset(50%)]";
@@ -45,8 +42,8 @@ function QuestionCardFrame({
 }) {
   return (
     <div
-      className={`bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm relative overflow-hidden ${
-        isDragging ? "opacity-35" : ""
+      className={`bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800/60 shadow-sm relative overflow-hidden ${
+        isDragging ? "opacity-0" : ""
       } ${isOverlay ? "shadow-2xl scale-[1.01] opacity-95" : ""}`}
     >
       <div
@@ -86,7 +83,7 @@ function QuestionCardFrame({
           </div>
           <div className="flex items-center gap-3">
             {isOverlay ? (
-              <div className="flex-1 rounded-xl border border-slate-200/80 bg-white/75 px-4 py-3 text-slate-800">
+              <div className="flex-1 rounded-xl border border-slate-200/80 dark:border-slate-700/60 bg-white/75 dark:bg-slate-900/75 px-4 py-3 text-left text-slate-800 dark:text-slate-100">
                 {question.text || "Untitled question"}
               </div>
             ) : (
@@ -152,7 +149,7 @@ function QuestionCardFrame({
                 />
               </label>
               {isOverlay ? (
-                <div className="flex-1 text-slate-800">
+                <div className="flex-1 text-left text-slate-800 dark:text-slate-100">
                   {answer.text || `Answer ${answerIndex + 1}`}
                 </div>
               ) : (
@@ -267,6 +264,7 @@ export function SortableQuestionList({
   onAnswerChange,
   onSetCorrectAnswer,
   onRemoveQuestion,
+  onDragStateChange,
 }) {
   const [activeId, setActiveId] = useState(null);
   const [announcement, setAnnouncement] = useState("");
@@ -276,14 +274,8 @@ export function SortableQuestionList({
   const lastAnnouncedOverIdRef = useRef(null);
 
   const sensors = useSensors(
-    useSensor(MouseSensor, {
+    useSensor(PointerSensor, {
       activationConstraint: { distance: 4 },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: TOUCH_HOLD_DELAY_MS,
-        tolerance: TOUCH_TOLERANCE_PX,
-      },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -298,6 +290,10 @@ export function SortableQuestionList({
     ? questions.find((question) => question.editorSortableId === activeId) || null
     : null;
 
+  useEffect(() => {
+    onDragStateChange?.(Boolean(activeId));
+  }, [activeId, onDragStateChange]);
+
   const stopAutoScroll = useCallback(() => {
     if (autoScrollFrameRef.current) {
       cancelAnimationFrame(autoScrollFrameRef.current);
@@ -305,6 +301,13 @@ export function SortableQuestionList({
     }
     autoScrollVelocityRef.current = 0;
   }, []);
+
+  const resetDragState = useCallback(() => {
+    stopAutoScroll();
+    pointerYRef.current = null;
+    lastAnnouncedOverIdRef.current = null;
+    setActiveId(null);
+  }, [stopAutoScroll]);
 
   const updatePointerPosition = useCallback((event) => {
     if ("touches" in event && event.touches.length > 0) {
@@ -320,6 +323,7 @@ export function SortableQuestionList({
     if (!activeId) return undefined;
 
     const handlePointerMove = (event) => updatePointerPosition(event);
+
     window.addEventListener("mousemove", handlePointerMove, { passive: true });
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("touchmove", handlePointerMove, { passive: true });
@@ -402,10 +406,7 @@ export function SortableQuestionList({
   const handleDragEnd = useCallback(
     (event) => {
       const { active, over } = event;
-      stopAutoScroll();
-      pointerYRef.current = null;
-      lastAnnouncedOverIdRef.current = null;
-      setActiveId(null);
+      resetDragState();
 
       if (!over) {
         setAnnouncement("Question drop cancelled.");
@@ -430,16 +431,13 @@ export function SortableQuestionList({
         return reordered;
       });
     },
-    [describePosition, setQuestions, stopAutoScroll]
+    [describePosition, resetDragState, setQuestions]
   );
 
   const handleDragCancel = useCallback(() => {
-    stopAutoScroll();
-    pointerYRef.current = null;
-    lastAnnouncedOverIdRef.current = null;
-    setActiveId(null);
+    resetDragState();
     setAnnouncement("Question move cancelled.");
-  }, [stopAutoScroll]);
+  }, [resetDragState]);
 
   return (
     <>

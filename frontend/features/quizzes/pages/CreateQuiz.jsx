@@ -43,6 +43,7 @@ export default function CreateQuiz() {
   const returnTo = location.state?.returnTo || "/";
   const [ignoreBlocker, setIgnoreBlocker] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [isQuestionDragging, setIsQuestionDragging] = useState(false);
   const opalBackdropStyle = {
     backgroundColor: "var(--opal-bg-color)",
     backgroundImage: "var(--opal-backdrop-image)"
@@ -628,9 +629,10 @@ export default function CreateQuiz() {
               onAnswerChange={handleAnswerChange}
               onSetCorrectAnswer={setCorrectAnswer}
               onRemoveQuestion={removeQuestion}
+              onDragStateChange={setIsQuestionDragging}
             />
             {questions.length > 0 && (
-              <div className="sticky bottom-6 z-20 pt-4 hidden sm:block">
+              <div className={`sticky bottom-6 z-20 pt-4 hidden sm:block ${isQuestionDragging ? "pointer-events-none" : ""}`}>
                 <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/70 backdrop-blur-lg shadow-lg px-4 py-4 sm:px-6">
                   <div className="flex flex-col sm:flex-row gap-4">
                     <button

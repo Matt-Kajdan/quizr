@@ -14,7 +14,7 @@ const dragState = {
 };
 
 vi.mock("@dnd-kit/core", () => ({
-  DndContext: ({ children, onDragStart, onDragEnd }) => (
+  DndContext: ({ children, onDragStart, onDragEnd, onDragCancel }) => (
     <div>
       <button
         type="button"
@@ -38,13 +38,15 @@ vi.mock("@dnd-kit/core", () => ({
       >
         Finish Mock Drag
       </button>
+      <button type="button" onClick={() => onDragCancel?.()}>
+        Cancel Mock Drag
+      </button>
       {children}
     </div>
   ),
   DragOverlay: ({ children }) => <div>{children}</div>,
   KeyboardSensor: class KeyboardSensor {},
-  MouseSensor: class MouseSensor {},
-  TouchSensor: class TouchSensor {},
+  PointerSensor: class PointerSensor {},
   closestCenter: vi.fn(),
   useSensor: (sensor, options) => ({ sensor, options }),
   useSensors: (...sensors) => sensors,
@@ -134,6 +136,22 @@ describe("quiz question reordering", () => {
       "Second prompt | First prompt"
     );
     expect(screen.getByText(/moved question 1 to position 2/i)).toBeTruthy();
+  });
+
+  it("clears the drag state when the drag is cancelled", () => {
+    dragState.activeId = "question-question-a";
+    dragState.overId = null;
+
+    render(<SortableQuestionListHarness />);
+
+    fireEvent.click(screen.getByRole("button", { name: /start mock drag/i }));
+
+    expect(screen.getAllByRole("button", { name: /reorder question/i })).toHaveLength(3);
+
+    fireEvent.click(screen.getByRole("button", { name: /cancel mock drag/i }));
+
+    expect(screen.getAllByRole("button", { name: /reorder question/i })).toHaveLength(2);
+    expect(screen.getByText(/question move cancelled/i)).toBeTruthy();
   });
 
   it("strips editor-only ids before quiz payload submission", () => {
