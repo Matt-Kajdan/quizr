@@ -1,9 +1,6 @@
-<div align="center">
-  <h1>
-    <img src="./frontend/shared/assets/quizr.png" alt="Quizr logo" width="44" style="vertical-align: middle; margin-right: 10px;" />
-    <span style="vertical-align: middle;">Quizr</span>
-  </h1>
-</div>
+<h1 align="center">
+  <img src="./frontend/shared/assets/quizr.png" alt="Quizr logo" width="44" valign="middle" /> Quizr
+</h1>
 
 Quizr is a full-stack quiz platform built with React, Vite, Express, MongoDB, and Firebase Authentication.
 
