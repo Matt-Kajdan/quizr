@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useLocation, useNavigate, useParams, unstable_useBlocker as useBlocker } from "react-router-dom";
-import { auth } from "@shared/auth/firebase";
+import { signOut } from "firebase/auth";
+import { useLocation, useNavigate, useParams, useBlocker } from "react-router-dom";
 import { apiFetch } from "@shared/api/apiClient";
+import { DIFFICULTY_ICONS } from "@shared/assets/icons";
+import { useAuth } from "@shared/auth/useAuth";
+import { auth } from "@shared/auth/firebase";
 import { getQuizById, updateQuiz } from "@features/quizzes/api/quizzes";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { LogOut } from "lucide-react";
@@ -68,6 +70,7 @@ function shouldResetAttempts(originalQuiz, updatedData) {
 }
 
 export default function EditQuiz() {
+  const user = useAuth();
   const isMobile = useIsMobile();
   const ANSWER_COUNT_OPTIONS = useMemo(() => [2, 3, 4, 5, 6], []);
   const DEFAULT_ANSWERS_PER_QUESTION = 4;
@@ -75,7 +78,6 @@ export default function EditQuiz() {
   const navigate = useNavigate();
   const location = useLocation();
   const returnTo = location.state?.returnTo || `/quiz/${id}`;
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [initialQuiz, setInitialQuiz] = useState(null);
   const [title, setTitle] = useState("");
@@ -105,19 +107,6 @@ export default function EditQuiz() {
     backgroundColor: "var(--opal-bg-color)",
     backgroundImage: "var(--opal-backdrop-image)"
   };
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (nextUser) => {
-      setUser(nextUser);
-      if (!nextUser) {
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
-      setLoading(false);
-    });
-    return unsub;
-  }, [navigate]);
 
   useEffect(() => {
     if (!user) return;
@@ -490,7 +479,7 @@ export default function EditQuiz() {
       description: "Review every question after finishing, including the correct answers.",
       gradient: "from-emerald-500/80 via-emerald-500/80 to-emerald-500/80 dark:from-emerald-900/60 dark:via-emerald-900/60 dark:to-emerald-900/60",
       border: "border-emerald-400/50 dark:border-emerald-800/50",
-      icon: "/easy.svg",
+      icon: DIFFICULTY_ICONS.easy,
     },
     {
       value: "medium",
@@ -498,7 +487,7 @@ export default function EditQuiz() {
       description: "Review every question after finishing, showing which selections were right or wrong.",
       gradient: "from-amber-400/85 via-amber-400/85 to-amber-400/85 dark:from-amber-900/60 dark:via-amber-900/60 dark:to-amber-900/60",
       border: "border-amber-400/50 dark:border-amber-800/50",
-      icon: "/medium.svg",
+      icon: DIFFICULTY_ICONS.medium,
     },
     {
       value: "hard",
@@ -506,7 +495,7 @@ export default function EditQuiz() {
       description: "Only see the total number of correct answers after finishing.",
       gradient: "from-rose-500/85 via-rose-500/85 to-rose-500/85 dark:from-rose-900/60 dark:via-rose-900/60 dark:to-rose-900/60",
       border: "border-rose-400/50 dark:border-rose-800/50",
-      icon: "/hard.svg",
+      icon: DIFFICULTY_ICONS.hard,
     },
   ];
   const categories = [

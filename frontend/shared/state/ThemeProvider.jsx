@@ -5,7 +5,7 @@ import { auth } from "../auth/firebase";
 import { authReady } from "../auth/authState";
 import { onAuthStateChanged } from "firebase/auth";
 import { ThemeContext } from "./ThemeContext";
-import { isSigningUp } from "../auth/signupGate";
+import { isSigningUp, subscribeToSignupGate } from "../auth/signupGate";
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
@@ -34,10 +34,18 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     let mounted = true;
 
-    const loadTheme = async () => {
+    const loadTheme = async ({ fallbackToLight = false } = {}) => {
       try {
         await authReady;
-        if (!auth.currentUser || isSigningUp()) return;
+        if (!auth.currentUser) return;
+        if (isSigningUp()) {
+          if (fallbackToLight && mounted) {
+            setTheme("light");
+            localStorage.setItem("theme", "light");
+          }
+          return;
+        }
+
         const res = await apiFetch("/me");
         if (res.ok) {
           const body = await res.json();
@@ -64,18 +72,24 @@ export const ThemeProvider = ({ children }) => {
       }
     };
 
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
       // If the user logs out, keep the current theme in localStorage
       // so the auth pages retain whatever theme was last active.
       if (!user) {
         return;
       }
+      loadTheme({ fallbackToLight: isSigningUp() });
+    });
+
+    const unsubSignupGate = subscribeToSignupGate((signingUp) => {
+      if (!auth.currentUser || signingUp) return;
       loadTheme();
     });
 
     return () => {
       mounted = false;
-      unsub();
+      unsubAuth();
+      unsubSignupGate();
     };
   }, []);
 

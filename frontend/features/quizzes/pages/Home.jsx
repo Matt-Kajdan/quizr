@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getQuizzes } from "@features/quizzes/api/quizzes";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
+import { CATEGORY_ICONS } from "@shared/assets/icons";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -104,13 +105,7 @@ export function Home() {
       hover: { primary: "107 114 128", secondary: "100 116 139" }
     }
   };
-  const categoryIcons = {
-    art: "/art.svg",
-    history: "/history.svg",
-    music: "/music.svg",
-    science: "/science.svg",
-    other: "/other.svg"
-  };
+  const categoryIcons = CATEGORY_ICONS;
   const difficultyChips = {
     easy: {
       label: "Easy",

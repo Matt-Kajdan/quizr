@@ -8,6 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  cacheDir: "../node_modules/.vite/frontend",
   resolve: {
     alias: {
       "@app": path.resolve(__dirname, "./app"),
@@ -18,6 +19,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    cache: {
+      dir: "../node_modules/.vitest/frontend",
+    },
   },
   server: {
     host: true

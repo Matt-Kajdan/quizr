@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { auth } from "@shared/auth/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signup } from "@shared/auth/authService";
 import { apiFetch } from "@shared/api/apiClient";
@@ -25,36 +23,22 @@ export function Signup() {
 
   const { refreshUser } = useUser();
   const { theme, toggleTheme } = useTheme();
-  const [isSigningUp, setIsSigningUp] = useState(false);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user && !isSigningUp) {
-        navigate("/");
-      }
-    });
-    return unsub;
-  }, [navigate, isSigningUp]);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError(null);
     setEmailInUse(false);
-    setIsSigningUp(true);
     try {
       if (!username.trim()) {
         setError("Username is required");
-        setIsSigningUp(false);
         return;
       }
       if (password.length < 12) {
         setError("Password must be at least 12 characters long");
-        setIsSigningUp(false);
         return;
       }
       if (password !== confirmPassword) {
         setError("Passwords do not match");
-        setIsSigningUp(false);
         return;
       }
       const availabilityRes = await fetch(
@@ -90,7 +74,6 @@ export function Signup() {
         setError(err.message || "Signup failed");
       }
       setSignupGate(false);
-      setIsSigningUp(false);
     }
   }
 

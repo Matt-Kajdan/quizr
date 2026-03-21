@@ -1,17 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged, updatePassword, updateEmail, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
+import { updatePassword, updateEmail, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { PasswordInput } from "@shared/components/PasswordInput";
-import { auth } from "@shared/auth/firebase";
 import { apiFetch } from "@shared/api/apiClient";
+import { useAuth } from "@shared/auth/useAuth";
 import { scheduleAccountDeletion } from "@features/users/api/users";
 import { useUser } from "@shared/state/useUser";
 import { formatUsernameInput, trimTrailingSpace, toProfileUrl } from "@shared/utils/usernameValidation";
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const loggedInUser = useAuth();
   const { refreshUser } = useUser();
-  const [loggedInUser, setLoggedInUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,13 +40,6 @@ export default function SettingsPage() {
   const [deletionError, setDeletionError] = useState(null);
   const [deletionPassword, setDeletionPassword] = useState("");
   const [deletionVerifying, setDeletionVerifying] = useState(false);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      setLoggedInUser(currentUser);
-    });
-    return unsub;
-  }, []);
 
   const loadProfile = useCallback(async () => {
     if (!loggedInUser) {

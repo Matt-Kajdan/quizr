@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-import { auth } from "@shared/auth/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { login, forgotPassword } from "@shared/auth/authService";
 import { BACKEND_URL } from "@shared/api/backendUrl";
 import { PasswordInput } from "@shared/components/PasswordInput";
@@ -12,20 +10,12 @@ export function Login() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
   const [isForgotMode, setIsForgotMode] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSent, setForgotSent] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) navigate("/")
-    })
-    return unsub
-  }, [navigate])
 
   async function handleSubmit(event) {
     event.preventDefault();

@@ -1,13 +1,12 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@shared/auth/firebase";
 import { getFriends, getPendingRequests, acceptFriendRequest, removeRequest } from "@features/friends/api/friends";
 import { apiFetch } from "@shared/api/apiClient";
+import { useAuth } from "@shared/auth/useAuth";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 export default function FriendsPage() {
-  // const [user, setUser] = useState(null);
+  const user = useAuth();
   const [profile, setProfile] = useState(null);
   const [friends, setFriends] = useState([]);
   const [pending, setPending] = useState([]);
@@ -38,14 +37,10 @@ export default function FriendsPage() {
   }
   const isIncoming = useCallback((request) => profile && request.user2?._id === profile._id, [profile]);
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (currentUser) => {
-      // setUser(currentUser);
-      if (currentUser) {
-        await loadData()
-      }
-    });
-    return unsub
-  }, [loadData])
+    if (user) {
+      loadData();
+    }
+  }, [loadData, user]);
 
   const handleAccept = async (friendId) => {
     await acceptFriendRequest(friendId)

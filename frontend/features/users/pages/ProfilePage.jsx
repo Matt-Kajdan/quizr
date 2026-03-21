@@ -1,10 +1,12 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "@shared/auth/firebase";
 import { getUserByUsername, cancelAccountDeletion, executeAccountDeletion } from "@features/users/api/users";
 import { apiFetch } from "@shared/api/apiClient";
+import { DIFFICULTY_ICONS } from "@shared/assets/icons";
+import { useAuth } from "@shared/auth/useAuth";
 import { getPendingRequests, sendFriendRequest, getFriends, removeRequest, acceptFriendRequest } from "@features/friends/api/friends";
 import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourites";
 import { QuizStats } from "@features/quizzes/components/QuizStats";
@@ -14,12 +16,12 @@ import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 export default function ProfilePage() {
   const isMobile = useIsMobile();
+  const loggedInUser = useAuth();
   const { username: routeUsername } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { favouriteIds, setFavouriteIds, refreshUser } = useUser();
   const [profile, setProfile] = useState(null);
-  const [loggedInUser, setLoggedInUser] = useState(null);
   const [takenQuizzes, setTakenQuizzes] = useState([]);
   const [createdQuizzes, setCreatedQuizzes] = useState([]);
   const [myFavourites, setMyFavourites] = useState([]);
@@ -69,13 +71,6 @@ export default function ProfilePage() {
     quiz?.favourited_count ??
     (Array.isArray(quiz?.favourites) ? quiz.favourites.length : (quiz?.favouritesCount ?? 0))
   );
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      setLoggedInUser(currentUser);
-    });
-    return unsub;
-  }, []);
 
   useEffect(() => {
     if (!showRemoveFriendConfirm) return;
@@ -647,17 +642,17 @@ export default function ProfilePage() {
     easy: {
       label: "Easy",
       className: "border-emerald-300/50 bg-emerald-400/25 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400 hover:border-emerald-200/80 hover:bg-emerald-100/70 hover:text-emerald-700 dark:hover:border-emerald-400/50 dark:hover:bg-emerald-500/20",
-      icon: "/easy.svg"
+      icon: DIFFICULTY_ICONS.easy
     },
     medium: {
       label: "Medium",
       className: "border-amber-400/40 bg-amber-500/20 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700 dark:hover:border-amber-400/50 dark:hover:bg-amber-500/20",
-      icon: "/medium.svg"
+      icon: DIFFICULTY_ICONS.medium
     },
     hard: {
       label: "Hard",
       className: "border-rose-400/40 bg-rose-500/20 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400 hover:border-rose-200/80 hover:bg-rose-100/70 hover:text-rose-700 dark:hover:border-rose-400/50 dark:hover:bg-rose-500/20",
-      icon: "/hard.svg"
+      icon: DIFFICULTY_ICONS.hard
     }
   };
 

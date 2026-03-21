@@ -11,6 +11,7 @@ import TakeQuizPage from "@features/quizzes/pages/TakeQuizPage";
 import CreateQuiz from "@features/quizzes/pages/CreateQuiz";
 import EditQuiz from "@features/quizzes/pages/EditQuiz";
 import Layout from "./Layout";
+import { GuestRoute, ProtectedRoute } from "./RouteGuards";
 import ProfilePage from "@features/users/pages/ProfilePage";
 import FriendsPage from "@features/friends/pages/FriendsPage";
 import SettingsPage from "@features/users/pages/SettingsPage";
@@ -23,16 +24,26 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      {index: true, element: <Home /> },
-      {path: "login", element: <Login /> },
-      {path: "signup", element: <Signup /> },
-      {path: "quiz/:id", element: <TakeQuizPage /> },
-      {path: "quiz/:id/edit", element: <EditQuiz /> },
-      {path: "quizzes/create", element: <CreateQuiz /> },
-      {path: "users/:username", element: <ProfilePage /> },
-      {path: "friends", element: <FriendsPage /> },
-      {path: "leaderboard", element: <LeaderboardPage /> },
-      {path: "settings", element: <SettingsPage />}
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { index: true, element: <Home /> },
+          { path: "quiz/:id", element: <TakeQuizPage /> },
+          { path: "quiz/:id/edit", element: <EditQuiz /> },
+          { path: "quizzes/create", element: <CreateQuiz /> },
+          { path: "users/:username", element: <ProfilePage /> },
+          { path: "friends", element: <FriendsPage /> },
+          { path: "leaderboard", element: <LeaderboardPage /> },
+          { path: "settings", element: <SettingsPage /> },
+        ],
+      },
+      {
+        element: <GuestRoute />,
+        children: [
+          { path: "login", element: <Login /> },
+          { path: "signup", element: <Signup /> },
+        ],
+      },
     ],
   },
 ]);

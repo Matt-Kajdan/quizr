@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@shared/auth/firebase";
 import { apiFetch } from "@shared/api/apiClient";
+import { useAuth } from "@shared/auth/useAuth";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { useUser } from "@shared/state/useUser";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -19,6 +18,7 @@ function formatScorePercentage(value) {
 }
 
 function TakeQuizPage() {
+    const user = useAuth();
     //Getting the quiz id from the URL e.g. /quiz/:id
     const { id } = useParams();
     const navigate = useNavigate();
@@ -53,16 +53,9 @@ function TakeQuizPage() {
     }, [id]);
 
     useEffect(() => {
-        // Listen for login state, then fetch the quiz if user is logged in
-        const unsub = onAuthStateChanged(auth, async (user) => {
-            //If no user, don't fetch a quiz
-            if (!user) return;
-            await loadQuiz();
-        });
-
-        // Stop listening when the page changes
-        return () => unsub();
-    }, [id, loadQuiz]);
+        if (!user) return;
+        loadQuiz();
+    }, [loadQuiz, user]);
 
     const isQuizOwner = useMemo(() => {
         if (!quiz || !currentUserId) return false;
@@ -468,7 +461,6 @@ function TakeQuizPage() {
 
     async function submitQuiz() {
         //Making sure user is still logged in
-        const user = auth.currentUser;
         if (!user) return;
         //Sending the user's answers to the backend
         const res = await apiFetch(`/quizzes/${id}/submit`, {
@@ -487,7 +479,6 @@ function TakeQuizPage() {
             console.error("Failed to refresh quiz data", error);
         }
         setPhase("done");
-        console.log(data.correctAnswers);
     }
 
     return (

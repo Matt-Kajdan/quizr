@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "@shared/auth/authService";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -26,12 +25,6 @@ function NavBar({ accountStatus, accountUsername }) {
   const username = accountUsername;
   const isAccountLocked = accountStatus === "pending_deletion";
   const profileLabel = username || "Profile";
-
-  useEffect(() => {
-    if (user === null) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
 
   if (isLoading) {
     return null;

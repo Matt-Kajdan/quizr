@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "@shared/auth/firebase";
-import { useLocation, useNavigate, unstable_useBlocker as useBlocker } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { useLocation, useNavigate, useBlocker } from "react-router-dom";
 import { createQuiz } from "@features/quizzes/api/quizzes";
+import { DIFFICULTY_ICONS } from "@shared/assets/icons";
+import { useAuth } from "@shared/auth/useAuth";
+import { auth } from "@shared/auth/firebase";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { LogOut } from "lucide-react";
 
 export default function CreateQuiz() {
+  const user = useAuth();
   const isMobile = useIsMobile();
   const ANSWER_COUNT_OPTIONS = useMemo(() => [2, 3, 4, 5, 6], []);
   const DEFAULT_ANSWERS_PER_QUESTION = 4;
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("other");
   const [difficulty, setDifficulty] = useState("medium");
@@ -41,19 +42,6 @@ export default function CreateQuiz() {
     backgroundColor: "var(--opal-bg-color)",
     backgroundImage: "var(--opal-backdrop-image)"
   };
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (!user) {
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
-      setLoading(false);
-    });
-    return unsub;
-  }, [navigate]);
 
   useEffect(() => {
     const currentCount = questions.length;
@@ -156,19 +144,6 @@ export default function CreateQuiz() {
     document.addEventListener('click', handleOutsideClick);
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
-
-  if (loading)
-    return (
-      <div
-        className="fixed inset-0 flex items-center justify-center"
-        style={opalBackdropStyle}
-      >
-        <div className="relative flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
-          <p className="mt-4 text-slate-600 font-medium">Loading...</p>
-        </div>
-      </div>
-    );
 
   if (!user) return null;
 
@@ -312,7 +287,7 @@ export default function CreateQuiz() {
       description: "Review every question after finishing, including the correct answers.",
       gradient: "from-emerald-500/80 via-emerald-500/80 to-emerald-500/80 dark:from-emerald-900/60 dark:via-emerald-900/60 dark:to-emerald-900/60",
       border: "border-emerald-400/50 dark:border-emerald-800/50",
-      icon: "/easy.svg",
+      icon: DIFFICULTY_ICONS.easy,
     },
     {
       value: "medium",
@@ -320,7 +295,7 @@ export default function CreateQuiz() {
       description: "Review every question after finishing, showing which selections were right or wrong.",
       gradient: "from-amber-400/85 via-amber-400/85 to-amber-400/85 dark:from-amber-900/60 dark:via-amber-900/60 dark:to-amber-900/60",
       border: "border-amber-400/50 dark:border-amber-800/50",
-      icon: "/medium.svg",
+      icon: DIFFICULTY_ICONS.medium,
     },
     {
       value: "hard",
@@ -328,7 +303,7 @@ export default function CreateQuiz() {
       description: "Only see the total number of correct answers after finishing.",
       gradient: "from-rose-500/85 via-rose-500/85 to-rose-500/85 dark:from-rose-900/60 dark:via-rose-900/60 dark:to-rose-900/60",
       border: "border-rose-400/50 dark:border-rose-800/50",
-      icon: "/hard.svg",
+      icon: DIFFICULTY_ICONS.hard,
     },
   ];
   const categories = [
