@@ -112,6 +112,7 @@ export default function EditQuiz() {
   const navigate = useNavigate();
   const location = useLocation();
   const returnTo = location.state?.returnTo || `/quiz/${id}`;
+  const quizReturnTo = location.state?.quizReturnTo;
   const [loading, setLoading] = useState(true);
   const [initialQuiz, setInitialQuiz] = useState(null);
   const [isQuestionDragging, setIsQuestionDragging] = useState(false);
@@ -144,6 +145,10 @@ export default function EditQuiz() {
     backgroundImage: "var(--opal-backdrop-image)"
   };
 
+  const navigateToReturn = useCallback(() => {
+    navigate(returnTo, quizReturnTo ? { state: { returnTo: quizReturnTo } } : undefined);
+  }, [navigate, returnTo, quizReturnTo]);
+
   useEffect(() => {
     if (!user) return;
     let mounted = true;
@@ -161,7 +166,7 @@ export default function EditQuiz() {
         const creatorId =
           typeof quiz?.created_by === "string" ? quiz.created_by : quiz?.created_by?._id;
         if (!creatorId || creatorId !== meBody.user?._id) {
-          navigate(returnTo);
+          navigateToReturn();
           return;
         }
 
@@ -220,7 +225,7 @@ export default function EditQuiz() {
         );
       } catch (error) {
         alert(error.message);
-        navigate(returnTo);
+        navigateToReturn();
       } finally {
         if (mounted) setLoading(false);
       }
@@ -230,7 +235,7 @@ export default function EditQuiz() {
     return () => {
       mounted = false;
     };
-  }, [id, navigate, user, returnTo, ANSWER_COUNT_OPTIONS]);
+  }, [id, navigateToReturn, user, ANSWER_COUNT_OPTIONS]);
 
   useEffect(() => {
     const currentCount = questions.length;
@@ -369,8 +374,8 @@ export default function EditQuiz() {
   }, [blocker]);
 
   const handleCancel = useCallback(() => {
-    navigate(returnTo);
-  }, [navigate, returnTo]);
+    navigateToReturn();
+  }, [navigateToReturn]);
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -394,8 +399,8 @@ export default function EditQuiz() {
 
   useEffect(() => {
     if (!pendingNavigation || !ignoreBlocker) return;
-    navigate(returnTo);
-  }, [pendingNavigation, ignoreBlocker, navigate, returnTo]);
+    navigateToReturn();
+  }, [pendingNavigation, ignoreBlocker, navigateToReturn]);
 
   if (loading)
     return (
