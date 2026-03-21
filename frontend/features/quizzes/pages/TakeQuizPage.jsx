@@ -93,7 +93,7 @@ function TakeQuizPage() {
         ? "deleted user"
         : authorUsername || "Unknown";
     const canNavigateToAuthor = !authorIsDeleted && Boolean(authorUsername);
-    const returnTo = location.state?.returnTo;
+    const returnTo = location.state?.returnTo || "/";
     const baseQuizLeaderboard = useMemo(() => {
         const attempts = Array.isArray(quiz?.attempts) ? quiz.attempts : [];
         const questionsCount = Array.isArray(quiz?.questions) ? quiz.questions.length : 0;
@@ -591,7 +591,15 @@ function TakeQuizPage() {
                                             <button
                                                 className="rounded-xl border border-slate-200/80 bg-white/40 dark:bg-slate-950/40 dark:border-slate-900/60 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors hover:bg-white/80 dark:hover:bg-slate-950/60 hover:border-slate-200/80 flex items-center justify-center gap-2"
                                                 type="button"
-                                                onClick={() => navigate(`/quiz/${id}/edit`, { state: { from: "quiz", returnTo: `/quiz/${id}` } })}
+                                                onClick={() =>
+                                                    navigate(`/quiz/${id}/edit`, {
+                                                        state: {
+                                                            from: "quiz",
+                                                            returnTo: `/quiz/${id}`,
+                                                            quizReturnTo: returnTo,
+                                                        },
+                                                    })
+                                                }
                                             >
                                                 <svg
                                                     className="w-4 h-4"
@@ -757,7 +765,7 @@ function TakeQuizPage() {
                                     <button
                                         className="w-full h-full rounded-2xl bg-white/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors flex items-center justify-center gap-2 px-6 py-5 text-lg leading-tight"
                                         type="button"
-                                        onClick={() => navigate(returnTo || -1)}
+                                        onClick={() => navigate(returnTo)}
                                     >
                                         <svg
                                             className="w-5 h-5"
