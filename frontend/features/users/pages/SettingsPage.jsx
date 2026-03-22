@@ -25,6 +25,21 @@ const SETTINGS_SECTIONS = [
 const panelClassName = "bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800/60 shadow-sm";
 const inputClassName = "w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50";
 const labelClassName = "block text-slate-600 dark:text-slate-300 mb-2";
+const avatarGradients = [
+  "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
+  "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
+  "from-emerald-300 to-green-400 dark:from-emerald-500/80 dark:to-green-600/80",
+  "from-orange-300 to-amber-400 dark:from-orange-500/80 dark:to-amber-600/80"
+];
+
+function getAvatarGradient(userId) {
+  const value = String(userId || "");
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) % avatarGradients.length;
+  }
+  return avatarGradients[hash];
+}
 
 function SettingsSidebar({ sections, activeSection, onSelect }) {
   return (
@@ -127,6 +142,8 @@ export default function SettingsPage() {
   }, [profile, deletionStep, deletionMode]);
 
   const isAccountLocked = profile?.status === "pending_deletion";
+  const previewInitial = (username.trim() || originalUsername || profile?.user_data?.username || "?").charAt(0).toUpperCase();
+  const previewAvatarGradient = getAvatarGradient(profile?._id || username || originalUsername);
 
   useEffect(() => {
     if (isAccountLocked && activeSection === "delete") {
@@ -391,32 +408,40 @@ export default function SettingsPage() {
               className={inputClassName}
               required
             />
-            <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${usernameWarning ? 'text-rose-500' : 'text-transparent'}`}>
-              {usernameWarning || '\u00A0'}
-            </p>
+            {usernameWarning && (
+              <p className="mt-0.5 pl-0.5 text-xs text-rose-500">
+                {usernameWarning}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelClassName}>Profile Picture URL</label>
-            <input
-              type="url"
-              value={profilePic}
-              onChange={(e) => setProfilePic(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              disabled={isAccountLocked}
-              className={inputClassName}
-            />
-          </div>
-          {profilePic && (
-            <div className="flex items-center gap-4">
-              <p className="text-slate-600 dark:text-slate-300">Preview:</p>
-              <img
-                src={profilePic}
-                alt="Profile preview"
-                className="w-16 h-16 rounded-full object-cover border-2 border-slate-200/80"
-                onError={(e) => e.target.style.display = "none"}
+            <div className="flex items-stretch gap-3">
+              <div
+                className={`relative h-11 w-11 shrink-0 rounded-[30%] overflow-hidden border border-slate-200/80 bg-gradient-to-br ${previewAvatarGradient} flex items-center justify-center text-white font-semibold text-sm shadow-sm`}
+              >
+                <span>{previewInitial}</span>
+                {profilePic && (
+                  <img
+                    src={profilePic}
+                    alt="Profile picture"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                )}
+              </div>
+              <input
+                type="url"
+                value={profilePic}
+                onChange={(e) => setProfilePic(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                disabled={isAccountLocked}
+                className={`${inputClassName} h-[50px] py-0`}
               />
             </div>
-          )}
+          </div>
           <Button
             htmlType="submit"
             disabled={profileSaving || isAccountLocked || (username.trim() === originalUsername && profilePic === originalProfilePic)}
@@ -457,9 +482,11 @@ export default function SettingsPage() {
               className={inputClassName}
               required
             />
-            <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${emailFieldWarning ? 'text-rose-500' : 'text-transparent'}`}>
-              {emailFieldWarning || '\u00A0'}
-            </p>
+            {emailFieldWarning && (
+              <p className="mt-0.5 pl-0.5 text-xs text-rose-500">
+                {emailFieldWarning}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelClassName}>Current Password (required for security)</label>
