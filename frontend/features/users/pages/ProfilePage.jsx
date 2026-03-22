@@ -10,6 +10,7 @@ import { useAuth } from "@shared/auth/useAuth";
 import { getPendingRequests, sendFriendRequest, getFriends, removeRequest, acceptFriendRequest } from "@features/friends/api/friends";
 import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourites";
 import { QuizStats } from "@features/quizzes/components/QuizStats";
+import { Button } from "@shared/components/Button";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
@@ -741,22 +742,30 @@ export default function ProfilePage() {
                         isAccountLocked ? (
                           <span className="px-6 py-2.5 rounded-xl bg-slate-100 text-slate-500 font-semibold border border-slate-200/80">Settings Locked</span>
                         ) : (
-                          <a href="/settings" className="bg-slate-800 dark:bg-blue-950/60 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-colors hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 hover:text-white visited:text-white focus:text-white active:text-white flex items-center gap-2">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
+                          <Button
+                            to="/settings"
+                            variant="primary"
+                            color="standard"
+                            icon={(
+                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                            )}
+                          >
                             Settings
-                          </a>
+                          </Button>
                         )
                       ) : friendsLoading ? (
-                        <button disabled className="px-4 py-2 text-sm rounded-xl bg-white/70 text-slate-600 font-semibold border border-slate-200/80">Loading...</button>
+                        <Button disabled variant="secondary" color="standard">
+                          Loading...
+                        </Button>
                       ) : isFriend ? (
                         <div className="flex items-center gap-3">
                           <div className="relative">
-                            <button
-                              type="button"
-                              aria-label="Remove friend"
+                            <Button
+                              htmlType="button"
+                              ariaLabel="Remove friend"
                               ref={removeFriendButtonRef}
                               onClick={() => {
                                 setShowRemoveFriendConfirm((prev) => {
@@ -771,7 +780,9 @@ export default function ProfilePage() {
                                   return next;
                                 });
                               }}
-                              className="group w-[128px] px-4 py-2 text-sm rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200/80 shadow-sm transition-colors hover:bg-slate-200/70 dark:bg-blue-950/60 dark:text-white dark:border-blue-400/30 dark:hover:bg-blue-900/60 flex items-center justify-center"
+                              variant="secondary"
+                              color="standard"
+                              className="group w-[128px] relative"
                             >
                               <span className="flex items-center gap-2 transition-opacity group-hover:opacity-0">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -785,7 +796,7 @@ export default function ProfilePage() {
                                 </svg>
                                 Remove
                               </span>
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ) : pendingSent ? (
@@ -796,15 +807,28 @@ export default function ProfilePage() {
                             </svg>
                             Pending
                           </span>
-                          <button onClick={handleRemove} className="px-4 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold transition-colors border border-slate-200/80 dark:border-slate-700">Cancel Request</button>
+                          <Button onClick={handleRemove} variant="secondary" color="standard">
+                            Cancel Request
+                          </Button>
                         </div>
                       ) : incomingRequest ? (
                         <div className="flex items-center gap-3">
-                          <button onClick={handleAccept} className="px-4 py-2 text-sm rounded-xl bg-emerald-100 dark:bg-emerald-900/40 hover:bg-emerald-200 dark:hover:bg-emerald-800/40 text-emerald-800 dark:text-emerald-400 font-semibold transition-colors border border-emerald-200/50 dark:border-emerald-800/50">Accept Request</button>
-                          <button onClick={handleRemove} className="px-4 py-2 text-sm rounded-xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-800/40 text-rose-800 dark:text-rose-400 font-semibold transition-colors border border-rose-200/50 dark:border-rose-800/50">Decline</button>
+                          <Button onClick={handleAccept} variant="secondary" color="green">
+                            Accept Request
+                          </Button>
+                          <Button onClick={handleRemove} variant="secondary" color="red">
+                            Decline
+                          </Button>
                         </div>
                       ) : (
-                        <button onClick={handleSendRequest} disabled={sendingRequest} className="px-4 py-2 text-sm rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white font-semibold hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 transition-colors disabled:opacity-50">{sendingRequest ? "Sending..." : "Add Friend"}</button>
+                        <Button
+                          onClick={handleSendRequest}
+                          disabled={sendingRequest}
+                          variant="primary"
+                          color="standard"
+                        >
+                          {sendingRequest ? "Sending..." : "Add Friend"}
+                        </Button>
                       )}
                     </div>
                   )}
@@ -818,20 +842,22 @@ export default function ProfilePage() {
                   >
                     <div className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-3">Remove friend?</div>
                     <div className="flex gap-2">
-                      <button
-                        type="button"
+                      <Button
                         onClick={handleConfirmRemoveFriend}
-                        className="flex-1 px-4 py-2 text-sm rounded-xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-800/40 text-rose-700 dark:text-rose-400 font-semibold transition-colors border border-rose-200/50 dark:border-rose-800/50"
+                        variant="secondary"
+                        color="red"
+                        className="flex-1"
                       >
                         Remove
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
                         onClick={() => setShowRemoveFriendConfirm(false)}
-                        className="flex-1 px-4 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold transition-colors border border-slate-200/80 dark:border-slate-700"
+                        variant="secondary"
+                        color="standard"
+                        className="flex-1"
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </div>
                   </div>,
                   document.body
@@ -904,22 +930,22 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
+                  <Button
                     onClick={handleCancelDeletion}
                     disabled={deletionActionLoading}
-                    className="px-5 py-2.5 rounded-xl bg-white/80 text-slate-700 font-semibold border border-amber-200/80 hover:bg-white transition-colors disabled:opacity-50 dark:bg-amber-950/40 dark:text-amber-100 dark:border-amber-800/60 dark:hover:bg-amber-900/50"
+                    variant="secondary"
+                    color="amber"
                   >
                     {deletionActionLoading ? "Working..." : "Cancel Deletion"}
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
                     onClick={handleDeleteNow}
                     disabled={deletionActionLoading}
-                    className="px-5 py-2.5 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors disabled:opacity-50 dark:bg-rose-600 dark:hover:bg-rose-500"
+                    variant="primary"
+                    color="red"
                   >
                     Delete Now
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -964,13 +990,14 @@ export default function ProfilePage() {
                 </p>
                 {isOwnProfile && !isAccountLocked && (
                   <div className="mt-6">
-                    <Link
+                    <Button
                       to="/quizzes/create"
                       state={{ returnTo: location.pathname }}
-                      className="inline-flex items-center justify-center rounded-xl bg-slate-800 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+                      variant="primary"
+                      color="standard"
                     >
                       Create a quiz
-                    </Link>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -1081,8 +1108,7 @@ export default function ProfilePage() {
                               </span>
                               {isOwnProfile && !isAccountLocked && (
                                 <div className="flex items-center gap-2">
-                                  <button
-                                    type="button"
+                                  <Button
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       const isFavourited = myFavourites.some((item) => {
@@ -1091,43 +1117,49 @@ export default function ProfilePage() {
                                       });
                                       handleToggleFavourite(quiz, isFavourited);
                                     }}
-                                    className="h-10 px-3 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 backdrop-blur text-slate-500 dark:text-slate-400 transition-all duration-100 ease-out hover:text-amber-500 dark:hover:text-amber-400 hover:bg-white dark:hover:bg-slate-700/80 active:scale-95 flex items-center gap-2"
-                                    aria-label="Toggle favourite"
+                                    variant="secondary"
+                                    color="standard"
+                                    className="px-3"
+                                    ariaLabel="Toggle favourite"
                                     title="Toggle favourite"
+                                    icon={(
+                                      <svg
+                                        viewBox="0 0 24 24"
+                                        className="h-4 w-4"
+                                        fill={myFavourites.some((item) => {
+                                          const itemId = typeof item === "string" ? item : item._id;
+                                          return itemId === quiz._id;
+                                        }) ? "currentColor" : "none"}
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                      </svg>
+                                    )}
                                   >
-                                    <svg
-                                      viewBox="0 0 24 24"
-                                      className="h-4 w-4"
-                                      fill={myFavourites.some((item) => {
-                                        const itemId = typeof item === "string" ? item : item._id;
-                                        return itemId === quiz._id;
-                                      }) ? "currentColor" : "none"}
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    >
-                                      <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                    </svg>
                                     <span className="text-sm font-semibold">
                                       {quiz.favourited_count ?? (Array.isArray(quiz.favourites) ? quiz.favourites.length : (quiz.favouritesCount ?? 0))}
                                     </span>
-                                  </button>
-                                  <button
-                                    type="button"
+                                  </Button>
+                                  <Button
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setQuizToDelete(quiz);
                                       setShowDeleteConfirm(true);
                                     }}
-                                    className="h-10 w-10 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 backdrop-blur text-rose-500 dark:text-rose-400 transition-all duration-100 ease-out hover:bg-rose-100/70 dark:hover:bg-rose-500 dark:hover:text-white active:scale-95"
-                                    aria-label="Delete quiz"
+                                    variant="secondary"
+                                    color="red"
+                                    ariaLabel="Delete quiz"
                                     title="Delete quiz"
+                                    icon={(
+                                      <svg className="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                      </svg>
+                                    )}
                                   >
-                                    <svg className="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                  </button>
+                                  </Button>
                                 </div>
                               )}
                             </div>
@@ -1158,36 +1190,43 @@ export default function ProfilePage() {
                             </div>
                             <div className={`grid gap-2 ${isOwnProfile ? "sm:grid-cols-2" : "grid-cols-1"}`}>
                               {isOwnProfile && !isAccountLocked && (
-                                <button
+                                <Button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     navigate(`/quiz/${quiz._id}/edit`, {
                                       state: { from: "profile", returnTo: toProfileUrl(routeUsername) }
                                     });
                                   }}
-                                  className="w-full px-4 py-2.5 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-200 text-sm font-bold transition-all duration-100 ease-out hover:bg-slate-100/80 dark:hover:bg-slate-700/50 active:scale-95 flex items-center justify-center gap-2"
+                                  variant="secondary"
+                                  color="standard"
+                                  className="w-full"
+                                  icon={(
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
+                                    </svg>
+                                  )}
                                 >
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
-                                  </svg>
                                   Edit Quiz
-                                </button>
+                                </Button>
                               )}
-                              <button
+                              <Button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (isAccountLocked) return;
                                   handleViewStats(quiz._id);
                                 }}
                                 disabled={isAccountLocked}
-                                className={`w-full px-4 py-2.5 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-200 text-sm font-bold transition-all duration-100 ease-out flex items-center justify-center gap-2 ${isAccountLocked ? "opacity-50" : "hover:bg-slate-100/80 dark:hover:bg-slate-700/50 active:scale-95"
-                                  }`}
+                                variant="secondary"
+                                color="standard"
+                                className="w-full"
+                                icon={(
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                  </svg>
+                                )}
                               >
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
                                 View Stats
-                              </button>
+                              </Button>
                             </div>
                             <div className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
                               <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1266,8 +1305,7 @@ export default function ProfilePage() {
                                   <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
                                 </svg>
                               </span>
-                              <button
-                                type="button"
+                              <Button
                                 onClick={(event) => {
                                   event.preventDefault();
                                   event.stopPropagation();
@@ -1275,10 +1313,12 @@ export default function ProfilePage() {
                                   handleRemoveFavourite(quizId);
                                 }}
                                 disabled={isAccountLocked}
-                                className={`px-3 py-1.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 backdrop-blur text-rose-600 dark:text-rose-400 text-xs font-bold transition-all duration-100 ease-out ${isAccountLocked ? "opacity-50" : "hover:bg-rose-100/80 dark:hover:bg-rose-900/50 active:scale-95"}`}
+                                variant="secondary"
+                                color="red"
+                                className="h-8 px-3 text-xs"
                               >
                                 Remove
-                              </button>
+                              </Button>
                             </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -1572,8 +1612,7 @@ export default function ProfilePage() {
                               })}
                             </div>
                           </div>
-                          <button
-                            type="button"
+                          <Button
                             onClick={(event) => {
                               event.preventDefault();
                               event.stopPropagation();
@@ -1581,23 +1620,27 @@ export default function ProfilePage() {
                               handleToggleFavourite(quiz, isFavourited);
                             }}
                             disabled={isAccountLocked}
-                            className="h-10 px-3 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 backdrop-blur text-slate-500 dark:text-slate-400 transition-all duration-100 ease-out hover:text-amber-500 dark:hover:text-amber-400 hover:bg-white dark:hover:bg-slate-700/80 active:scale-95 flex items-center gap-2 disabled:opacity-50"
-                            aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                            variant="secondary"
+                            color="standard"
+                            className="px-3"
+                            ariaLabel={isFavourited ? "Remove from favourites" : "Add to favourites"}
                             title={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                            icon={(
+                              <svg
+                                viewBox="0 0 24 24"
+                                className="h-4 w-4"
+                                fill={isFavourited ? "currentColor" : "none"}
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                              </svg>
+                            )}
                           >
-                            <svg
-                              viewBox="0 0 24 24"
-                              className="h-4 w-4"
-                              fill={isFavourited ? "currentColor" : "none"}
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                            </svg>
                             <span className="text-sm font-semibold">{favouriteCount}</span>
-                          </button>
+                          </Button>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
@@ -1721,12 +1764,13 @@ export default function ProfilePage() {
               </p>
               {isOwnProfile && !isAccountLocked && (
                 <div className="mt-6">
-                  <Link
+                  <Button
                     to="/"
-                    className="inline-flex items-center justify-center rounded-xl bg-slate-800 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+                    variant="primary"
+                    color="standard"
                   >
                     Take a quiz
-                  </Link>
+                  </Button>
                 </div>
               )}
             </div>
@@ -1769,23 +1813,25 @@ export default function ProfilePage() {
                   attempts, and leaderboard entries will be permanently removed.
                 </p>
                 <div className="flex gap-3">
-                  <button
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors"
-                    type="button"
+                  <Button
+                    className="flex-1"
+                    variant="primary"
+                    color="red"
                     onClick={handleDeleteQuiz}
                   >
                     Delete Quiz
-                  </button>
-                  <button
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-white/70 border border-slate-200/80 text-slate-700 font-semibold hover:bg-white transition-colors"
-                    type="button"
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    variant="secondary"
+                    color="standard"
                     onClick={() => {
                       setShowDeleteConfirm(false);
                       setQuizToDelete(null);
                     }}
                   >
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

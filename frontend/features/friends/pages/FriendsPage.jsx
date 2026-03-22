@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getFriends, getPendingRequests, acceptFriendRequest, removeRequest } from "@features/friends/api/friends";
 import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
+import { Button } from "@shared/components/Button";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
@@ -207,26 +208,30 @@ export default function FriendsPage() {
                                 </div>
                               </div>
                               <div className="flex gap-2">
-                                <button
+                                <Button
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     handleAccept(r._id);
                                   }}
-                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 hover:bg-emerald-200 dark:hover:bg-emerald-800/40 text-emerald-800 dark:text-emerald-400 text-xs sm:text-sm font-semibold transition-colors border border-emerald-200/50 dark:border-emerald-800/50"
+                                  variant="secondary"
+                                  color="green"
+                                  className="px-3 sm:px-4 text-xs sm:text-sm"
                                 >
                                   Accept
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     handleRemove(other._id);
                                   }}
-                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-800/40 text-rose-800 dark:text-rose-400 text-xs sm:text-sm font-semibold transition-colors border border-rose-200/50 dark:border-rose-800/50"
+                                  variant="secondary"
+                                  color="red"
+                                  className="px-3 sm:px-4 text-xs sm:text-sm"
                                 >
                                   Decline
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           </Link>
@@ -282,16 +287,18 @@ export default function FriendsPage() {
                                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Request sent</p>
                                 </div>
                               </div>
-                              <button
+                              <Button
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   handleRemove(other._id);
                                 }}
-                                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-100 dark:bg-amber-900/40 hover:bg-amber-200 dark:hover:bg-amber-800/40 text-amber-800 dark:text-amber-400 text-xs sm:text-sm font-semibold transition-colors border border-amber-200/50 dark:border-amber-800/50"
+                                variant="secondary"
+                                color="amber"
+                                className="px-3 sm:px-4 text-xs sm:text-sm"
                               >
                                 Cancel
-                              </button>
+                              </Button>
                             </div>
                           </Link>
                         );
@@ -358,17 +365,19 @@ export default function FriendsPage() {
                               </p>
                             </div>
                             <div className="flex gap-2">
-                              <button
+                              <Button
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   setConfirmRemoveId(null);
                                 }}
-                                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition-colors"
+                                variant="secondary"
+                                color="standard"
+                                className="px-3 sm:px-4 text-xs sm:text-sm"
                               >
                                 Cancel
-                              </button>
-                              <button
+                              </Button>
+                              <Button
                                 onClick={async (e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -378,10 +387,12 @@ export default function FriendsPage() {
                                     setConfirmRemoveId(null);
                                   }
                                 }}
-                                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-800/40 text-rose-800 dark:text-rose-400 text-xs sm:text-sm font-semibold transition-colors border border-rose-200/50 dark:border-rose-800/50"
+                                variant="secondary"
+                                color="red"
+                                className="px-3 sm:px-4 text-xs sm:text-sm"
                               >
                                 Confirm
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         ) : (
@@ -415,16 +426,18 @@ export default function FriendsPage() {
                                 )}
                               </div>
                             </div>
-                            <button
+                            <Button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 setConfirmRemoveId(f._id);
                               }}
-                              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-800/40 text-rose-800 dark:text-rose-400 text-xs sm:text-sm font-semibold transition-colors border border-rose-200/50 dark:border-rose-800/50"
+                              variant="secondary"
+                              color="red"
+                              className="px-3 sm:px-4 text-xs sm:text-sm"
                             >
                               Remove
-                            </button>
+                            </Button>
                           </div>
                         )}
                       </Link>
