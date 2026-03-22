@@ -138,6 +138,16 @@ describe("Quiz model", () => {
     expect(quiz.require_all_correct).toEqual(false);
   });
 
+  it("has random_question_order field with default false", () => {
+    const quiz = new Quiz({
+      title: "Test quiz",
+      created_by: testUser._id,
+      category: "other",
+      req_to_pass: 1,
+    });
+    expect(quiz.random_question_order).toEqual(false);
+  });
+
   it("can list all quizzes", async () => {
     const quizzes = await Quiz.find();
     expect(quizzes).toEqual([]);
