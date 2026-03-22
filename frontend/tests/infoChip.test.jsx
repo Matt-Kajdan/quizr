@@ -34,7 +34,7 @@ describe("InfoChip", () => {
 
     const chip = screen.getByRole("button", { name: "Created by Jane" });
 
-    expect(chip.className.includes("hover:bg-slate-100/80")).toBe(true);
+    expect(chip.className.includes("hover:bg-slate-200/80")).toBe(true);
     expect(chip.className.includes("scale")).toBe(false);
   });
 

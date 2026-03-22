@@ -12,7 +12,7 @@ export function Home() {
   const isMobile = useIsMobile();
   const [loading, setLoading] = useState(true)
   const [quizzes, setQuizzes] = useState([])
-  const { favouriteIds, setFavouriteIds, isLoading: isUserLoading } = useUser();
+  const { favouriteIds, setFavouriteIds, accountUsername, isLoading: isUserLoading } = useUser();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -484,6 +484,14 @@ export function Home() {
                 const authorName = authorIsDeleted
                   ? "deleted user"
                   : authorUsername || "Unknown";
+                const authorLabel = authorName.length > 24
+                  ? `by ${authorName.slice(0, 24)}...`
+                  : authorName.length > 16
+                    ? `by ${authorName}`
+                    : `Created by ${authorName}`;
+                const isMyOwnQuiz = !authorIsDeleted
+                  && Boolean(accountUsername)
+                  && authorUsername === accountUsername;
                 const canNavigateToAuthor = !authorIsDeleted && Boolean(authorUsername);
                 return (
                   <Link
@@ -629,7 +637,7 @@ export function Home() {
                                 color="slate"
                                 className="hover:[background-color:rgb(var(--shadow-color)/0.2)]"
                               >
-                                By {authorName}
+                                {isMyOwnQuiz ? "Created by you" : authorLabel}
                               </InfoChip>
                             ) : (
                               <InfoChip
@@ -638,7 +646,7 @@ export function Home() {
                                 color="slate"
                                 className="text-slate-400"
                               >
-                                By {authorName}
+                                {isMyOwnQuiz ? "Created by you" : authorLabel}
                               </InfoChip>
                             )}
                           </div>

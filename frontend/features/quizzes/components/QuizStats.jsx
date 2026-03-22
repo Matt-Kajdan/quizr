@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { Button } from "@shared/components/Button";
 
 export function QuizStats({ quiz, onClose }) {
   const closeModal = useCallback(() => {
@@ -24,11 +25,15 @@ export function QuizStats({ quiz, onClose }) {
   const attempts = quiz.attempts || [];
   const totalAttempts = attempts.length;
   const questionCount = quiz.questions?.length || 0;
+  const totalAnswers = quiz.questions?.reduce((sum, question) => sum + (question.answers?.length || 0), 0) || 0;
+  const answersPerQuestion = questionCount > 0
+    ? (totalAnswers / questionCount).toFixed(1).replace(/\.0$/, "")
+    : "0";
   const passThreshold = Number.isFinite(quiz.req_to_pass)
     ? quiz.req_to_pass
     : questionCount;
   const passPercent = questionCount > 0 ? Math.round((passThreshold / questionCount) * 100) : 0;
-  const passLabel = `${passPercent}% to pass`;
+  const passLabel = questionCount > 0 ? `${passPercent}% (${passThreshold}/${questionCount})` : "0%";
 
   const passes = attempts.filter(attempt => {
     return attempt.correct >= passThreshold;
@@ -38,7 +43,9 @@ export function QuizStats({ quiz, onClose }) {
   const totalCorrect = attempts.reduce((sum, attempt) => sum + attempt.correct, 0);
   const totalQuestions = totalAttempts * questionCount;
   const averageScore = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
-  const uniqueUsers = new Set(attempts.map(a => a.user_id.toString())).size;
+  const uniqueUsers = new Set(
+    attempts.map((attempt) => (attempt.user_id == null ? "unknown-user" : attempt.user_id.toString()))
+  ).size;
 
   const scoreDistribution = {
     excellent: 0, // 80-100%
@@ -58,6 +65,12 @@ export function QuizStats({ quiz, onClose }) {
   const authorName = (quiz?.created_by?.authId === "deleted-user" || quiz?.created_by?.user_data?.username === "__deleted__" || quiz?.created_by?.username === "__deleted__")
     ? "deleted user"
     : (quiz?.created_by?.user_data?.username || quiz?.created_by?.username || "Unknown");
+  const categoryLabel = quiz?.category
+    ? quiz.category.charAt(0).toUpperCase() + quiz.category.slice(1)
+    : "Other";
+  const difficultyLabel = quiz?.difficulty
+    ? quiz.difficulty.charAt(0).toUpperCase() + quiz.difficulty.slice(1)
+    : "Unknown";
 
   return (
     <div
@@ -66,69 +79,68 @@ export function QuizStats({ quiz, onClose }) {
       role="presentation"
     >
       <div
-        className="relative bg-white/90 rounded-3xl border border-slate-200/80 max-w-2xl w-full shadow-2xl overflow-hidden"
+        className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-slate-200/80 bg-white/90 shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="max-h-[calc(100vh-12rem)] overflow-y-auto px-6 py-6 sm:px-8 sm:py-7">
-          <div className="space-y-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1 pr-4">
-                <h2 className="text-2xl font-semibold text-slate-800 mb-2">Quiz Statistics</h2>
-                <p className="text-slate-600 text-sm">{quiz.title}</p>
-                <p className="text-slate-500 text-xs mt-1">Category: {quiz.category}</p>
+        <div className="no-scrollbar max-h-[calc(100vh-12rem)] overflow-y-auto px-6 py-6 sm:px-7 sm:py-6">
+          <div className="space-y-4">
+            <div className="mb-1 grid grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-start gap-3">
+              <div aria-hidden="true" className="h-10 w-10" />
+              <div className="text-center">
+                <h2 className="mb-1 text-2xl font-semibold text-slate-800">Quiz Statistics</h2>
+                <p className="text-sm font-medium text-slate-700">{quiz.title}</p>
+                <p className="mt-1 text-xs text-slate-500">{categoryLabel}</p>
               </div>
-              <button
+              <Button
                 onClick={onClose}
-                className="flex-shrink-0 w-10 h-10 rounded-full bg-white/70 border border-slate-200/80 hover:bg-white flex items-center justify-center transition-colors"
-              >
-                <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+                variant="subtle"
+                color="standard"
+                ariaLabel="Close statistics dialog"
+                className="justify-self-end"
+                icon={(
+                  <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+              />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-5 border border-slate-200/80 text-center shadow-sm">
-                <div className="text-3xl font-semibold text-slate-800 mb-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-center shadow-sm">
+                <div className="mb-1 text-2xl font-semibold text-slate-800">
                   {totalAttempts}
                 </div>
-                <div className="text-slate-600 text-sm">Total Attempts</div>
+                <div className="text-xs font-medium text-slate-500">Total Attempts</div>
               </div>
-              <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-5 border border-slate-200/80 text-center shadow-sm">
-                <div className="text-3xl font-semibold text-slate-800 mb-2">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-center shadow-sm">
+                <div className="mb-1 text-2xl font-semibold text-slate-800">
                   {uniqueUsers}
                 </div>
-                <div className="text-slate-600 text-sm">Unique Users</div>
+                <div className="text-xs font-medium text-slate-500">Unique Users</div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-5 border border-slate-200/80 shadow-sm">
-                <div className="text-center mb-3">
-                  <div className="text-3xl font-semibold text-emerald-600 mb-2">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-center shadow-sm">
+                <div className="mb-1 text-2xl font-semibold text-emerald-600">
                     {passRate}%
-                  </div>
-                  <div className="text-slate-600 text-sm">Pass Rate</div>
                 </div>
-                <div className="text-center text-slate-500 text-xs">
+                <div className="text-xs font-medium text-slate-500">Pass Rate</div>
+                <div className="mt-1 text-center text-[11px] text-slate-400">
                   {passes} of {totalAttempts} passed
                 </div>
               </div>
-              <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-5 border border-slate-200/80 shadow-sm">
-                <div className="text-center mb-3">
-                  <div className="text-3xl font-semibold text-amber-600 mb-2">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-center shadow-sm">
+                <div className="mb-1 text-2xl font-semibold text-amber-600">
                     {averageScore}%
-                  </div>
-                  <div className="text-slate-600 text-sm">Average Score</div>
                 </div>
-                <div className="text-center text-slate-500 text-xs">
+                <div className="text-xs font-medium text-slate-500">Average Score</div>
+                <div className="mt-1 text-center text-[11px] text-slate-400">
                   Across all attempts
                 </div>
               </div>
             </div>
-            <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 border border-slate-200/80 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Score Distribution</h3>
-              <div className="space-y-3">
+            <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-5 shadow-sm">
+              <h3 className="mb-3 text-base font-semibold text-slate-800">Score Distribution</h3>
+              <div className="space-y-2.5">
                 <div>
-                  <div className="flex items-center justify-between text-sm mb-2">
+                  <div className="mb-1.5 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Excellent (80-100%)</span>
                     <span className="text-emerald-600 font-semibold">{scoreDistribution.excellent}</span>
                   </div>
@@ -177,19 +189,27 @@ export function QuizStats({ quiz, onClose }) {
                 </div>
               </div>
             </div>
-            <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 border border-slate-200/80 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Quiz Details</h3>
-              <div className="space-y-3 text-slate-600">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Total Questions</span>
+            <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-5 shadow-sm">
+              <h3 className="mb-3 text-base font-semibold text-slate-800">Details</h3>
+              <div className="divide-y divide-slate-200/80 text-sm text-slate-600">
+                <div className="flex items-center justify-between py-2">
+                  <span>Questions</span>
                   <span className="font-semibold text-slate-800">{questionCount}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Pass Threshold</span>
+                <div className="flex items-center justify-between py-2">
+                  <span>Answers per question</span>
+                  <span className="font-semibold text-slate-800">{answersPerQuestion}</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span>Pass threshold</span>
                   <span className="font-semibold text-slate-800">{passLabel}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Created By</span>
+                <div className="flex items-center justify-between py-2">
+                  <span>Difficulty</span>
+                  <span className="font-semibold text-slate-800">{difficultyLabel}</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span>Created by</span>
                   <span className="font-semibold text-slate-800">
                     {authorName}
                   </span>

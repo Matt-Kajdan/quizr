@@ -33,7 +33,7 @@ export function SortingChipBar({
   return (
     <div
       className={joinClasses(
-        "relative min-w-0 overflow-hidden rounded-full border border-slate-200/80 bg-slate-100/80 h-10 dark:border-slate-800/60 dark:bg-slate-800/40",
+        "relative min-w-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100/80 h-10 dark:border-slate-800/60 dark:bg-slate-800/40",
         className
       )}
       role="group"
@@ -42,6 +42,9 @@ export function SortingChipBar({
       <div className="flex items-center gap-1.5 p-1 h-full overflow-x-auto overflow-y-hidden no-scrollbar">
         {chips.map((chip) => {
           const isActive = chip.value === activeValue;
+          const widthLabel = chip.reverseLabel && chip.reverseLabel.length > chip.label.length
+            ? chip.reverseLabel
+            : chip.label;
           const label = isActive && direction === "asc" && chip.reverseLabel
             ? chip.reverseLabel
             : chip.label;
@@ -64,7 +67,10 @@ export function SortingChipBar({
               )}
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              <span className="whitespace-nowrap">{label}</span>
+              <span className="relative grid">
+                <span className="invisible whitespace-nowrap">{widthLabel}</span>
+                <span className="absolute inset-0 whitespace-nowrap">{label}</span>
+              </span>
               {isActive && <DirectionArrow direction={direction} />}
             </button>
           );
