@@ -214,7 +214,7 @@ export default function FriendsPage() {
                                     e.stopPropagation();
                                     handleAccept(r._id);
                                   }}
-                                  variant="secondary"
+                                  variant="primary"
                                   color="green"
                                   className="px-3 sm:px-4 text-xs sm:text-sm"
                                 >
@@ -226,7 +226,7 @@ export default function FriendsPage() {
                                     e.stopPropagation();
                                     handleRemove(other._id);
                                   }}
-                                  variant="secondary"
+                                  variant="primary"
                                   color="red"
                                   className="px-3 sm:px-4 text-xs sm:text-sm"
                                 >
@@ -293,7 +293,7 @@ export default function FriendsPage() {
                                   e.stopPropagation();
                                   handleRemove(other._id);
                                 }}
-                                variant="secondary"
+                                variant="primary"
                                 color="amber"
                                 className="px-3 sm:px-4 text-xs sm:text-sm"
                               >
@@ -366,18 +366,6 @@ export default function FriendsPage() {
                             </div>
                             <div className="flex gap-2">
                               <Button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setConfirmRemoveId(null);
-                                }}
-                                variant="secondary"
-                                color="standard"
-                                className="px-3 sm:px-4 text-xs sm:text-sm"
-                              >
-                                Cancel
-                              </Button>
-                              <Button
                                 onClick={async (e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -392,6 +380,18 @@ export default function FriendsPage() {
                                 className="px-3 sm:px-4 text-xs sm:text-sm"
                               >
                                 Confirm
+                              </Button>
+                              <Button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setConfirmRemoveId(null);
+                                }}
+                                variant="secondary"
+                                color="standard"
+                                className="px-3 sm:px-4 text-xs sm:text-sm"
+                              >
+                                Cancel
                               </Button>
                             </div>
                           </div>
@@ -433,7 +433,7 @@ export default function FriendsPage() {
                                 setConfirmRemoveId(f._id);
                               }}
                               variant="secondary"
-                              color="red"
+                              color="standard"
                               className="px-3 sm:px-4 text-xs sm:text-sm"
                             >
                               Remove

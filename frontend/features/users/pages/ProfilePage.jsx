@@ -801,14 +801,21 @@ export default function ProfilePage() {
                         </div>
                       ) : pendingSent ? (
                         <div className="flex items-center gap-3">
-                          <span className="px-4 py-2 text-sm rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 font-semibold border border-amber-200/50 dark:border-amber-800/50 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Pending
-                          </span>
-                          <Button onClick={handleRemove} variant="secondary" color="standard">
-                            Cancel Request
+                          <Button
+                            disabled
+                            variant="subtle"
+                            color="standard"
+                            className="px-0"
+                            icon={(
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            )}
+                          >
+                            Request sent
+                          </Button>
+                          <Button onClick={handleRemove} variant="secondary" color="amber">
+                            Cancel
                           </Button>
                         </div>
                       ) : incomingRequest ? (

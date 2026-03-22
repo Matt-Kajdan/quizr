@@ -56,6 +56,7 @@ export const Button = forwardRef(function Button({
   variant = "secondary",
   color = "standard",
   disabled = false,
+  bold = false,
   icon,
   children,
   onClick,
@@ -66,13 +67,13 @@ export const Button = forwardRef(function Button({
   className,
   ...rest
 }, ref) {
-  const targetCount = [typeof onClick === "function", Boolean(to), Boolean(href)].filter(Boolean).length;
+  const targetCount = [Boolean(to), Boolean(href)].filter(Boolean).length;
   const hasChildren = Children.count(children) > 0;
   const hasIcon = Boolean(icon);
   const isIconOnly = hasIcon && !hasChildren;
 
   if (targetCount > 1) {
-    throw new Error("Button accepts only one of onClick, to, or href.");
+    throw new Error("Button accepts only one of to or href.");
   }
 
   if (isIconOnly && !ariaLabel) {
@@ -80,8 +81,9 @@ export const Button = forwardRef(function Button({
   }
 
   const classes = joinClasses(
-    "relative inline-flex h-10 shrink-0 select-none items-center justify-center rounded-xl border text-sm font-semibold leading-none transition-[background-color,color,border-color,box-shadow,transform,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/70",
+    "relative inline-flex h-10 shrink-0 select-none items-center justify-center rounded-xl border text-sm leading-none transition-[background-color,color,border-color,box-shadow,transform,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/70",
     disabled ? "cursor-default" : "cursor-pointer active:scale-[0.98]",
+    bold ? "!font-bold" : "!font-semibold",
     hasChildren ? "gap-2 px-4" : "w-10 px-0",
     getStyleClasses({ variant, color, disabled }),
     className
@@ -93,7 +95,7 @@ export const Button = forwardRef(function Button({
         <span
           aria-hidden="true"
           className={joinClasses(
-            "flex shrink-0 items-center justify-center [&_svg]:h-4 [&_svg]:w-4",
+            "flex shrink-0 items-center justify-center [&_svg]:h-5 [&_svg]:w-5",
             hasChildren ? "h-5 w-5" : "h-10 w-10"
           )}
         >
@@ -106,7 +108,7 @@ export const Button = forwardRef(function Button({
 
   if (to && !disabled) {
     return (
-      <Link ref={ref} to={to} aria-label={ariaLabel} className={classes} {...rest}>
+      <Link ref={ref} to={to} aria-label={ariaLabel} onClick={onClick} className={classes} {...rest}>
         {content}
       </Link>
     );
@@ -114,7 +116,7 @@ export const Button = forwardRef(function Button({
 
   if (href && !disabled) {
     return (
-      <a ref={ref} href={href} aria-label={ariaLabel} className={classes} {...rest}>
+      <a ref={ref} href={href} aria-label={ariaLabel} onClick={onClick} className={classes} {...rest}>
         {content}
       </a>
     );

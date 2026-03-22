@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { Button } from "@shared/components/Button";
@@ -63,6 +63,16 @@ describe("Button", () => {
     expect(button.className.includes("cursor-default")).toBe(true);
   });
 
+  it("applies bold typography when requested", () => {
+    render(
+      <Button bold onClick={() => {}}>
+        Active
+      </Button>
+    );
+
+    expect(screen.getByRole("button", { name: "Active" }).className.includes("font-bold")).toBe(true);
+  });
+
   it("requires ariaLabel for icon-only buttons", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -75,19 +85,35 @@ describe("Button", () => {
     }
   });
 
-  it("rejects mixed navigation and click targets", () => {
+  it("allows onClick handlers on router links", () => {
+    const onClick = vi.fn();
+
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Button onClick={onClick} to="/settings">
+          Settings
+        </Button>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "Settings" }));
+
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects mixed href and router targets", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     try {
       expect(() =>
         render(
           <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <Button onClick={() => {}} to="/settings">
+            <Button to="/settings" href="/docs">
               Settings
             </Button>
           </MemoryRouter>
         )
-      ).toThrow("Button accepts only one of onClick, to, or href.");
+      ).toThrow("Button accepts only one of to or href.");
     } finally {
       errorSpy.mockRestore();
     }
