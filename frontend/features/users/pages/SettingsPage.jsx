@@ -557,6 +557,8 @@ export default function SettingsPage() {
           <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">{deletionHeader}</h2>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
             Start account deletion, then choose whether your quizzes are removed or preserved.
+            <br />
+            You will then have 7 days to cancel if you change your mind, or delete immediately.
           </p>
         </div>
         {deletionStep === "intro" && (
@@ -568,9 +570,6 @@ export default function SettingsPage() {
               await handleVerifyDeletionPassword();
             }}
           >
-            <p className="text-slate-600 dark:text-slate-300 mb-4">
-              You will then have 7 days to cancel if you change your mind, or delete immediately.
-            </p>
             <div>
               <label className={labelClassName}>Current Password</label>
               <PasswordInput
@@ -583,17 +582,15 @@ export default function SettingsPage() {
                 {deletionError || '\u00A0'}
               </p>
             </div>
-            <div className="flex justify-center">
-              <Button
-                htmlType="submit"
-                disabled={!deletionPassword || deletionVerifying}
-                variant="primary"
-                color="red"
-                className="h-11 px-5"
-              >
-                {deletionVerifying ? "Verifying..." : "Continue"}
-              </Button>
-            </div>
+            <Button
+              htmlType="submit"
+              disabled={!deletionPassword || deletionVerifying}
+              variant="primary"
+              color="red"
+              className="h-11 px-5"
+            >
+              {deletionVerifying ? "Verifying..." : "Continue"}
+            </Button>
           </form>
         )}
         {deletionError && deletionStep === "choose" && (

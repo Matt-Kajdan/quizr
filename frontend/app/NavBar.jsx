@@ -162,6 +162,7 @@ function NavBar({ accountStatus, accountUsername }) {
                 color="standard"
                 bold={isDesktopNavActive(toProfileUrl(username))}
                 className="h-11 min-w-[6.5rem]"
+                title="Profile"
               >
                 {profileLabel}
               </Button>
@@ -172,6 +173,7 @@ function NavBar({ accountStatus, accountUsername }) {
                 variant="subtle"
                 color="standard"
                 ariaLabel="Settings"
+                title="Settings"
                 icon={<Settings size={20} />}
               >
               </Button>
@@ -182,6 +184,7 @@ function NavBar({ accountStatus, accountUsername }) {
                 variant="subtle"
                 color="standard"
                 ariaLabel="Toggle theme"
+                title={theme === "dark" ? "Light mode" : "Dark mode"}
                 icon={theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
               >
               </Button>
