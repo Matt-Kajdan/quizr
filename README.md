@@ -18,8 +18,7 @@ Quizr is a full-stack quiz platform built with React, Vite, Express, MongoDB, an
 │   ├── features/
 │   ├── shared/
 │   └── tests/
-├── README.md
-└── DOCUMENTATION.md
+└── README.md
 ```
 
 Folder rules:
@@ -29,6 +28,10 @@ Folder rules:
 - `frontend/app`: router, app shell, and provider composition
 - `frontend/features`: product areas and route-level UI
 - `frontend/shared`: reusable client utilities, auth, state, hooks, and UI
+
+Architecture note:
+- There is no separate maintained `docs/` tree right now
+- If deeper architecture docs are added later, they should describe the current `frontend/` and `backend/` layout rather than the old `api/src` structure
 
 ## Requirements
 
