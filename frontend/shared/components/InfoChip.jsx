@@ -131,7 +131,7 @@ export function InfoChip({
   }
 
   const classes = joinClasses(
-    "inline-flex max-w-full items-center rounded-full border font-semibold leading-none",
+    "inline-flex max-w-full items-center rounded-xl border font-semibold leading-none",
     onClick
       ? "cursor-pointer select-none transition-[background-color,color,border-color,box-shadow] duration-150"
       : "pointer-events-none cursor-default",

@@ -1430,24 +1430,29 @@ export default function ProfilePage() {
                                 </svg>
                               )}
                             >
-                              {questionCount} Questions
+                              {questionCount} questions
                             </InfoChip>
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <span className="font-semibold text-slate-800">
-                                {passPercent !== null ? `${passPercent}%` : "--"}
-                              </span>
-                              <span className="text-slate-500">
-                                to pass
-                              </span>
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <span className="font-semibold text-slate-800">{allowsMultiple ? "Multi" : "Single"}</span>
-                              <span className="text-slate-600">Correct</span>
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <span className="font-semibold text-slate-800">{isQuizLocked ? "Locked" : "Changeable"}</span>
-                              <span className="text-slate-600">Answers</span>
-                            </span>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                            >
+                              {passPercent !== null ? `${passPercent}%` : "--"} to pass
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                            >
+                              {allowsMultiple ? "Multi" : "Single"} correct
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                            >
+                              {isQuizLocked ? "Locked" : "Changeable"} answers
+                            </InfoChip>
                           </div>
                         </div>
                       </>
@@ -1654,7 +1659,7 @@ export default function ProfilePage() {
                     const takenContent = (
                       <div className="flex flex-col gap-4">
                         <div className="flex items-start justify-between gap-4">
-                          <div>
+                          <div className="min-w-0 flex-1 text-left">
                             <h3 className="text-lg font-bold text-slate-800 mb-1 line-clamp-1">{quiz.title}</h3>
                             <div className="text-xs font-medium text-slate-500 dark:group-hover:text-white/80 text-left">
                               Took on {new Date(quiz.attempted_at).toLocaleDateString("en-GB", {

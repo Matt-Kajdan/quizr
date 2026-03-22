@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getQuizzes } from "@features/quizzes/api/quizzes";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { CATEGORY_ICONS } from "@shared/assets/icons";
+import { InfoChip } from "@shared/components/InfoChip";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -156,6 +157,31 @@ export function Home() {
     0,
     quiz.favourited_count ??
     (Array.isArray(quiz.favourites) ? quiz.favourites.length : (quiz.favouritesCount ?? 0))
+  );
+
+  const formatCategoryLabel = (category) => {
+    if (!category) return "Other";
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
+  const getCategoryChipColor = (category) => (
+    category === "art"
+      ? "pink"
+      : category === "history"
+        ? "amber"
+        : category === "music"
+          ? "indigo"
+          : category === "science"
+            ? "blue"
+            : "slate"
+  );
+
+  const getDifficultyChipColor = (difficulty) => (
+    difficulty === "easy"
+      ? "emerald"
+      : difficulty === "hard"
+        ? "rose"
+        : "amber"
   );
 
   const filteredQuizzes = (selectedCategory === "all"
@@ -355,7 +381,7 @@ export function Home() {
                           dropdown.classList.add('hidden');
                         }}
                         className={`w-full text-left px-4 py-3 text-xs sm:text-sm font-semibold transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-600/50 first:rounded-t-2xl last:rounded-b-2xl ${selectedCategory === category
-                          ? 'bg-slate-50/60 dark:bg-slate-600/60 text-slate-900 dark:text-white'
+                          ? 'bg-slate-100/80 dark:bg-slate-500/70 text-slate-900 dark:text-white'
                           : 'text-slate-700 dark:text-slate-200'
                           }`}
                       >
@@ -487,37 +513,49 @@ export function Home() {
                       <div className="relative z-10 flex-1 flex flex-col">
                         <div className="flex items-center justify-between mb-3 sm:mb-4">
                           <div className="flex flex-wrap items-center gap-2">
-                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r dark:bg-none ${gradient.className} text-white text-xs font-semibold`}>
-                              <span
-                                className="w-4 h-4 bg-current"
-                                style={{
-                                  WebkitMaskImage: `url(${categoryIcon})`,
-                                  maskImage: `url(${categoryIcon})`,
-                                  WebkitMaskSize: 'contain',
-                                  maskSize: 'contain',
-                                  WebkitMaskRepeat: 'no-repeat',
-                                  maskRepeat: 'no-repeat'
-                                }}
-                              />
-                              <span className="capitalize">{categoryLabel}</span>
-                            </div>
-                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200/80 bg-white/70 text-xs font-semibold text-slate-700 transition-all duration-200 ease-in-out ${difficulty.className}`}>
-                              <svg
-                                viewBox="0 0 24 24"
-                                aria-hidden="true"
-                                className="h-4 w-4 text-current"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                {difficulty.iconPaths.map((path) => (
-                                  <path key={path} d={path} />
-                                ))}
-                              </svg>
-                              <span>{difficulty.label}</span>
-                            </div>
+                            <InfoChip
+                              variant="primary"
+                              size="sm"
+                              color={getCategoryChipColor(quiz.category)}
+                              icon={(
+                                <span
+                                  className="block h-3.5 w-3.5 bg-current"
+                                  style={{
+                                    WebkitMaskImage: `url(${categoryIcon})`,
+                                    maskImage: `url(${categoryIcon})`,
+                                    WebkitMaskSize: "contain",
+                                    maskSize: "contain",
+                                    WebkitMaskRepeat: "no-repeat",
+                                    maskRepeat: "no-repeat"
+                                  }}
+                                />
+                              )}
+                            >
+                              {formatCategoryLabel(categoryLabel)}
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color={getDifficultyChipColor(quiz.difficulty)}
+                              icon={(
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  aria-hidden="true"
+                                  className="h-4 w-4 text-current"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="1.8"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  {difficulty.iconPaths.map((path) => (
+                                    <path key={path} d={path} />
+                                  ))}
+                                </svg>
+                              )}
+                            >
+                              {difficulty.label}
+                            </InfoChip>
                           </div>
                           <div className="inline-flex items-center gap-2">
                             <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
@@ -558,37 +596,50 @@ export function Home() {
                         <div className="mt-auto -mx-5 sm:-mx-6">
                           <div className="h-px w-full bg-slate-200/70 mb-2"></div>
                           <div className="flex items-center justify-between gap-2 py-0.5 px-4 sm:px-5 text-xs sm:text-sm text-slate-600 dark:group-hover:text-white/90">
-                            <div className="flex items-center gap-1.5 leading-none text-slate-600">
-                              <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-3.5 w-3.5"
-                              >
-                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
-                                <rect x="3" y="7" width="12" height="14" rx="2" />
-                              </svg>
-                              <span>{quiz?.questions?.length || 0} questions</span>
-                            </div>
+                            <InfoChip
+                              variant="subtle"
+                              size="sm"
+                              color="slate"
+                              icon={(
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-3.5 w-3.5"
+                                >
+                                  <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                  <rect x="3" y="7" width="12" height="14" rx="2" />
+                                </svg>
+                              )}
+                            >
+                              {quiz?.questions?.length || 0} questions
+                            </InfoChip>
                             {canNavigateToAuthor ? (
-                              <button
-                                type="button"
+                              <InfoChip
                                 onClick={(event) => {
                                   event.preventDefault();
                                   event.stopPropagation();
                                   navigate(toProfileUrl(authorName));
                                 }}
-                                className="rounded-lg px-3 py-1.5 transition-colors dark:group-hover:text-white hover:[background-color:rgb(var(--shadow-color)/0.2)]"
+                                variant="subtle"
+                                size="sm"
+                                color="slate"
+                                className="hover:[background-color:rgb(var(--shadow-color)/0.2)]"
                               >
-                                <span>By {authorName}</span>
-                              </button>
-                            ) : (
-                              <span className="rounded-lg px-3 py-1.5 text-slate-400 cursor-default">
                                 By {authorName}
-                              </span>
+                              </InfoChip>
+                            ) : (
+                              <InfoChip
+                                variant="subtle"
+                                size="sm"
+                                color="slate"
+                                className="text-slate-400"
+                              >
+                                By {authorName}
+                              </InfoChip>
                             )}
                           </div>
                         </div>

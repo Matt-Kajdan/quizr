@@ -31,7 +31,7 @@ export function FilterChipGroup({
               aria-pressed={isSelected}
               onClick={() => onChipClick?.(chip.value)}
               className={joinClasses(
-                "inline-flex h-8 shrink-0 select-none items-center justify-center gap-1.5 rounded-full border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,border-color] duration-150 sm:text-xs",
+                "inline-flex h-8 shrink-0 select-none items-center justify-center gap-1.5 rounded-xl border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,border-color] duration-150 sm:text-xs",
                 isSelected
                   ? "border-slate-200/80 bg-white text-slate-800 shadow-sm dark:border-slate-500 dark:bg-slate-600 dark:text-slate-100"
                   : "border-transparent text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700/40 dark:hover:text-slate-200",
