@@ -300,7 +300,7 @@ export function Home() {
                 <span aria-hidden="true" className="absolute" style={{ inset: "-9rem" }}></span>
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 text-transparent bg-clip-text blur-[20px] opacity-65 dark:opacity-30"
+                  className="pointer-events-none absolute inset-0 text-transparent bg-clip-text blur-[20px] opacity-0 group-hover:opacity-65 dark:group-hover:opacity-30 transition-opacity duration-200"
                   style={{
                     backgroundImage: logoBaseGradient,
                     filter: "blur(18px) saturate(1.08) brightness(var(--logo-base-brightness, 0.9))",
@@ -310,7 +310,7 @@ export function Home() {
                   Quizr.fun
                 </span>
                 <span
-                  className="relative z-10 text-slate-800 dark:text-slate-500"
+                  className="relative z-10 text-slate-800 dark:text-white"
                   style={{
                     textShadow: "var(--logo-shadow)",
                     WebkitTextStroke: "var(--logo-stroke)"

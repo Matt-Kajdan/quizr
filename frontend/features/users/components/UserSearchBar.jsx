@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { apiFetch } from "@shared/api/apiClient";
 
 export default function UserSearchBar({ excludeUsername }) {
-  const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
@@ -87,17 +86,64 @@ export default function UserSearchBar({ excludeUsername }) {
     };
   }, [q, excludeUsername]);
 
-  function selectUser(username) {
+  function handleResultClick(event) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
     setOpen(false);
     setQ("");
     if (inputRef.current) {
       inputRef.current.blur();
     }
-    navigate(toProfileUrl(username));
+  }
+
+  function handleResultMouseDown(event) {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      // Keep the input focused so the dropdown stays open for context-menu and new-tab actions.
+      event.preventDefault();
+    }
   }
 
   return (
     <div className="relative w-full max-w-md">
+      <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+        </svg>
+      </span>
+      {q && (
+        <button
+          type="button"
+          aria-label="Clear search"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            setQ("");
+            setUsers([]);
+            setOpen(false);
+            setShowLoading(false);
+            inputRef.current?.focus();
+          }}
+          className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-200/70 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-700/60 dark:hover:text-slate-300"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      )}
       <input
         ref={inputRef}
         type="text"
@@ -115,9 +161,9 @@ export default function UserSearchBar({ excludeUsername }) {
             e.currentTarget.blur();
           }
         }}
-        placeholder="Search users…"
+        placeholder="Search users"
         id="mobile-search-input"
-        className="w-full rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 px-4 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/30 dark:focus:ring-white/40 focus:shadow-[0_0_12px_-2px_rgba(100,116,139,0.25)] dark:focus:shadow-[0_0_16px_-2px_rgba(255,255,255,0.15)] transition-all"
+        className={`w-full rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 py-2 pl-10 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/30 dark:focus:ring-white/40 focus:shadow-[0_0_12px_-2px_rgba(100,116,139,0.25)] dark:focus:shadow-[0_0_16px_-2px_rgba(255,255,255,0.15)] transition-all ${q ? "pr-10" : "pr-4"}`}
       />
 
       {open && (
@@ -130,11 +176,11 @@ export default function UserSearchBar({ excludeUsername }) {
           )}
           {!showLoading &&
             users.map((u) => (
-              <button
+              <Link
                 key={u.id || u.username}
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => selectUser(u.username)}
+                to={toProfileUrl(u.username)}
+                onMouseDown={handleResultMouseDown}
+                onClick={handleResultClick}
                 className="w-full text-left px-4 py-3 text-sm text-slate-800 dark:text-slate-100 hover:bg-slate-100/80 dark:hover:bg-slate-900/60 flex items-center gap-3 transition-colors"
               >
                 <div className={`w-9 h-9 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(u.id || u._id)} flex items-center justify-center flex-shrink-0`}>
@@ -151,7 +197,7 @@ export default function UserSearchBar({ excludeUsername }) {
                   )}
                 </div>
                 <span className="font-medium">{u.username}</span>
-              </button>
+              </Link>
             ))}
         </div>
       )}

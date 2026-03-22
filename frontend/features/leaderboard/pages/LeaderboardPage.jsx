@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getLeaderboard } from "@features/quizzes/api/quizzes";
 import { PageShell } from "@shared/components/PageShell";
@@ -8,13 +8,15 @@ import { toProfileUrl } from "@shared/utils/usernameValidation";
 const columns = [
   { key: "rank", label: "#", isNumeric: true },
   { key: "username", label: "Player", isNumeric: false },
-  { key: "totalCorrect", label: "Correct Answers", isNumeric: true },
-  { key: "avgPercent", label: "Average Score", isNumeric: true },
-  { key: "attemptsCount", label: "Their Attempts", isNumeric: true },
-  { key: "quizzesTaken", label: "Quizzes Taken", isNumeric: true },
-  { key: "attemptsOnTheirQuizzes", label: "Attempts On Their Quizzes", isNumeric: true },
-  { key: "quizzesCreated", label: "Quizzes Created", isNumeric: true }
+  { key: "totalCorrect", label: "Correct", isNumeric: true },
+  { key: "avgPercent", label: "Avg. score", isNumeric: true },
+  { key: "attemptsCount", label: "Attempts", isNumeric: true },
+  { key: "quizzesTaken", label: "Quizzes taken", isNumeric: true },
+  { key: "attemptsOnTheirQuizzes", label: "Own quiz attempts", isNumeric: true },
+  { key: "quizzesCreated", label: "Created", isNumeric: true }
 ];
+
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 export default function LeaderboardPage() {
   const [entries, setEntries] = useState([]);
@@ -25,7 +27,9 @@ export default function LeaderboardPage() {
     direction: "desc"
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [pageSizeOpen, setPageSizeOpen] = useState(false);
+  const pageSizeRef = useRef(null);
   const avatarGradients = [
     "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
     "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
@@ -63,6 +67,17 @@ export default function LeaderboardPage() {
     return () => {
       mounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (pageSizeRef.current && !pageSizeRef.current.contains(event.target)) {
+        setPageSizeOpen(false);
+      }
+    }
+
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
   const rows = useMemo(() => {
@@ -111,6 +126,9 @@ export default function LeaderboardPage() {
     return sorted;
   }, [rows, sortConfig]);
 
+  const totalPages = Math.max(1, Math.ceil(sortedRows.length / itemsPerPage));
+  const paginatedRows = sortedRows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   function handleSort(key) {
     setSortConfig((prev) => {
       if (key === "rank") {
@@ -123,6 +141,12 @@ export default function LeaderboardPage() {
       return { key, direction: defaultDirection };
     });
     setCurrentPage(1);
+  }
+
+  function handleItemsPerPageChange(value) {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+    setPageSizeOpen(false);
   }
 
   function renderSortIcon(key) {
@@ -187,25 +211,86 @@ export default function LeaderboardPage() {
     <PageShell>
       <PageHeader title="Leaderboard" subtitle="All quizzes combined" />
 
-      <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
+      <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-sm">
+            <div className="mb-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+              {totalPages > 1 && (
+              <div className="flex h-11 w-[210px] items-center justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white/70 text-sm font-medium text-slate-600 backdrop-blur">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="flex h-full min-w-[44px] items-center justify-center bg-white/70 text-slate-700 transition-colors hover:bg-white disabled:opacity-40"
+                  aria-label="Previous page"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <span className="px-3 text-center">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage >= totalPages}
+                  className="flex h-full min-w-[44px] items-center justify-center bg-white/70 text-slate-700 transition-colors hover:bg-white disabled:opacity-40"
+                  aria-label="Next page"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              )}
+              <div ref={pageSizeRef} className="relative w-full max-w-[232px]">
+                <button
+                  type="button"
+                  aria-haspopup="true"
+                  onClick={() => setPageSizeOpen((prev) => !prev)}
+                  className="category-dropdown-button w-full h-11 bg-white/70 text-slate-800 rounded-2xl border border-slate-200/80 backdrop-blur text-left focus:outline-none focus:ring-0 appearance-none transition-all duration-200 hover:bg-white/90 hover:border-slate-300 hover:shadow-sm text-sm font-semibold cursor-pointer flex items-center justify-between px-4 relative"
+                >
+                  <span>Display on one page</span>
+                  <span className="flex items-center gap-3">
+                    <span className="text-slate-500">{itemsPerPage}</span>
+                    <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                </button>
+                {pageSizeOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-2xl border border-slate-200/80 shadow-lg z-50 overflow-hidden">
+                    {PAGE_SIZE_OPTIONS.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleItemsPerPageChange(option)}
+                        className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors hover:bg-slate-100 ${itemsPerPage === option ? "bg-slate-100 text-slate-900" : "text-slate-700"}`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="rounded-2xl border border-slate-200/80 bg-white/60 overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[640px] text-sm sm:text-base">
+                <table className="w-full min-w-[760px] border-collapse text-sm sm:text-base">
                   <thead className="bg-slate-100/70 text-left text-slate-600">
                     <tr>
                       {columns.map((column) => (
                         <th
                           key={column.key}
-                          className={`px-3 sm:px-4 py-3 ${column.key === "username" ? "text-left w-[220px] max-w-[220px]" : ""
+                          className={`h-16 p-0 align-middle ${column.key === "username" ? "text-left w-[220px] max-w-[220px]" : ""
                             }`}
                         >
                           <button
                             type="button"
                             onClick={() => handleSort(column.key)}
-                            className="inline-flex items-center gap-2 text-left font-semibold text-slate-700 hover:text-slate-900"
+                            className={`flex h-full min-h-[64px] w-full items-center gap-2 px-3 py-3 text-left font-semibold text-slate-700 transition-colors hover:bg-slate-200/40 hover:text-slate-900 sm:px-4 ${column.key === "username" ? "justify-start" : "justify-between"}`}
                           >
-                            <span>{column.label}</span>
-                            <span className="text-xs text-slate-400">{renderSortIcon(column.key)}</span>
+                            <span className={`${column.key === "rank" ? "w-full" : ""}`}>{column.label}</span>
+                            <span className="text-xs text-slate-400 shrink-0">{renderSortIcon(column.key)}</span>
                           </button>
                         </th>
                       ))}
@@ -219,14 +304,12 @@ export default function LeaderboardPage() {
                         </td>
                       </tr>
                     ) : (
-                      sortedRows
-                        .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
-                        .map((entry, index) => (
+                      paginatedRows.map((entry, index) => (
                         <tr key={entry.user_id}>
                           <td className="px-3 sm:px-4 py-3 font-medium text-slate-800 text-left">
                             {sortConfig.direction === "desc"
-                              ? (currentPage - 1) * ITEMS_PER_PAGE + index + 1
-                              : sortedRows.length - ((currentPage - 1) * ITEMS_PER_PAGE + index)}
+                              ? (currentPage - 1) * itemsPerPage + index + 1
+                              : sortedRows.length - ((currentPage - 1) * itemsPerPage + index)}
                           </td>
                           <td className="px-3 sm:px-4 py-3 font-medium text-slate-800 text-left w-[220px] max-w-[220px]">
                             {entry.user_data?.username ? (
@@ -285,7 +368,7 @@ export default function LeaderboardPage() {
             </div>
           </div>
           {/* Pagination */}
-          {sortedRows.length > ITEMS_PER_PAGE && (
+          {sortedRows.length > itemsPerPage && (
             <div className="mt-4 flex items-center justify-center gap-4">
               <button
                 type="button"
@@ -299,12 +382,12 @@ export default function LeaderboardPage() {
                 </svg>
               </button>
               <span className="text-sm text-slate-600 font-medium">
-                Page {currentPage} of {Math.ceil(sortedRows.length / ITEMS_PER_PAGE)}
+                Page {currentPage} of {totalPages}
               </span>
               <button
                 type="button"
-                onClick={() => setCurrentPage((p) => Math.min(Math.ceil(sortedRows.length / ITEMS_PER_PAGE), p + 1))}
-                disabled={currentPage >= Math.ceil(sortedRows.length / ITEMS_PER_PAGE)}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
                 className="p-2 rounded-xl bg-white/70 backdrop-blur border border-slate-200/80 text-slate-700 hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center min-w-[36px] min-h-[36px]"
                 aria-label="Next page"
               >
