@@ -3,6 +3,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
+import { PageShell } from "@shared/components/PageShell";
+import { PageHeader } from "@shared/components/PageHeader";
 import { useUser } from "@shared/state/useUser";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
@@ -85,6 +87,17 @@ function TakeQuizPage() {
             ? quiz.created_by
             : quiz.created_by?._id;
         return creatorId === currentUserId;
+    }, [quiz, currentUserId]);
+    const currentUserAttemptCount = useMemo(() => {
+        if (!quiz || !currentUserId) return 0;
+        const attempts = Array.isArray(quiz.attempts) ? quiz.attempts : [];
+
+        return attempts.filter((attempt) => {
+            const userId = typeof attempt.user_id === "string"
+                ? attempt.user_id
+                : attempt.user_id?._id;
+            return userId === currentUserId;
+        }).length;
     }, [quiz, currentUserId]);
     const authorUsername = quiz?.created_by?.user_data?.username;
     const authorIsDeleted = quiz?.created_by?.authId === "deleted-user"
@@ -210,6 +223,11 @@ function TakeQuizPage() {
         { key: "bestCorrect", label: "Correct answers" },
         { key: "attemptsCount", label: "Attempts" }
     ];
+    const headerSubtitle = phase === "inProgress"
+        ? `Question ${currentIndex + 1} of ${quiz.questions.length}`
+        : phase === "done"
+            ? `Attempt ${currentUserAttemptCount} - your results`
+            : "Ready to take on this quiz?";
 
     function handleQuizSort(key) {
         setQuizSortConfig((prev) => {
@@ -523,28 +541,14 @@ function TakeQuizPage() {
     }
 
     return (
-        <>
-            <div className="fixed inset-0" style={opalBackdropStyle}></div>
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
-                <div className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
-            </div>
-            <div className="relative min-h-screen pt-16 sm:pt-20">
-                <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:py-12 min-h-full">
-                    <div className="mb-6 sm:mb-8 text-center">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-slate-800 mb-3 sm:mb-4 select-none">
-                            {quiz.title}
-                        </h1>
-                        <p
-                            className={`text-slate-600 text-base sm:text-lg select-none transition-opacity ${phase === "inProgress" ? "opacity-0 pointer-events-none" : "opacity-100"
-                                }`}
-                        >
-                            Ready to take on this quiz?
-                        </p>
-                    </div>
+        <PageShell>
+            <PageHeader
+                title={quiz.title}
+                subtitle={headerSubtitle}
+                className="mb-6 sm:mb-8"
+            />
 
-                    {phase === "intro" && (
+            {phase === "intro" && (
                         <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
                             <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 sm:px-8 ${activeCategoryStyle.header}`}>
                                 <div className="inline-flex items-center gap-2 text-slate-700 font-semibold text-sm uppercase tracking-wide">
@@ -927,7 +931,6 @@ function TakeQuizPage() {
                     {phase === "inProgress" && (
                         <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 shadow-sm pt-4 sm:pt-5 pb-6 sm:pb-8 px-6 sm:px-8">
                             <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500 mb-4 pb-2">
-                                <span>Question {currentIndex + 1} of {quiz.questions.length}</span>
                                 <div className="flex flex-wrap items-center gap-2">
                                     <span
                                         className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide dark:bg-slate-900/60 dark:border-slate-800/80 cursor-default ${activeCategoryStyle.badge}`}
@@ -1210,9 +1213,7 @@ function TakeQuizPage() {
                             </div>
                         </div>
                     )}
-                </main>
-            </div>
-        </>
+        </PageShell>
     );
 }
 

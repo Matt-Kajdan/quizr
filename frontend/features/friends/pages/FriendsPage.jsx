@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { getFriends, getPendingRequests, acceptFriendRequest, removeRequest } from "@features/friends/api/friends";
 import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
+import { PageShell } from "@shared/components/PageShell";
 import { Button } from "@shared/components/Button";
+import { PageHeader } from "@shared/components/PageHeader";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
@@ -123,29 +125,10 @@ export default function FriendsPage() {
   }
 
   return (
-    <>
-      <div className="fixed inset-0 -top-20" style={opalBackdropStyle}></div>
-      <div className="fixed inset-0 -top-20 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-      </div>
-      <div className="relative min-h-screen pt-16 sm:pt-20">
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:py-12 min-h-full">
-          <div className="mb-9 sm:mb-12 text-center mt-0">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-slate-800 mb-3 sm:mb-4 select-none">
-              Friends
-            </h1>
-            <p className="text-slate-600 text-base sm:text-lg select-none">Connect and compete with your friends</p>
-          </div>
+    <PageShell>
+      <PageHeader title="Friends" subtitle="Connect and compete with your friends" />
 
-          <div className="space-y-6 sm:space-y-8">
+      <div className="space-y-6 sm:space-y-8">
             <section className="bg-white/70 backdrop-blur-lg rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <h2 className="text-xl sm:text-2xl font-semibold text-slate-800">Pending Requests</h2>
@@ -446,9 +429,7 @@ export default function FriendsPage() {
                 </div>
               )}
             </section>
-          </div>
-        </main >
-      </div >
-    </>
+      </div>
+    </PageShell>
   );
 }

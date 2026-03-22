@@ -11,6 +11,8 @@ import { getPendingRequests, sendFriendRequest, getFriends, removeRequest, accep
 import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourites";
 import { QuizStats } from "@features/quizzes/components/QuizStats";
 import { Button } from "@shared/components/Button";
+import { PageHeader } from "@shared/components/PageHeader";
+import { PageShell } from "@shared/components/PageShell";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
@@ -685,23 +687,16 @@ export default function ProfilePage() {
   const totalQuestions = takenQuizzes.reduce((sum, quiz) => sum + quiz.totalQuestions, 0);
   const totalCorrect = takenQuizzes.reduce((sum, quiz) => sum + quiz.correct, 0);
   const averageScore = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+  const profileSubtitle = isOwnProfile
+    ? "Manage your quizzes, favourites, and activity"
+    : "View quizzes, favourites, and activity";
 
   return (
-    <>
-      <div
-        className="fixed inset-0 -top-20"
-        style={{
-          backgroundColor: "var(--opal-bg-color)",
-          backgroundImage: "var(--opal-backdrop-image)"
-        }}
-      ></div>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
-        <div className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
-      </div>
-      <div className="relative min-h-screen pt-16 sm:pt-20">
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:py-12 min-h-full">
+    <PageShell>
+      <PageHeader
+        title={profile.user_data?.username}
+        subtitle={profileSubtitle}
+      />
           <div className="mb-6 sm:mb-8">
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 relative overflow-hidden shadow-sm">
               <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -718,7 +713,6 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex-1 text-center sm:text-left">
-                  <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 mb-2">{profile.user_data?.username}</h1>
                   {profile.user_data?.created_at && (
                     <div className="flex items-center justify-center sm:justify-start gap-2 text-slate-500 text-sm mb-4">
                       {isOwnProfile && (
@@ -1782,7 +1776,6 @@ export default function ProfilePage() {
               )}
             </div>
           )}
-        </main>
         {selectedQuizForStats && (
           <QuizStats
             quiz={selectedQuizForStats}
@@ -1844,7 +1837,6 @@ export default function ProfilePage() {
             </div>
           )
         }
-      </div >
-    </>
+    </PageShell>
   );
 }
