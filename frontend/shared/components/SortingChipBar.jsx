@@ -68,7 +68,7 @@ export function SortingChipBar({
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <span className="relative grid">
-                <span className="invisible whitespace-nowrap">{widthLabel}</span>
+                <span aria-hidden="true" className="invisible whitespace-nowrap">{widthLabel}</span>
                 <span className="absolute inset-0 whitespace-nowrap">{label}</span>
               </span>
               {isActive && <DirectionArrow direction={direction} />}

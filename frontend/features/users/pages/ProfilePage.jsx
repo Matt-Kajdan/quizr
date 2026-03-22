@@ -724,7 +724,7 @@ export default function ProfilePage() {
   return (
     <PageShell>
       <PageHeader
-        title={profile.user_data?.username}
+        title="Profile"
         subtitle={profileSubtitle}
       />
           <div className="mb-6 sm:mb-8">
@@ -743,8 +743,11 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex-1 text-center sm:text-left">
+                  <h2 className="mb-3 text-2xl font-semibold text-slate-800 sm:text-3xl">
+                    {profile.user_data?.username}
+                  </h2>
                   {profile.user_data?.created_at && (
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-slate-500 text-sm mb-4">
+                    <div className="mb-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                       {isOwnProfile && (
                         <InfoChip
                           variant="primary"
@@ -759,10 +762,18 @@ export default function ProfilePage() {
                           You
                         </InfoChip>
                       )}
-                      <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span>Joined {new Date(profile.user_data.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      <InfoChip
+                        variant="subtle"
+                        size="sm"
+                        color="slate"
+                        icon={(
+                          <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        )}
+                      >
+                        Joined {new Date(profile.user_data.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                      </InfoChip>
                     </div>
                   )}
 
@@ -1057,15 +1068,6 @@ export default function ProfilePage() {
                     return 0;
                   })
                   .map((quiz) => {
-                    const totalAttempts = quiz.attempts?.length || 0;
-                    const passes = quiz.attempts?.filter(attempt => {
-                      const percentage = (attempt.correct / quiz.questions.length) * 100;
-                      return percentage >= 60;
-                    }).length || 0;
-                    const passRate = totalAttempts > 0 ? Math.round((passes / totalAttempts) * 100) : 0;
-                    const avgScore = totalAttempts > 0
-                      ? Math.round((quiz.attempts.reduce((sum, a) => sum + a.correct, 0) / totalAttempts / quiz.questions.length) * 100)
-                      : 0;
                     const questionCount = quiz.questions?.length || 0;
                     const passThreshold = Number.isFinite(quiz.req_to_pass) ? quiz.req_to_pass : questionCount;
                     const passThresholdPercent = questionCount > 0

@@ -1187,9 +1187,6 @@ function TakeQuizPage() {
                                                 const statusClasses = item.isCorrect
                                                     ? "border-emerald-300/90 bg-emerald-100/90 dark:bg-emerald-900/40 dark:border-emerald-800/60"
                                                     : "border-rose-300/90 bg-rose-100/90 dark:bg-rose-900/40 dark:border-rose-800/60";
-                                                const statusBadge = item.isCorrect
-                                                    ? "bg-emerald-200/90 text-emerald-800 border-emerald-300/90 dark:bg-emerald-800/60 dark:text-white dark:border-emerald-700/50"
-                                                    : "bg-rose-200/90 text-rose-800 border-rose-300/90 dark:bg-rose-800/60 dark:text-white dark:border-rose-700/50";
                                                 return (
                                                     <div
                                                         key={item.question._id || index}
