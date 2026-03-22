@@ -11,6 +11,7 @@ import { getPendingRequests, sendFriendRequest, getFriends, removeRequest, accep
 import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourites";
 import { QuizStats } from "@features/quizzes/components/QuizStats";
 import { Button } from "@shared/components/Button";
+import { InfoChip } from "@shared/components/InfoChip";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PageShell } from "@shared/components/PageShell";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
@@ -599,12 +600,12 @@ export default function ProfilePage() {
     );
   }
 
-  const categoryColors = {
-    art: "border-pink-400/40 bg-pink-500/20 text-pink-700 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-400 hover:border-pink-200/80 hover:bg-pink-100/70 hover:text-pink-700 dark:hover:border-pink-400/50 dark:hover:bg-pink-500/20",
-    history: "border-amber-400/40 bg-amber-500/20 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700 dark:hover:border-amber-400/50 dark:hover:bg-amber-500/20",
-    music: "border-indigo-400/40 bg-indigo-500/20 text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-400 hover:border-indigo-200/80 hover:bg-indigo-100/70 hover:text-indigo-700 dark:hover:border-indigo-400/50 dark:hover:bg-indigo-500/20",
-    science: "border-blue-400/40 bg-blue-500/20 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-400 hover:border-blue-200/80 hover:bg-blue-100/70 hover:text-blue-700 dark:hover:border-blue-400/50 dark:hover:bg-blue-500/20",
-    other: "border-slate-400/40 bg-slate-500/20 text-slate-700 dark:border-slate-500/30 dark:bg-slate-500/10 dark:text-slate-400 hover:border-slate-200/80 hover:bg-slate-100/70 hover:text-slate-700 dark:hover:border-slate-400/50 dark:hover:bg-slate-500/20"
+  const categoryChipColors = {
+    art: "pink",
+    history: "amber",
+    music: "indigo",
+    science: "blue",
+    other: "slate",
   };
   const categoryGradients = {
     art: {
@@ -656,20 +657,49 @@ export default function ProfilePage() {
   const difficultyChips = {
     easy: {
       label: "Easy",
-      className: "border-emerald-300/50 bg-emerald-400/25 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400 hover:border-emerald-200/80 hover:bg-emerald-100/70 hover:text-emerald-700 dark:hover:border-emerald-400/50 dark:hover:bg-emerald-500/20",
+      color: "emerald",
       icon: DIFFICULTY_ICONS.easy
     },
     medium: {
       label: "Medium",
-      className: "border-amber-400/40 bg-amber-500/20 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700 dark:hover:border-amber-400/50 dark:hover:bg-amber-500/20",
+      color: "amber",
       icon: DIFFICULTY_ICONS.medium
     },
     hard: {
       label: "Hard",
-      className: "border-rose-400/40 bg-rose-500/20 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400 hover:border-rose-200/80 hover:bg-rose-100/70 hover:text-rose-700 dark:hover:border-rose-400/50 dark:hover:bg-rose-500/20",
+      color: "rose",
       icon: DIFFICULTY_ICONS.hard
     }
   };
+
+  function renderDifficultyIcon(icon, sizeClass = "h-4 w-4") {
+    return (
+      <span
+        aria-hidden="true"
+        className={sizeClass}
+        style={{
+          backgroundColor: "currentColor",
+          maskImage: `url(${icon})`,
+          WebkitMaskImage: `url(${icon})`,
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+          maskSize: "contain",
+          WebkitMaskSize: "contain"
+        }}
+      ></span>
+    );
+  }
+
+  function formatQuizCountLabel(count) {
+    return `${count} quiz${count === 1 ? "" : "zes"}`;
+  }
+
+  function formatCategoryLabel(category) {
+    if (!category) return "Other";
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  }
 
   const handleCardMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -971,11 +1001,14 @@ export default function ProfilePage() {
                     setSortDirection("desc");
                   }}
                 />
-                <div className={`px-4 py-2.5 rounded-full border flex items-center h-[40px] cursor-default shrink-0 ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
-                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
-                    {createdQuizzes.length} quiz{createdQuizzes.length !== 1 ? 'zes' : ''}
-                  </span>
-                </div>
+                <InfoChip
+                  variant="secondary"
+                  size="md"
+                  color="slate"
+                  className={isAccountLocked ? "border-slate-200/60 bg-slate-50/80 text-slate-400 dark:border-slate-800/40 dark:bg-slate-900/40 dark:text-slate-500" : undefined}
+                >
+                  {formatQuizCountLabel(createdQuizzes.length)}
+                </InfoChip>
               </div>
             </div>
             {createdQuizzes.length === 0 ? (
@@ -1064,49 +1097,53 @@ export default function ProfilePage() {
                           }}
                         ></div>
                         <div className="relative z-10">
-                          <div className={`flex items-center justify-between px-4 py-2 ${categoryStripeColors[quiz.category] || categoryStripeColors.other}`}>
-                            <div className="flex items-center gap-2">
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {categoryIcons[quiz.category] || categoryIcons.other}
-                              </svg>
-                              <span className="text-xs font-semibold capitalize">{quiz.category}</span>
-                            </div>
-                            <span className="text-xs font-semibold flex items-center gap-1">
-                              <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-3.5 w-3.5"
-                              >
-                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
-                                <rect x="3" y="7" width="12" height="14" rx="2" />
-                              </svg>
-                              {quiz.questions.length} Question{quiz.questions.length !== 1 ? 's' : ''}
-                            </span>
+                          <div className={`flex items-center justify-between px-2 py-2 ${categoryStripeColors[quiz.category] || categoryStripeColors.other}`}>
+                            <InfoChip
+                              variant="subtle"
+                              size="sm"
+                              color={categoryChipColors[quiz.category] || categoryChipColors.other}
+                              className="min-h-0 gap-1 px-0 py-0 text-xs"
+                              icon={(
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  {categoryIcons[quiz.category] || categoryIcons.other}
+                                </svg>
+                              )}
+                            >
+                              {formatCategoryLabel(quiz.category)}
+                            </InfoChip>
+                            <InfoChip
+                              variant="subtle"
+                              size="sm"
+                              color={categoryChipColors[quiz.category] || categoryChipColors.other}
+                              className="min-h-0 gap-1 px-0 py-0 text-xs"
+                              icon={(
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-3.5 w-3.5"
+                                >
+                                  <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                  <rect x="3" y="7" width="12" height="14" rx="2" />
+                                </svg>
+                              )}
+                            >
+                              {quiz.questions.length} Question{quiz.questions.length !== 1 ? "s" : ""}
+                            </InfoChip>
                           </div>
                           <div className="px-6 pt-4 pb-3">
                             <div className="flex items-center justify-between mb-4">
-                              <span className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficultyChips[quiz.difficulty || "medium"].className}`}>
-                                <span
-                                  aria-hidden="true"
-                                  className="h-4 w-4"
-                                  style={{
-                                    backgroundColor: "currentColor",
-                                    maskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
-                                    WebkitMaskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
-                                    maskRepeat: "no-repeat",
-                                    WebkitMaskRepeat: "no-repeat",
-                                    maskPosition: "center",
-                                    WebkitMaskPosition: "center",
-                                    maskSize: "contain",
-                                    WebkitMaskSize: "contain"
-                                  }}
-                                ></span>
-                                <span className="capitalize">{quiz.difficulty || "medium"}</span>
-                              </span>
+                              <InfoChip
+                                variant="secondary"
+                                size="sm"
+                                color={difficultyChips[quiz.difficulty || "medium"].color}
+                                icon={renderDifficultyIcon(difficultyChips[quiz.difficulty || "medium"].icon)}
+                              >
+                                {difficultyChips[quiz.difficulty || "medium"].label}
+                              </InfoChip>
                               {isOwnProfile && !isAccountLocked && (
                                 <div className="flex items-center gap-2">
                                   <Button
@@ -1254,11 +1291,14 @@ export default function ProfilePage() {
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Favourites</h2>
-                <div className={`px-4 py-2.5 rounded-full border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
-                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
-                    {myFavourites.length} quiz{myFavourites.length !== 1 ? 'zes' : ''}
-                  </span>
-                </div>
+                <InfoChip
+                  variant="secondary"
+                  size="md"
+                  color="slate"
+                  className={isAccountLocked ? "border-slate-200/60 bg-slate-50/80 text-slate-400 dark:border-slate-800/40 dark:bg-slate-900/40 dark:text-slate-500" : undefined}
+                >
+                  {formatQuizCountLabel(myFavourites.length)}
+                </InfoChip>
               </div>
               {myFavourites.length === 0 ? (
                 <div className="text-center py-10">
@@ -1323,67 +1363,75 @@ export default function ProfilePage() {
                             </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-2 mb-3">
-                            <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${categoryColors[quizCategory] || categoryColors.other}`}>
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {categoryIcons[quizCategory] || categoryIcons.other}
-                              </svg>
-                              <span className="capitalize">{quizCategory || "other"}</span>
-                            </div>
-                            <div className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficulty.className}`}>
-                              <span
-                                aria-hidden="true"
-                                className="h-4 w-4"
-                                style={{
-                                  backgroundColor: "currentColor",
-                                  maskImage: `url(${difficulty.icon})`,
-                                  WebkitMaskImage: `url(${difficulty.icon})`,
-                                  maskRepeat: "no-repeat",
-                                  WebkitMaskRepeat: "no-repeat",
-                                  maskPosition: "center",
-                                  WebkitMaskPosition: "center",
-                                  maskSize: "contain",
-                                  WebkitMaskSize: "contain"
-                                }}
-                              ></span>
-                              <span>{difficulty.label}</span>
-                            </div>
+                            <InfoChip
+                              variant="primary"
+                              size="sm"
+                              color={categoryChipColors[quizCategory] || categoryChipColors.other}
+                              icon={(
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  {categoryIcons[quizCategory] || categoryIcons.other}
+                                </svg>
+                              )}
+                            >
+                              {formatCategoryLabel(quizCategory)}
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color={difficulty.color}
+                              icon={renderDifficultyIcon(difficulty.icon)}
+                            >
+                              {difficulty.label}
+                            </InfoChip>
                             {creatorName && (
                               creatorIsDeleted || isAccountLocked || isMyOwnQuiz ? (
-                                <span className={`rounded-full px-3 py-1.5 text-xs font-bold border border-slate-200/80 bg-white/70 ${creatorIsDeleted ? "text-slate-400" : "text-slate-600 dark:group-hover:text-white"}`}>
-                                  {isMyOwnQuiz ? 'Created by you' : `Created by ${creatorIsDeleted ? "deleted user" : creatorName}`}
-                                </span>
+                                <InfoChip
+                                  variant="subtle"
+                                  size="sm"
+                                  color="slate"
+                                  className={creatorIsDeleted ? "text-slate-400 dark:text-slate-500" : "dark:group-hover:text-white"}
+                                >
+                                  {isMyOwnQuiz ? "Created by you" : `Created by ${creatorIsDeleted ? "deleted user" : creatorName}`}
+                                </InfoChip>
                               ) : (
-                                <button
-                                  type="button"
+                                <InfoChip
+                                  variant="subtle"
+                                  size="sm"
+                                  color="slate"
                                   onClick={(event) => {
                                     event.preventDefault();
                                     event.stopPropagation();
                                     navigate(toProfileUrl(creatorName));
                                   }}
-                                  className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 dark:group-hover:text-white transition-all hover:bg-white/20 bg-white/70 border border-slate-200/80 active:scale-95"
+                                  className="dark:group-hover:text-white"
                                 >
                                   Created by {creatorName}
-                                </button>
+                                </InfoChip>
                               )
                             )}
                           </div>
                           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:group-hover:text-white/80">
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-3.5 w-3.5"
-                              >
-                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
-                                <rect x="3" y="7" width="12" height="14" rx="2" />
-                              </svg>
-                              <span className="font-semibold text-slate-800">{questionCount}</span>
-                              <span className="text-slate-500">Questions</span>
-                            </span>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                              icon={(
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-3.5 w-3.5"
+                                >
+                                  <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                  <rect x="3" y="7" width="12" height="14" rx="2" />
+                                </svg>
+                              )}
+                            >
+                              {questionCount} Questions
+                            </InfoChip>
                             <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
                               <span className="font-semibold text-slate-800">
                                 {passPercent !== null ? `${passPercent}%` : "--"}
@@ -1481,11 +1529,14 @@ export default function ProfilePage() {
                         setTakenSortDirection("desc");
                       }}
                     />
-                    <div className={`px-4 py-2.5 rounded-full border flex items-center h-[40px] cursor-default shrink-0 ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
-                      <span className={`font-semibold text-[10px] sm:text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
-                        {takenQuizzes.length} {takenQuizzes.length === 1 ? 'quiz' : 'quizzes'}
-                      </span>
-                    </div>
+                    <InfoChip
+                      variant="secondary"
+                      size="md"
+                      color="slate"
+                      className={isAccountLocked ? "border-slate-200/60 bg-slate-50/80 text-slate-400 dark:border-slate-800/40 dark:bg-slate-900/40 dark:text-slate-500" : undefined}
+                    >
+                      {formatQuizCountLabel(takenQuizzes.length)}
+                    </InfoChip>
                   </div>
                 </div>
 
@@ -1510,15 +1561,15 @@ export default function ProfilePage() {
                         };
                         return categoryColors[favoriteCat] || categoryColors.other;
                       })()}>
-                        {(() => {
+                        {formatCategoryLabel((() => {
                           if (takenQuizzes.length === 0) return "--";
                           const counts = {};
                           takenQuizzes.forEach(q => {
-                            const cat = q.category || 'other';
+                            const cat = q.category || "other";
                             counts[cat] = (counts[cat] || 0) + 1;
                           });
                           return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
-                        })()}
+                        })())}
                       </span>
                     </div>
                   </div>
@@ -1645,39 +1696,41 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                          <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${categoryColors[quizCategory] || categoryColors.other}`}>
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                              {categoryIcons[quizCategory] || categoryIcons.other}
-                            </svg>
-                            <span className="capitalize">{quizCategory}</span>
-                          </div>
-
-                          <div className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficulty.className}`}>
-                            <span
-                              aria-hidden="true"
-                              className="h-3.5 w-3.5"
-                              style={{
-                                backgroundColor: "currentColor",
-                                maskImage: `url(${difficulty.icon})`,
-                                WebkitMaskImage: `url(${difficulty.icon})`,
-                                maskRepeat: "no-repeat",
-                                WebkitMaskRepeat: "no-repeat",
-                                maskPosition: "center",
-                                WebkitMaskPosition: "center",
-                                maskSize: "contain",
-                                WebkitMaskSize: "contain"
-                              }}
-                            ></span>
-                            <span>{difficulty.label}</span>
-                          </div>
-                          {isMastered && (
-                            <div className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700 border border-amber-200 dark:bg-amber-900/40 dark:text-amber-200 dark:border-amber-800/60">
-                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
-                                <path d="M5 16h14l-1 7H6l-1-7z" />
+                          <InfoChip
+                            variant="primary"
+                            size="sm"
+                            color={categoryChipColors[quizCategory] || categoryChipColors.other}
+                            icon={(
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                {categoryIcons[quizCategory] || categoryIcons.other}
                               </svg>
-                              <span>Mastered</span>
-                            </div>
+                            )}
+                          >
+                            {formatCategoryLabel(quizCategory)}
+                          </InfoChip>
+
+                          <InfoChip
+                            variant="secondary"
+                            size="sm"
+                            color={difficulty.color}
+                            icon={renderDifficultyIcon(difficulty.icon, "h-3.5 w-3.5")}
+                          >
+                            {difficulty.label}
+                          </InfoChip>
+                          {isMastered && (
+                            <InfoChip
+                              variant="primary"
+                              size="sm"
+                              color="amber"
+                              icon={(
+                                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                                  <path d="M5 16h14l-1 7H6l-1-7z" />
+                                </svg>
+                              )}
+                            >
+                              Mastered
+                            </InfoChip>
                           )}
                         </div>
 

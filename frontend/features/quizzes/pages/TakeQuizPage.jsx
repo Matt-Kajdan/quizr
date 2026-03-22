@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
+import { FilterChipGroup } from "@shared/components/FilterChipGroup";
 import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
 import { useUser } from "@shared/state/useUser";
@@ -320,6 +321,11 @@ function TakeQuizPage() {
         }
         return summaryItems;
     }, [summaryItems, summaryFilter]);
+    const summaryFilterChips = [
+        { value: "all", label: "All" },
+        { value: "correct", label: "Correct" },
+        { value: "wrong", label: "Incorrect" },
+    ];
 
     const categoryStyles = {
         art: {
@@ -1105,20 +1111,13 @@ function TakeQuizPage() {
                                 <div className="mt-6 text-left">
                                     <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                                         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Answer summary</h3>
-                                        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800/40 rounded-full">
-                                            {['all', 'correct', 'wrong'].map((option) => (
-                                                <button
-                                                    key={option}
-                                                    onClick={() => setSummaryFilter(option)}
-                                                    className={`sorting-button h-8 min-w-[70px] px-3 rounded-full text-xs font-semibold transition-all flex items-center justify-center ${summaryFilter === option
-                                                        ? "isActive bg-white dark:bg-slate-900 shadow-sm border border-slate-200/80 dark:border-slate-800/80 text-slate-900 dark:text-slate-100"
-                                                        : "bg-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
-                                                        }`}
-                                                >
-                                                    {option === 'all' ? 'All' : option === 'correct' ? 'Correct' : 'Incorrect'}
-                                                </button>
-                                            ))}
-                                        </div>
+                                        <FilterChipGroup
+                                            chips={summaryFilterChips}
+                                            selectedValue={summaryFilter}
+                                            ariaLabel="Filter answer summary"
+                                            className="w-fit"
+                                            onChipClick={setSummaryFilter}
+                                        />
                                     </div>
                                     <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
                                         {filteredSummaryItems.length === 0 ? (
