@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { apiFetch } from "@shared/api/apiClient";
 
 export default function UserSearchBar({ excludeUsername }) {
-  const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
@@ -87,13 +86,36 @@ export default function UserSearchBar({ excludeUsername }) {
     };
   }, [q, excludeUsername]);
 
-  function selectUser(username) {
+  function handleResultClick(event) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
     setOpen(false);
     setQ("");
     if (inputRef.current) {
       inputRef.current.blur();
     }
-    navigate(toProfileUrl(username));
+  }
+
+  function handleResultMouseDown(event) {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      // Keep the input focused so the dropdown stays open for context-menu and new-tab actions.
+      event.preventDefault();
+    }
   }
 
   return (
@@ -130,11 +152,11 @@ export default function UserSearchBar({ excludeUsername }) {
           )}
           {!showLoading &&
             users.map((u) => (
-              <button
+              <Link
                 key={u.id || u.username}
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => selectUser(u.username)}
+                to={toProfileUrl(u.username)}
+                onMouseDown={handleResultMouseDown}
+                onClick={handleResultClick}
                 className="w-full text-left px-4 py-3 text-sm text-slate-800 dark:text-slate-100 hover:bg-slate-100/80 dark:hover:bg-slate-900/60 flex items-center gap-3 transition-colors"
               >
                 <div className={`w-9 h-9 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(u.id || u._id)} flex items-center justify-center flex-shrink-0`}>
@@ -151,7 +173,7 @@ export default function UserSearchBar({ excludeUsername }) {
                   )}
                 </div>
                 <span className="font-medium">{u.username}</span>
-              </button>
+              </Link>
             ))}
         </div>
       )}

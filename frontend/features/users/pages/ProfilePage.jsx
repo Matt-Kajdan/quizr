@@ -955,7 +955,7 @@ export default function ProfilePage() {
           {isAccountLocked && (
             <div className="mb-6 sm:mb-8 bg-amber-100/70 border border-amber-200/80 rounded-3xl p-6 sm:p-8 backdrop-blur-lg shadow-sm dark:bg-amber-900/40 dark:border-amber-800/60">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
+                <div className="text-left">
                   <h2 className="text-xl sm:text-2xl font-semibold text-amber-800 mb-2 dark:text-amber-200">
                     Account scheduled for deletion
                   </h2>

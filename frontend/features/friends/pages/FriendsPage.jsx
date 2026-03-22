@@ -5,6 +5,7 @@ import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
 import { PageShell } from "@shared/components/PageShell";
 import { Button } from "@shared/components/Button";
+import { InfoChip } from "@shared/components/InfoChip";
 import { PageHeader } from "@shared/components/PageHeader";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -147,7 +148,7 @@ export default function FriendsPage() {
                 <div className="pb-5 sm:pb-0 sm:pr-5">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xs sm:text-sm font-semibold text-slate-600 uppercase tracking-wide">
-                      {incomingPending.length} received
+                      {incomingPending.length > 0 ? `${incomingPending.length} received` : "received"}
                     </h3>
                   </div>
                   {incomingPending.length === 0 ? (
@@ -227,7 +228,7 @@ export default function FriendsPage() {
                 <div className="pt-5 sm:pt-0 sm:pl-5">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xs sm:text-sm font-semibold text-slate-600 uppercase tracking-wide">
-                      {outgoingPending.length} sent
+                      {outgoingPending.length > 0 ? `${outgoingPending.length} sent` : "sent"}
                     </h3>
                   </div>
                   {outgoingPending.length === 0 ? (
@@ -296,9 +297,14 @@ export default function FriendsPage() {
               <div className="flex items-start justify-between gap-3 mb-4">
                 <h2 className="text-xl sm:text-2xl font-semibold text-slate-800">Your Friends</h2>
                 <div className="flex items-center gap-2">
-                  <div className="shrink-0 rounded-full border border-slate-200/80 bg-white/60 px-3 py-1 text-xs sm:text-sm font-semibold text-slate-600">
+                  <InfoChip
+                    variant="subtle"
+                    size="md"
+                    color="slate"
+                    className="shrink-0"
+                  >
                     {friends.length} total
-                  </div>
+                  </InfoChip>
                   <SortingChipBar
                     chips={dateSortChip}
                     activeValue="date"
@@ -313,17 +319,15 @@ export default function FriendsPage() {
               </div>
               {friends.length === 0 ? (
                 <div className="text-center py-8 sm:py-10 max-w-md mx-auto">
-                  <div className="bg-white/60 rounded-2xl p-6 sm:p-8 border border-slate-200/80">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-400 to-rose-400 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <svg className="w-7 h-7 sm:w-8 sm:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-2">No Friends Yet</h3>
-                    <p className="text-slate-600 text-sm sm:text-base">
-                      Start connecting with others to build your network
-                    </p>
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-400 to-rose-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <svg className="w-7 h-7 sm:w-8 sm:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
                   </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-2">No friends yet</h3>
+                  <p className="text-slate-600 text-sm sm:text-base">
+                    Start connecting with others to build your network
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

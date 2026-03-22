@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         >
             <div className="relative flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-slate-300 dark:border-slate-700 border-t-slate-600 dark:border-t-slate-200 rounded-full animate-spin"></div>
-            <p className="mt-4 text-slate-600 dark:text-slate-300 font-medium">Checking authentication...</p>
+            <p className="mt-4 text-slate-600 dark:text-slate-300 font-medium">Authenticating...</p>
             </div>
         </div>
         );

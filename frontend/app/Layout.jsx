@@ -18,12 +18,17 @@ function Layout() {
     const user = useAuth();
     const isMobile = useIsMobile();
     const { theme, toggleTheme } = useTheme();
-    const { accountStatus, accountUsername, refreshUser } = useUser();
+    const { accountStatus, accountUsername, refreshUser, isLoading: isUserLoading } = useUser();
     const [statusRefreshKey, setStatusRefreshKey] = useState(0);
 
     const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
     const isQuizEditor = location.pathname === "/quizzes/create"
         || (location.pathname.startsWith("/quiz/") && location.pathname.endsWith("/edit"));
+    const showNavbar = !hideNavbar && !isUserLoading;
+    const showMobileTopBar = isMobile && showNavbar && !isQuizEditor;
+    const layoutPaddingClass = isMobile
+        ? (showNavbar ? "pb-16" : "")
+        : (showNavbar ? "pt-16" : "");
 
     useLayoutEffect(() => {
         const root = document.getElementById("root");
@@ -59,13 +64,13 @@ function Layout() {
     }, [accountStatus, accountUsername, location.pathname, navigate]);
 
     return (
-        <div className={`flex flex-col min-h-screen ${isMobile ? 'pb-16' : 'pt-16'}`}>
+        <div className={`flex flex-col min-h-screen ${layoutPaddingClass}`}>
             {gitBranch && (
                 <div className="pointer-events-none fixed left-2 top-2 z-[100] text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-500">
                     {gitBranch}
                 </div>
             )}
-            {isMobile && !hideNavbar && !isQuizEditor && (
+            {showMobileTopBar && (
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80 pt-[env(safe-area-inset-top)]">
                     <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-3">
                         <div className="flex-1 min-w-0">
@@ -90,7 +95,7 @@ function Layout() {
                     </div>
                 </div>
             )}
-            {!hideNavbar && <NavBar accountStatus={accountStatus} accountUsername={accountUsername} />}
+            {showNavbar && <NavBar accountStatus={accountStatus} accountUsername={accountUsername} />}
             <main className="flex-1"><Outlet /></main>
         </div>
     );

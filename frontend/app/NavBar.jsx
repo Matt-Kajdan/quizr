@@ -12,6 +12,7 @@ import {
   Users,
   Trophy,
   User,
+  Settings,
   Search,
   Sun,
   Moon,
@@ -64,7 +65,7 @@ function NavBar({ accountStatus, accountUsername }) {
   }
 
   function handleDesktopNavClick(event, to) {
-    if (!isDesktopNavActive(to)) return;
+    if (to !== "/" || location.pathname !== "/") return;
     event.preventDefault();
     navigate(0);
   }
@@ -153,16 +154,6 @@ function NavBar({ accountStatus, accountUsername }) {
           </div>
 
           <div className="flex items-center gap-3">
-            {user && (
-              <Button
-                onClick={toggleTheme}
-                variant="subtle"
-                color="standard"
-                ariaLabel="Toggle theme"
-                icon={theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-              >
-              </Button>
-            )}
             {user && username && (
               <Button
                 to={toProfileUrl(username)}
@@ -173,6 +164,26 @@ function NavBar({ accountStatus, accountUsername }) {
                 className="h-11 min-w-[6.5rem]"
               >
                 {profileLabel}
+              </Button>
+            )}
+            {user && !isAccountLocked && (
+              <Button
+                to="/settings"
+                variant="subtle"
+                color="standard"
+                ariaLabel="Settings"
+                icon={<Settings size={20} />}
+              >
+              </Button>
+            )}
+            {user && (
+              <Button
+                onClick={toggleTheme}
+                variant="subtle"
+                color="standard"
+                ariaLabel="Toggle theme"
+                icon={theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+              >
               </Button>
             )}
 

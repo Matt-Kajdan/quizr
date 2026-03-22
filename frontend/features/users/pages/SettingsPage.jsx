@@ -6,9 +6,52 @@ import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
 import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
+import { Button } from "@shared/components/Button";
 import { scheduleAccountDeletion } from "@features/users/api/users";
 import { useUser } from "@shared/state/useUser";
 import { formatUsernameInput, trimTrailingSpace, toProfileUrl } from "@shared/utils/usernameValidation";
+
+function joinClasses(...values) {
+  return values.filter(Boolean).join(" ");
+}
+
+const SETTINGS_SECTIONS = [
+  { id: "profile", label: "Profile" },
+  { id: "email", label: "Email" },
+  { id: "password", label: "Password" },
+  { id: "delete", label: "Delete Account" },
+];
+
+const panelClassName = "bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800/60 shadow-sm";
+const inputClassName = "w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50";
+const labelClassName = "block text-slate-600 dark:text-slate-300 mb-2";
+
+function SettingsSidebar({ sections, activeSection, onSelect }) {
+  return (
+    <aside className="self-start lg:sticky lg:top-24">
+      <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-2 shadow-sm backdrop-blur-lg dark:border-slate-800/60 dark:bg-slate-900/40">
+        <nav aria-label="Settings sections" className="flex flex-col gap-1.5">
+          {sections.map((section) => {
+            const isActive = section.id === activeSection;
+            return (
+              <Button
+                key={section.id}
+                htmlType="button"
+                aria-pressed={isActive}
+                onClick={() => onSelect(section.id)}
+                variant={isActive ? "primary" : "subtle"}
+                color="standard"
+                className="w-full justify-start rounded-xl text-base sm:text-base"
+              >
+                {section.label}
+              </Button>
+            );
+          })}
+        </nav>
+      </div>
+    </aside>
+  );
+}
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -16,6 +59,7 @@ export default function SettingsPage() {
   const { refreshUser } = useUser();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState("profile");
 
   const [username, setUsername] = useState("");
   const [usernameWarning, setUsernameWarning] = useState(null);
@@ -83,6 +127,12 @@ export default function SettingsPage() {
   }, [profile, deletionStep, deletionMode]);
 
   const isAccountLocked = profile?.status === "pending_deletion";
+
+  useEffect(() => {
+    if (isAccountLocked && activeSection === "delete") {
+      setActiveSection("profile");
+    }
+  }, [isAccountLocked, activeSection]);
 
   if (!loggedInUser) {
     return (
@@ -247,6 +297,26 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleVerifyDeletionPassword() {
+    setDeletionError(null);
+    setDeletionVerifying(true);
+    try {
+      const credential = EmailAuthProvider.credential(loggedInUser.email, deletionPassword);
+      await reauthenticateWithCredential(loggedInUser, credential);
+      setDeletionStep("choose");
+    } catch (err) {
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setDeletionError("Incorrect password.");
+      } else if (err.code === 'auth/too-many-requests') {
+        setDeletionError("Too many failed attempts. Please try again later.");
+      } else {
+        setDeletionError(err.message || "Verification failed.");
+      }
+    } finally {
+      setDeletionVerifying(false);
+    }
+  }
+
   const deletionHeader = isAccountLocked
     ? "Account deletion scheduled"
     : deletionStep === "choose"
@@ -273,300 +343,338 @@ export default function SettingsPage() {
     );
   }
 
+  const availableSections = isAccountLocked
+    ? SETTINGS_SECTIONS.filter((section) => section.id !== "delete")
+    : SETTINGS_SECTIONS;
+  const currentSection = availableSections.some((section) => section.id === activeSection)
+    ? activeSection
+    : availableSections[0].id;
+
+  let activePanel = null;
+
+  if (currentSection === "profile") {
+    activePanel = (
+      <div className={panelClassName}>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">Profile Information</h2>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+            Update your username and profile picture.
+          </p>
+        </div>
+        <form onSubmit={handleUpdateProfile} className="space-y-4">
+          <div>
+            <label className={labelClassName}>Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => {
+                const input = e.target;
+                const cursorPos = input.selectionStart;
+                const raw = e.target.value;
+                const { value, warning } = formatUsernameInput(raw);
+                const charsRemoved = raw.length - value.length;
+                const newCursor = Math.max(0, cursorPos - charsRemoved);
+                setUsername(value);
+                if (warning) setUsernameWarning(warning);
+                else setUsernameWarning(null);
+                requestAnimationFrame(() => {
+                  input.setSelectionRange(newCursor, newCursor);
+                });
+              }}
+              onBlur={() => {
+                const { value, warning } = trimTrailingSpace(username);
+                setUsername(value);
+                if (warning) setUsernameWarning(warning);
+              }}
+              onFocus={() => setUsernameWarning(null)}
+              disabled={isAccountLocked}
+              className={inputClassName}
+              required
+            />
+            <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${usernameWarning ? 'text-rose-500' : 'text-transparent'}`}>
+              {usernameWarning || '\u00A0'}
+            </p>
+          </div>
+          <div>
+            <label className={labelClassName}>Profile Picture URL</label>
+            <input
+              type="url"
+              value={profilePic}
+              onChange={(e) => setProfilePic(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              disabled={isAccountLocked}
+              className={inputClassName}
+            />
+          </div>
+          {profilePic && (
+            <div className="flex items-center gap-4">
+              <p className="text-slate-600 dark:text-slate-300">Preview:</p>
+              <img
+                src={profilePic}
+                alt="Profile preview"
+                className="w-16 h-16 rounded-full object-cover border-2 border-slate-200/80"
+                onError={(e) => e.target.style.display = "none"}
+              />
+            </div>
+          )}
+          <Button
+            htmlType="submit"
+            disabled={profileSaving || isAccountLocked || (username.trim() === originalUsername && profilePic === originalProfilePic)}
+            variant="primary"
+            color="standard"
+            className="h-11 px-5"
+          >
+            {profileSaving ? "Saving..." : "Save Profile"}
+          </Button>
+          {profileError && <p className="mt-2 text-sm text-rose-600">{profileError}</p>}
+        </form>
+      </div>
+    );
+  }
+
+  if (currentSection === "email") {
+    activePanel = (
+      <div className={panelClassName}>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">Email Address</h2>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+            Change the email address linked to your account.
+          </p>
+        </div>
+        <form onSubmit={handleUpdateEmail} className="space-y-4">
+          <div>
+            <label className={labelClassName}>New Email</label>
+            <input
+              type="email"
+              value={newEmail}
+              onChange={(e) => { setNewEmail(e.target.value); setEmailFieldWarning(null); }}
+              onBlur={() => {
+                if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+                  setEmailFieldWarning("Please enter a valid email address.");
+                }
+              }}
+              disabled={isAccountLocked}
+              className={inputClassName}
+              required
+            />
+            <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${emailFieldWarning ? 'text-rose-500' : 'text-transparent'}`}>
+              {emailFieldWarning || '\u00A0'}
+            </p>
+          </div>
+          <div>
+            <label className={labelClassName}>Current Password (required for security)</label>
+            <PasswordInput
+              value={currentEmailPassword}
+              onChange={(e) => setCurrentEmailPassword(e.target.value)}
+              placeholder="Enter current password"
+              disabled={isAccountLocked}
+              required
+              autoComplete="new-password"
+              inputClassName={joinClasses(inputClassName, "pr-12")}
+            />
+          </div>
+          <Button
+            htmlType="submit"
+            disabled={emailSaving || isAccountLocked || newEmail === loggedInUser?.email || !currentEmailPassword}
+            variant="primary"
+            color="standard"
+            className="h-11 px-5"
+          >
+            {emailSaving ? "Updating..." : "Update Email"}
+          </Button>
+          {emailError && <p className="mt-2 text-sm text-rose-600">{emailError}</p>}
+          {emailMessage && <p className="mt-2 text-sm text-emerald-600">{emailMessage}</p>}
+        </form>
+      </div>
+    );
+  }
+
+  if (currentSection === "password") {
+    activePanel = (
+      <div className={panelClassName}>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">Change Password</h2>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+            Use a strong password with at least 12 characters.
+          </p>
+        </div>
+        <form onSubmit={handleUpdatePassword} className="space-y-4">
+          <div>
+            <label className={labelClassName}>Current Password</label>
+            <PasswordInput
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter current password"
+              disabled={isAccountLocked}
+              required
+              inputClassName={joinClasses(inputClassName, "pr-20")}
+            />
+          </div>
+          <div>
+            <label className={labelClassName}>New Password</label>
+            <PasswordInput
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
+              disabled={isAccountLocked}
+              minLength={12}
+              inputClassName={joinClasses(inputClassName, "pr-20")}
+            />
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 pl-0.5 min-h-[1.25rem]">Must be at least 12 characters long.</p>
+          </div>
+          <div>
+            <label className={labelClassName}>Confirm Password</label>
+            <PasswordInput
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              onPaste={(e) => e.preventDefault()}
+              placeholder="Confirm new password"
+              disabled={isAccountLocked}
+              minLength={12}
+              inputClassName={joinClasses(inputClassName, "pr-20")}
+            />
+          </div>
+          <Button
+            htmlType="submit"
+            disabled={passwordSaving || isAccountLocked || !currentPassword || !newPassword || !confirmPassword}
+            variant="primary"
+            color="standard"
+            className="h-11 px-5"
+          >
+            {passwordSaving ? "Updating..." : "Change Password"}
+          </Button>
+          {passwordError && <p className="mt-2 text-sm text-rose-600">{passwordError}</p>}
+          {passwordMessage && <p className="mt-2 text-sm text-emerald-600">{passwordMessage}</p>}
+        </form>
+      </div>
+    );
+  }
+
+  if (currentSection === "delete" && !isAccountLocked) {
+    activePanel = (
+      <div className={panelClassName}>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">{deletionHeader}</h2>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+            Start account deletion, then choose whether your quizzes are removed or preserved.
+          </p>
+        </div>
+        {deletionStep === "intro" && (
+          <form
+            className="space-y-4"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!deletionPassword || deletionVerifying) return;
+              await handleVerifyDeletionPassword();
+            }}
+          >
+            <p className="text-slate-600 dark:text-slate-300 mb-4">
+              You will then have 7 days to cancel if you change your mind, or delete immediately.
+            </p>
+            <div>
+              <label className={labelClassName}>Current Password</label>
+              <PasswordInput
+                value={deletionPassword}
+                onChange={(e) => setDeletionPassword(e.target.value)}
+                placeholder="Enter current password"
+                inputClassName={joinClasses(inputClassName, "pr-20")}
+              />
+              <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${deletionError ? 'text-rose-500' : 'text-transparent'}`}>
+                {deletionError || '\u00A0'}
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <Button
+                htmlType="submit"
+                disabled={!deletionPassword || deletionVerifying}
+                variant="primary"
+                color="red"
+                className="h-11 px-5"
+              >
+                {deletionVerifying ? "Verifying..." : "Continue"}
+              </Button>
+            </div>
+          </form>
+        )}
+        {deletionError && deletionStep === "choose" && (
+          <p className="mt-2 text-sm text-rose-600">{deletionError}</p>
+        )}
+        {deletionStep === "choose" && (
+          <div className="space-y-4">
+            <p className="text-slate-600 dark:text-slate-300">
+              You can delete all quizzes you created (this removes other users&apos; attempt history
+              on those quizzes), or preserve your quizzes and anonymise your authorship as
+              deleted user.
+            </p>
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Button
+                htmlType="button"
+                onClick={() => { setDeletionStep("intro"); setDeletionPassword(""); setDeletionError(null); }}
+                disabled={deletionSaving}
+                variant="secondary"
+                color="standard"
+                className="h-11 px-5"
+              >
+                Cancel
+              </Button>
+              <Button
+                htmlType="button"
+                onClick={() => handleChooseDeletion("delete_quizzes")}
+                disabled={deletionSaving}
+                variant="primary"
+                color="red"
+                className="h-11 px-5"
+              >
+                Delete My Quizzes
+              </Button>
+              <Button
+                htmlType="button"
+                onClick={() => handleChooseDeletion("preserve_quizzes")}
+                disabled={deletionSaving}
+                variant="primary"
+                color="standard"
+                className="h-11 px-5"
+              >
+                Preserve My Quizzes
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <PageShell>
+    <PageShell mainClassName="max-w-5xl">
       <PageHeader
         title="Settings"
-        subtitle="Manage your account and profile preferences "
+        subtitle="Manage your account and profile preferences"
       />
-          {isAccountLocked && (
-            <div className="mb-6 bg-amber-100/70 border border-amber-200/80 rounded-3xl p-4 backdrop-blur">
-              <p className="text-amber-700">Your account is scheduled for deletion. Manage the countdown from your profile.</p>
-              <div className="mt-4">
-                <button
-                  type="button"
-                  onClick={() => navigate(toProfileUrl(profile?.user_data?.username))}
-                  className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors"
-                >
-                  Go to My Profile
-                </button>
-              </div>
-            </div>
-          )}
+      {isAccountLocked && (
+        <div className="mb-6 rounded-2xl border border-amber-200/80 bg-amber-100/70 p-4 backdrop-blur">
+          <p className="text-amber-700">Your account is scheduled for deletion. Manage the countdown from your profile.</p>
+          <div className="mt-4">
+            <Button
+              htmlType="button"
+              onClick={() => navigate(toProfileUrl(profile?.user_data?.username))}
+              variant="secondary"
+              color="standard"
+              className="h-11 px-5"
+            >
+              Go to My Profile
+            </Button>
+          </div>
+        </div>
+      )}
 
-          <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 shadow-sm">
-            <h2 className="text-2xl font-semibold text-slate-800 mb-6">Profile Information</h2>
-            <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div>
-                <label className="block text-slate-600 mb-2">Username</label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => {
-                    const input = e.target;
-                    const cursorPos = input.selectionStart;
-                    const raw = e.target.value;
-                    const { value, warning } = formatUsernameInput(raw);
-                    const charsRemoved = raw.length - value.length;
-                    const newCursor = Math.max(0, cursorPos - charsRemoved);
-                    setUsername(value);
-                    if (warning) setUsernameWarning(warning);
-                    else setUsernameWarning(null);
-                    requestAnimationFrame(() => {
-                      input.setSelectionRange(newCursor, newCursor);
-                    });
-                  }}
-                  onBlur={() => {
-                    const { value, warning } = trimTrailingSpace(username);
-                    setUsername(value);
-                    if (warning) setUsernameWarning(warning);
-                  }}
-                  onFocus={() => setUsernameWarning(null)}
-                  disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
-                  required
-                />
-                <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${usernameWarning ? 'text-rose-500' : 'text-transparent'}`}>
-                  {usernameWarning || '\u00A0'}
-                </p>
-              </div>
-              <div>
-                <label className="block text-slate-600 mb-2">Profile Picture URL</label>
-                <input
-                  type="url"
-                  value={profilePic}
-                  onChange={(e) => setProfilePic(e.target.value)}
-                  placeholder="https://example.com/image.jpg"
-                  disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
-                />
-              </div>
-              {profilePic && (
-                <div className="flex items-center gap-4">
-                  <p className="text-slate-600">Preview:</p>
-                  <img
-                    src={profilePic}
-                    alt="Profile preview"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-slate-200/80"
-                    onError={(e) => e.target.style.display = 'none'}
-                  />
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={profileSaving || isAccountLocked || (username.trim() === originalUsername && profilePic === originalProfilePic)}
-                className="px-6 py-3 rounded-xl bg-slate-800 text-white font-semibold hover:bg-slate-700 transition-colors disabled:opacity-50"
-              >
-                {profileSaving ? "Saving..." : "Save Profile"}
-              </button>
-              {profileError && <p className="mt-2 text-sm text-rose-600">{profileError}</p>}
-            </form>
-          </div>
-          <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800/60 mb-6 shadow-sm">
-            <h2 className="text-2xl font-semibold text-slate-800 mb-6">Email Address</h2>
-            <form onSubmit={handleUpdateEmail} className="space-y-4">
-              <div>
-                <label className="block text-slate-600 mb-2">New Email</label>
-                <input
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => { setNewEmail(e.target.value); setEmailFieldWarning(null); }}
-                  onBlur={() => {
-                    if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-                      setEmailFieldWarning("Please enter a valid email address.");
-                    }
-                  }}
-                  disabled={isAccountLocked}
-                  className="w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
-                  required
-                />
-                <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${emailFieldWarning ? 'text-rose-500' : 'text-transparent'}`}>
-                  {emailFieldWarning || '\u00A0'}
-                </p>
-              </div>
-              <div>
-                <label className="block text-slate-600 mb-2">Current Password (required for security)</label>
-                <PasswordInput
-                  value={currentEmailPassword}
-                  onChange={(e) => setCurrentEmailPassword(e.target.value)}
-                  placeholder="Enter current password"
-                  disabled={isAccountLocked}
-                  required
-                  autoComplete="new-password"
-                  inputClassName="w-full px-4 py-3 pr-12 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={emailSaving || isAccountLocked || newEmail === loggedInUser?.email || !currentEmailPassword}
-                className="px-6 py-3 rounded-xl bg-slate-800 text-white font-semibold hover:bg-slate-700 transition-colors disabled:opacity-50"
-              >
-                {emailSaving ? "Updating..." : "Update Email"}
-              </button>
-              {emailError && <p className="mt-2 text-sm text-rose-600">{emailError}</p>}
-              {emailMessage && <p className="mt-2 text-sm text-emerald-600">{emailMessage}</p>}
-            </form>
-          </div>
-          <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800/60 shadow-sm">
-            <h2 className="text-2xl font-semibold text-slate-800 mb-6">Change Password</h2>
-            <form onSubmit={handleUpdatePassword} className="space-y-4">
-              <div>
-                <label className="block text-slate-600 mb-2">Current Password</label>
-                <PasswordInput
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
-                  disabled={isAccountLocked}
-                  required
-                  inputClassName="w-full px-4 py-3 pr-20 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-600 mb-2">New Password</label>
-                <PasswordInput
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
-                  disabled={isAccountLocked}
-                  minLength={12}
-                  inputClassName="w-full px-4 py-3 pr-20 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
-                />
-                <p className="text-xs text-slate-500 mt-0.5 pl-0.5 min-h-[1.25rem]">Must be at least 12 characters long.</p>
-              </div>
-              <div>
-                <label className="block text-slate-600 mb-2">Confirm Password</label>
-                <PasswordInput
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  onPaste={(e) => e.preventDefault()}
-                  placeholder="Confirm new password"
-                  disabled={isAccountLocked}
-                  minLength={12}
-                  inputClassName="w-full px-4 py-3 pr-20 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={passwordSaving || isAccountLocked || !currentPassword || !newPassword || !confirmPassword}
-                className="px-6 py-3 rounded-xl bg-slate-800 text-white font-semibold hover:bg-slate-700 transition-colors disabled:opacity-50"
-              >
-                {passwordSaving ? "Updating..." : "Change Password"}
-              </button>
-              {passwordError && <p className="mt-2 text-sm text-rose-600">{passwordError}</p>}
-              {passwordMessage && <p className="mt-2 text-sm text-emerald-600">{passwordMessage}</p>}
-            </form>
-          </div>
-          {!isAccountLocked && (
-            <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800/60 mt-6 shadow-sm min-h-[240px] flex flex-col justify-center">
-              <h2 className="text-2xl font-semibold text-slate-800 mb-4">{deletionHeader}</h2>
-              {deletionStep === "intro" && (
-                <>
-                  <p className="text-slate-600 mb-4">
-                    You will then have 7 days to cancel if you change your mind, or delete immediately.
-                  </p>
-                  <div className="flex justify-center">
-                    <button
-                      type="button"
-                      onClick={() => { setDeletionStep("confirmPassword"); setDeletionError(null); setDeletionPassword(""); }}
-                      className="px-6 py-3 rounded-xl bg-rose-500 dark:bg-rose-900/70 text-white font-semibold hover:bg-rose-600 dark:hover:bg-rose-800/80 transition-colors"
-                    >
-                      Delete Account
-                    </button>
-                  </div>
-                </>
-              )}
-              {deletionStep === "confirmPassword" && (
-                <div className="space-y-4">
-                  <p className="text-slate-600">Please enter your current password to confirm.</p>
-                  <div>
-                    <PasswordInput
-                      value={deletionPassword}
-                      onChange={(e) => setDeletionPassword(e.target.value)}
-                      placeholder="Enter current password"
-                      inputClassName="w-full px-4 py-3 pr-20 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50"
-                    />
-                    <p className={`text-xs mt-0.5 pl-0.5 min-h-[1.25rem] ${deletionError ? 'text-rose-500' : 'text-transparent'}`}>
-                      {deletionError || '\u00A0'}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                    <button
-                      type="button"
-                      onClick={() => { setDeletionStep("intro"); setDeletionPassword(""); setDeletionError(null); }}
-                      disabled={deletionVerifying}
-                      className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!deletionPassword || deletionVerifying}
-                      onClick={async () => {
-                        setDeletionError(null);
-                        setDeletionVerifying(true);
-                        try {
-                          const credential = EmailAuthProvider.credential(loggedInUser.email, deletionPassword);
-                          await reauthenticateWithCredential(loggedInUser, credential);
-                          setDeletionStep("choose");
-                        } catch (err) {
-                          if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-                            setDeletionError("Incorrect password.");
-                          } else if (err.code === 'auth/too-many-requests') {
-                            setDeletionError("Too many failed attempts. Please try again later.");
-                          } else {
-                            setDeletionError(err.message || "Verification failed.");
-                          }
-                        } finally {
-                          setDeletionVerifying(false);
-                        }
-                      }}
-                      className="px-6 py-3 rounded-xl bg-rose-500 dark:bg-rose-900/70 text-white font-semibold hover:bg-rose-600 dark:hover:bg-rose-800/80 transition-colors disabled:opacity-50"
-                    >
-                      {deletionVerifying ? "Verifying..." : "Continue"}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {deletionError && deletionStep !== "confirmPassword" && (
-                <p className="mt-2 text-sm text-rose-600">{deletionError}</p>
-              )}
-              {deletionStep === "choose" && (
-                <div className="space-y-4">
-                  <p className="text-slate-600">
-                    You can delete all quizzes you created (this removes other users&apos; attempt history
-                    on those quizzes), or preserve your quizzes and anonymise your authorship as
-                    deleted user.
-                  </p>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                    <button
-                      type="button"
-                      onClick={() => setDeletionStep("intro")}
-                      disabled={deletionSaving}
-                      className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleChooseDeletion("delete_quizzes")}
-                      disabled={deletionSaving}
-                      className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
-                    >
-                      Delete My Quizzes
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleChooseDeletion("preserve_quizzes")}
-                      disabled={deletionSaving}
-                      className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
-                    >
-                      Preserve My Quizzes
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+      <div className="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
+        <SettingsSidebar
+          sections={availableSections}
+          activeSection={currentSection}
+          onSelect={setActiveSection}
+        />
+        {activePanel}
+      </div>
     </PageShell>
   );
 }
