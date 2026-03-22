@@ -10,6 +10,11 @@ import { useAuth } from "@shared/auth/useAuth";
 import { getPendingRequests, sendFriendRequest, getFriends, removeRequest, acceptFriendRequest } from "@features/friends/api/friends";
 import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourites";
 import { QuizStats } from "@features/quizzes/components/QuizStats";
+import { Button } from "@shared/components/Button";
+import { InfoChip } from "@shared/components/InfoChip";
+import { PageHeader } from "@shared/components/PageHeader";
+import { PageShell } from "@shared/components/PageShell";
+import { SortingChipBar } from "@shared/components/SortingChipBar";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -71,6 +76,17 @@ export default function ProfilePage() {
     quiz?.favourited_count ??
     (Array.isArray(quiz?.favourites) ? quiz.favourites.length : (quiz?.favouritesCount ?? 0))
   );
+  const createdSortChips = [
+    { value: "date", label: "Newest", reverseLabel: "Oldest" },
+    { value: "stars", label: "Likes" },
+  ];
+  const takenSortChips = [
+    { value: "highest_score", label: "Score" },
+    { value: "category", label: "Category" },
+    { value: "difficulty", label: "Difficulty" },
+    { value: "questions", label: "Questions" },
+    { value: "taken_on", label: "Taken on" },
+  ];
 
   useEffect(() => {
     if (!showRemoveFriendConfirm) return;
@@ -584,12 +600,12 @@ export default function ProfilePage() {
     );
   }
 
-  const categoryColors = {
-    art: "border-pink-400/40 bg-pink-500/20 text-pink-700 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-400 hover:border-pink-200/80 hover:bg-pink-100/70 hover:text-pink-700 dark:hover:border-pink-400/50 dark:hover:bg-pink-500/20",
-    history: "border-amber-400/40 bg-amber-500/20 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700 dark:hover:border-amber-400/50 dark:hover:bg-amber-500/20",
-    music: "border-indigo-400/40 bg-indigo-500/20 text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-400 hover:border-indigo-200/80 hover:bg-indigo-100/70 hover:text-indigo-700 dark:hover:border-indigo-400/50 dark:hover:bg-indigo-500/20",
-    science: "border-blue-400/40 bg-blue-500/20 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-400 hover:border-blue-200/80 hover:bg-blue-100/70 hover:text-blue-700 dark:hover:border-blue-400/50 dark:hover:bg-blue-500/20",
-    other: "border-slate-400/40 bg-slate-500/20 text-slate-700 dark:border-slate-500/30 dark:bg-slate-500/10 dark:text-slate-400 hover:border-slate-200/80 hover:bg-slate-100/70 hover:text-slate-700 dark:hover:border-slate-400/50 dark:hover:bg-slate-500/20"
+  const categoryChipColors = {
+    art: "pink",
+    history: "amber",
+    music: "indigo",
+    science: "blue",
+    other: "slate",
   };
   const categoryGradients = {
     art: {
@@ -641,20 +657,49 @@ export default function ProfilePage() {
   const difficultyChips = {
     easy: {
       label: "Easy",
-      className: "border-emerald-300/50 bg-emerald-400/25 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400 hover:border-emerald-200/80 hover:bg-emerald-100/70 hover:text-emerald-700 dark:hover:border-emerald-400/50 dark:hover:bg-emerald-500/20",
+      color: "emerald",
       icon: DIFFICULTY_ICONS.easy
     },
     medium: {
       label: "Medium",
-      className: "border-amber-400/40 bg-amber-500/20 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 hover:border-amber-200/80 hover:bg-amber-100/70 hover:text-amber-700 dark:hover:border-amber-400/50 dark:hover:bg-amber-500/20",
+      color: "amber",
       icon: DIFFICULTY_ICONS.medium
     },
     hard: {
       label: "Hard",
-      className: "border-rose-400/40 bg-rose-500/20 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400 hover:border-rose-200/80 hover:bg-rose-100/70 hover:text-rose-700 dark:hover:border-rose-400/50 dark:hover:bg-rose-500/20",
+      color: "rose",
       icon: DIFFICULTY_ICONS.hard
     }
   };
+
+  function renderDifficultyIcon(icon, sizeClass = "h-4 w-4") {
+    return (
+      <span
+        aria-hidden="true"
+        className={sizeClass}
+        style={{
+          backgroundColor: "currentColor",
+          maskImage: `url(${icon})`,
+          WebkitMaskImage: `url(${icon})`,
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+          maskSize: "contain",
+          WebkitMaskSize: "contain"
+        }}
+      ></span>
+    );
+  }
+
+  function formatQuizCountLabel(count) {
+    return `${count} quiz${count === 1 ? "" : "zes"}`;
+  }
+
+  function formatCategoryLabel(category) {
+    if (!category) return "Other";
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  }
 
   const handleCardMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -672,23 +717,16 @@ export default function ProfilePage() {
   const totalQuestions = takenQuizzes.reduce((sum, quiz) => sum + quiz.totalQuestions, 0);
   const totalCorrect = takenQuizzes.reduce((sum, quiz) => sum + quiz.correct, 0);
   const averageScore = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+  const profileSubtitle = isOwnProfile
+    ? "Manage your quizzes, favourites, and activity"
+    : "View quizzes, favourites, and activity";
 
   return (
-    <>
-      <div
-        className="fixed inset-0 -top-20"
-        style={{
-          backgroundColor: "var(--opal-bg-color)",
-          backgroundImage: "var(--opal-backdrop-image)"
-        }}
-      ></div>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
-        <div className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
-      </div>
-      <div className="relative min-h-screen pt-16 sm:pt-20">
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:py-12 min-h-full">
+    <PageShell>
+      <PageHeader
+        title="Profile"
+        subtitle={profileSubtitle}
+      />
           <div className="mb-6 sm:mb-8">
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 relative overflow-hidden shadow-sm">
               <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -705,21 +743,37 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex-1 text-center sm:text-left">
-                  <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 mb-2">{profile.user_data?.username}</h1>
+                  <h2 className="mb-3 text-2xl font-semibold text-slate-800 sm:text-3xl">
+                    {profile.user_data?.username}
+                  </h2>
                   {profile.user_data?.created_at && (
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-slate-500 text-sm mb-4">
+                    <div className="mb-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                       {isOwnProfile && (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-xs font-semibold">
-                          <svg className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.45a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.45a1 1 0 00-1.175 0l-3.37 2.45c-.784.57-1.84-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.963 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.05 2.927z" />
-                          </svg>
+                        <InfoChip
+                          variant="primary"
+                          size="sm"
+                          color="amber"
+                          icon={(
+                            <svg className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.45a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.45a1 1 0 00-1.175 0l-3.37 2.45c-.784.57-1.84-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.963 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.05 2.927z" />
+                            </svg>
+                          )}
+                        >
                           You
-                        </span>
+                        </InfoChip>
                       )}
-                      <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span>Joined {new Date(profile.user_data.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      <InfoChip
+                        variant="subtle"
+                        size="sm"
+                        color="slate"
+                        icon={(
+                          <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        )}
+                      >
+                        Joined {new Date(profile.user_data.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                      </InfoChip>
                     </div>
                   )}
 
@@ -729,22 +783,30 @@ export default function ProfilePage() {
                         isAccountLocked ? (
                           <span className="px-6 py-2.5 rounded-xl bg-slate-100 text-slate-500 font-semibold border border-slate-200/80">Settings Locked</span>
                         ) : (
-                          <a href="/settings" className="bg-slate-800 dark:bg-blue-950/60 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-colors hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 hover:text-white visited:text-white focus:text-white active:text-white flex items-center gap-2">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
+                          <Button
+                            to="/settings"
+                            variant="primary"
+                            color="standard"
+                            icon={(
+                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                            )}
+                          >
                             Settings
-                          </a>
+                          </Button>
                         )
                       ) : friendsLoading ? (
-                        <button disabled className="px-4 py-2 text-sm rounded-xl bg-white/70 text-slate-600 font-semibold border border-slate-200/80">Loading...</button>
+                        <Button disabled variant="secondary" color="standard">
+                          Loading...
+                        </Button>
                       ) : isFriend ? (
                         <div className="flex items-center gap-3">
                           <div className="relative">
-                            <button
-                              type="button"
-                              aria-label="Remove friend"
+                            <Button
+                              htmlType="button"
+                              ariaLabel="Remove friend"
                               ref={removeFriendButtonRef}
                               onClick={() => {
                                 setShowRemoveFriendConfirm((prev) => {
@@ -759,7 +821,9 @@ export default function ProfilePage() {
                                   return next;
                                 });
                               }}
-                              className="group w-[128px] px-4 py-2 text-sm rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200/80 shadow-sm transition-colors hover:bg-slate-200/70 dark:bg-blue-950/60 dark:text-white dark:border-blue-400/30 dark:hover:bg-blue-900/60 flex items-center justify-center"
+                              variant="secondary"
+                              color="standard"
+                              className="group w-[128px] relative"
                             >
                               <span className="flex items-center gap-2 transition-opacity group-hover:opacity-0">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -773,26 +837,46 @@ export default function ProfilePage() {
                                 </svg>
                                 Remove
                               </span>
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ) : pendingSent ? (
                         <div className="flex items-center gap-3">
-                          <span className="px-4 py-2 text-sm rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 font-semibold border border-amber-200/50 dark:border-amber-800/50 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Pending
-                          </span>
-                          <button onClick={handleRemove} className="px-4 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold transition-colors border border-slate-200/80 dark:border-slate-700">Cancel Request</button>
+                          <Button
+                            disabled
+                            variant="subtle"
+                            color="standard"
+                            className="px-0"
+                            icon={(
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            )}
+                          >
+                            Request sent
+                          </Button>
+                          <Button onClick={handleRemove} variant="secondary" color="amber">
+                            Cancel
+                          </Button>
                         </div>
                       ) : incomingRequest ? (
                         <div className="flex items-center gap-3">
-                          <button onClick={handleAccept} className="px-4 py-2 text-sm rounded-xl bg-emerald-100 dark:bg-emerald-900/40 hover:bg-emerald-200 dark:hover:bg-emerald-800/40 text-emerald-800 dark:text-emerald-400 font-semibold transition-colors border border-emerald-200/50 dark:border-emerald-800/50">Accept Request</button>
-                          <button onClick={handleRemove} className="px-4 py-2 text-sm rounded-xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-800/40 text-rose-800 dark:text-rose-400 font-semibold transition-colors border border-rose-200/50 dark:border-rose-800/50">Decline</button>
+                          <Button onClick={handleAccept} variant="secondary" color="green">
+                            Accept Request
+                          </Button>
+                          <Button onClick={handleRemove} variant="secondary" color="red">
+                            Decline
+                          </Button>
                         </div>
                       ) : (
-                        <button onClick={handleSendRequest} disabled={sendingRequest} className="px-4 py-2 text-sm rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white font-semibold hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 transition-colors disabled:opacity-50">{sendingRequest ? "Sending..." : "Add Friend"}</button>
+                        <Button
+                          onClick={handleSendRequest}
+                          disabled={sendingRequest}
+                          variant="primary"
+                          color="standard"
+                        >
+                          {sendingRequest ? "Sending..." : "Add Friend"}
+                        </Button>
                       )}
                     </div>
                   )}
@@ -806,20 +890,22 @@ export default function ProfilePage() {
                   >
                     <div className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-3">Remove friend?</div>
                     <div className="flex gap-2">
-                      <button
-                        type="button"
+                      <Button
                         onClick={handleConfirmRemoveFriend}
-                        className="flex-1 px-4 py-2 text-sm rounded-xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-800/40 text-rose-700 dark:text-rose-400 font-semibold transition-colors border border-rose-200/50 dark:border-rose-800/50"
+                        variant="secondary"
+                        color="red"
+                        className="flex-1"
                       >
                         Remove
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
                         onClick={() => setShowRemoveFriendConfirm(false)}
-                        className="flex-1 px-4 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold transition-colors border border-slate-200/80 dark:border-slate-700"
+                        variant="secondary"
+                        color="standard"
+                        className="flex-1"
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </div>
                   </div>,
                   document.body
@@ -892,22 +978,22 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
+                  <Button
                     onClick={handleCancelDeletion}
                     disabled={deletionActionLoading}
-                    className="px-5 py-2.5 rounded-xl bg-white/80 text-slate-700 font-semibold border border-amber-200/80 hover:bg-white transition-colors disabled:opacity-50 dark:bg-amber-950/40 dark:text-amber-100 dark:border-amber-800/60 dark:hover:bg-amber-900/50"
+                    variant="secondary"
+                    color="amber"
                   >
                     {deletionActionLoading ? "Working..." : "Cancel Deletion"}
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
                     onClick={handleDeleteNow}
                     disabled={deletionActionLoading}
-                    className="px-5 py-2.5 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors disabled:opacity-50 dark:bg-rose-600 dark:hover:bg-rose-500"
+                    variant="primary"
+                    color="red"
                   >
                     Delete Now
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -916,55 +1002,30 @@ export default function ProfilePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
               <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes created</h2>
               <div className="flex flex-nowrap items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
-                <div className="relative w-fit max-w-[calc(100%-80px)] sm:max-w-none sm:w-auto min-w-0 overflow-hidden rounded-full border border-slate-200/80 dark:border-slate-800/60 bg-slate-100/80 dark:bg-slate-800/40 h-[40px]">
-                  <div className="flex items-center gap-1.5 p-1 h-full overflow-x-auto overflow-y-hidden no-scrollbar">
-                    {['date', 'stars'].map((option) => {
-                      const isActive = sortBy === option;
-                      const isAsc = isActive && sortDirection === "asc";
-                      return (
-                        <button
-                          key={option}
-                          disabled={isAccountLocked}
-                          onClick={() => {
-                            if (isActive) {
-                              setSortDirection(prev => prev === "desc" ? "asc" : "desc");
-                            } else {
-                              setSortBy(option);
-                              setSortDirection("desc");
-                            }
-                          }}
-                          className={`sorting-button ${isActive ? 'isActive' : ''} w-20 h-8 rounded-full text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1.5 shrink-0 ${isAccountLocked
-                            ? "opacity-50 text-slate-400"
-                            : isActive
-                              ? 'bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-300 dark:border-slate-500'
-                              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                            }`}
-                          style={{ WebkitTapHighlightColor: 'transparent' }}
-                        >
-                          <span className="leading-none">{option === 'date' ? (isAsc ? 'Oldest' : 'Newest') : 'Likes'}</span>
-                          {isActive && (
-                            <span className="flex items-center justify-center shrink-0">
-                              {isAsc ? (
-                                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 5l4 6H6l4-6z" />
-                                </svg>
-                              ) : (
-                                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 15l-4-6h8l-4 6z" />
-                                </svg>
-                              )}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className={`px-4 py-2.5 rounded-full border flex items-center h-[40px] cursor-default shrink-0 ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
-                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
-                    {createdQuizzes.length} quiz{createdQuizzes.length !== 1 ? 'zes' : ''}
-                  </span>
-                </div>
+                <InfoChip
+                  variant="subtle"
+                  size="md"
+                  color="slate"
+                  className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : undefined}
+                >
+                  {formatQuizCountLabel(createdQuizzes.length)}
+                </InfoChip>
+                <SortingChipBar
+                  chips={createdSortChips}
+                  activeValue={sortBy}
+                  direction={sortDirection}
+                  disabled={isAccountLocked}
+                  ariaLabel="Sort created quizzes"
+                  className="w-fit max-w-[calc(100%-80px)] sm:max-w-none sm:w-auto"
+                  onChipClick={(value) => {
+                    if (sortBy === value) {
+                      setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                      return;
+                    }
+                    setSortBy(value);
+                    setSortDirection("desc");
+                  }}
+                />
               </div>
             </div>
             {createdQuizzes.length === 0 ? (
@@ -980,13 +1041,14 @@ export default function ProfilePage() {
                 </p>
                 {isOwnProfile && !isAccountLocked && (
                   <div className="mt-6">
-                    <Link
+                    <Button
                       to="/quizzes/create"
                       state={{ returnTo: location.pathname }}
-                      className="inline-flex items-center justify-center rounded-xl bg-slate-800 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+                      variant="primary"
+                      color="standard"
                     >
                       Create a quiz
-                    </Link>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -1006,14 +1068,10 @@ export default function ProfilePage() {
                     return 0;
                   })
                   .map((quiz) => {
-                    const totalAttempts = quiz.attempts?.length || 0;
-                    const passes = quiz.attempts?.filter(attempt => {
-                      const percentage = (attempt.correct / quiz.questions.length) * 100;
-                      return percentage >= 60;
-                    }).length || 0;
-                    const passRate = totalAttempts > 0 ? Math.round((passes / totalAttempts) * 100) : 0;
-                    const avgScore = totalAttempts > 0
-                      ? Math.round((quiz.attempts.reduce((sum, a) => sum + a.correct, 0) / totalAttempts / quiz.questions.length) * 100)
+                    const questionCount = quiz.questions?.length || 0;
+                    const passThreshold = Number.isFinite(quiz.req_to_pass) ? quiz.req_to_pass : questionCount;
+                    const passThresholdPercent = questionCount > 0
+                      ? Math.round((passThreshold / questionCount) * 100)
                       : 0;
                     const titleLength = quiz.title?.length || 0;
                     const titleSizeClass = titleLength > 60
@@ -1052,101 +1110,58 @@ export default function ProfilePage() {
                           }}
                         ></div>
                         <div className="relative z-10">
-                          <div className={`flex items-center justify-between px-4 py-2 ${categoryStripeColors[quiz.category] || categoryStripeColors.other}`}>
-                            <div className="flex items-center gap-2">
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {categoryIcons[quiz.category] || categoryIcons.other}
-                              </svg>
-                              <span className="text-xs font-semibold capitalize">{quiz.category}</span>
-                            </div>
-                            <span className="text-xs font-semibold flex items-center gap-1">
-                              <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-3.5 w-3.5"
+                          <div className={`flex items-stretch justify-between pl-2 pr-0 ${categoryStripeColors[quiz.category] || categoryStripeColors.other}`}>
+                            <div className="flex items-center py-0.5">
+                              <InfoChip
+                                variant="subtle"
+                                size="sm"
+                                color={categoryChipColors[quiz.category] || categoryChipColors.other}
+                                className="min-h-0 gap-1 px-0 py-0 text-xs"
+                                icon={(
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    {categoryIcons[quiz.category] || categoryIcons.other}
+                                  </svg>
+                                )}
                               >
-                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
-                                <rect x="3" y="7" width="12" height="14" rx="2" />
-                              </svg>
-                              {quiz.questions.length} Question{quiz.questions.length !== 1 ? 's' : ''}
-                            </span>
+                                {formatCategoryLabel(quiz.category)}
+                              </InfoChip>
+                            </div>
+                            <InfoChip
+                              variant="subtle"
+                              size="sm"
+                              color={categoryChipColors[quiz.category] || categoryChipColors.other}
+                              className="min-h-0 self-stretch !rounded-none px-3 text-xs hover:bg-white/20 dark:hover:bg-white/10"
+                              icon={(
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  className="h-3.5 w-3.5"
+                                  fill={myFavourites.some((item) => {
+                                    const itemId = typeof item === "string" ? item : item._id;
+                                    return itemId === quiz._id;
+                                  }) ? "currentColor" : "none"}
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                </svg>
+                              )}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const isFavourited = myFavourites.some((item) => {
+                                  const itemId = typeof item === "string" ? item : item._id;
+                                  return itemId === quiz._id;
+                                });
+                                handleToggleFavourite(quiz, isFavourited);
+                              }}
+                              ariaLabel="Toggle favourite"
+                              title="Toggle favourite"
+                            >
+                              {getFavouriteCount(quiz)}
+                            </InfoChip>
                           </div>
                           <div className="px-6 pt-4 pb-3">
-                            <div className="flex items-center justify-between mb-4">
-                              <span className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficultyChips[quiz.difficulty || "medium"].className}`}>
-                                <span
-                                  aria-hidden="true"
-                                  className="h-4 w-4"
-                                  style={{
-                                    backgroundColor: "currentColor",
-                                    maskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
-                                    WebkitMaskImage: `url(${difficultyChips[quiz.difficulty || "medium"].icon})`,
-                                    maskRepeat: "no-repeat",
-                                    WebkitMaskRepeat: "no-repeat",
-                                    maskPosition: "center",
-                                    WebkitMaskPosition: "center",
-                                    maskSize: "contain",
-                                    WebkitMaskSize: "contain"
-                                  }}
-                                ></span>
-                                <span className="capitalize">{quiz.difficulty || "medium"}</span>
-                              </span>
-                              {isOwnProfile && !isAccountLocked && (
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      const isFavourited = myFavourites.some((item) => {
-                                        const itemId = typeof item === "string" ? item : item._id;
-                                        return itemId === quiz._id;
-                                      });
-                                      handleToggleFavourite(quiz, isFavourited);
-                                    }}
-                                    className="h-10 px-3 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 backdrop-blur text-slate-500 dark:text-slate-400 transition-all duration-100 ease-out hover:text-amber-500 dark:hover:text-amber-400 hover:bg-white dark:hover:bg-slate-700/80 active:scale-95 flex items-center gap-2"
-                                    aria-label="Toggle favourite"
-                                    title="Toggle favourite"
-                                  >
-                                    <svg
-                                      viewBox="0 0 24 24"
-                                      className="h-4 w-4"
-                                      fill={myFavourites.some((item) => {
-                                        const itemId = typeof item === "string" ? item : item._id;
-                                        return itemId === quiz._id;
-                                      }) ? "currentColor" : "none"}
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    >
-                                      <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                    </svg>
-                                    <span className="text-sm font-semibold">
-                                      {quiz.favourited_count ?? (Array.isArray(quiz.favourites) ? quiz.favourites.length : (quiz.favouritesCount ?? 0))}
-                                    </span>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setQuizToDelete(quiz);
-                                      setShowDeleteConfirm(true);
-                                    }}
-                                    className="h-10 w-10 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 backdrop-blur text-rose-500 dark:text-rose-400 transition-all duration-100 ease-out hover:bg-rose-100/70 dark:hover:bg-rose-500 dark:hover:text-white active:scale-95"
-                                    aria-label="Delete quiz"
-                                    title="Delete quiz"
-                                  >
-                                    <svg className="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                  </button>
-                                </div>
-                              )}
-                            </div>
                             <div className="mb-3 h-16 w-full">
                               <h3
                                 className={`${titleSizeClass} font-semibold text-slate-800 transition-colors line-clamp-2 text-center h-full w-full flex items-center justify-center`}
@@ -1156,55 +1171,81 @@ export default function ProfilePage() {
                             </div>
                             <div className="mb-3 text-xs text-slate-600 dark:text-slate-400 divide-y divide-slate-200/80 dark:divide-slate-800/90">
                               <div className="flex items-center justify-between py-2">
+                                <span>Questions</span>
+                                <span className="font-semibold text-slate-800">{questionCount}</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2">
                                 <span>Answers per question</span>
                                 <span className="font-semibold text-slate-800">{answersPerQuestion}</span>
                               </div>
                               <div className="flex items-center justify-between py-2">
-                                <span>Attempts</span>
-                                <span className="font-semibold text-slate-800">{totalAttempts}</span>
+                                <span>Pass threshold</span>
+                                <span className="font-semibold text-slate-800">{passThresholdPercent}%</span>
                               </div>
                               <div className="flex items-center justify-between py-2">
-                                <span>Pass Rate</span>
-                                <span className="font-semibold text-slate-800">{passRate}%</span>
-                              </div>
-                              <div className="flex items-center justify-between py-2">
-                                <span>Avg Score</span>
-                                <span className="font-semibold text-slate-800">{avgScore}%</span>
+                                <span>Difficulty</span>
+                                <span className="font-semibold text-slate-800">{difficultyChips[quiz.difficulty || "medium"].label}</span>
                               </div>
                             </div>
-                            <div className={`grid gap-2 ${isOwnProfile ? "sm:grid-cols-2" : "grid-cols-1"}`}>
-                              {isOwnProfile && !isAccountLocked && (
-                                <button
+                            {isOwnProfile && !isAccountLocked && (
+                              <div className="grid gap-2">
+                                <Button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    navigate(`/quiz/${quiz._id}/edit`, {
-                                      state: { from: "profile", returnTo: toProfileUrl(routeUsername) }
-                                    });
+                                    if (isAccountLocked) return;
+                                    handleViewStats(quiz._id);
                                   }}
-                                  className="w-full px-4 py-2.5 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-200 text-sm font-bold transition-all duration-100 ease-out hover:bg-slate-100/80 dark:hover:bg-slate-700/50 active:scale-95 flex items-center justify-center gap-2"
+                                  disabled={isAccountLocked}
+                                  variant="secondary"
+                                  color="standard"
+                                  className="w-full"
+                                  icon={(
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                  )}
                                 >
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
-                                  </svg>
-                                  Edit Quiz
-                                </button>
-                              )}
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (isAccountLocked) return;
-                                  handleViewStats(quiz._id);
-                                }}
-                                disabled={isAccountLocked}
-                                className={`w-full px-4 py-2.5 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-200 text-sm font-bold transition-all duration-100 ease-out flex items-center justify-center gap-2 ${isAccountLocked ? "opacity-50" : "hover:bg-slate-100/80 dark:hover:bg-slate-700/50 active:scale-95"
-                                  }`}
-                              >
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                                View Stats
-                              </button>
-                            </div>
+                                  Quiz statistics
+                                </Button>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate(`/quiz/${quiz._id}/edit`, {
+                                        state: { from: "profile", returnTo: toProfileUrl(routeUsername) }
+                                      });
+                                    }}
+                                    variant="secondary"
+                                    color="standard"
+                                    className="w-full"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
+                                      </svg>
+                                    )}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setQuizToDelete(quiz);
+                                      setShowDeleteConfirm(true);
+                                    }}
+                                    variant="secondary"
+                                    color="red"
+                                    className="w-full"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                      </svg>
+                                    )}
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
                             <div className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
                               <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -1230,11 +1271,14 @@ export default function ProfilePage() {
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Favourites</h2>
-                <div className={`px-4 py-2.5 rounded-full border flex items-center h-[38px] cursor-default ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
-                  <span className={`font-semibold text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
-                    {myFavourites.length} quiz{myFavourites.length !== 1 ? 'zes' : ''}
-                  </span>
-                </div>
+                <InfoChip
+                  variant="subtle"
+                  size="md"
+                  color="slate"
+                  className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : undefined}
+                >
+                  {formatQuizCountLabel(myFavourites.length)}
+                </InfoChip>
               </div>
               {myFavourites.length === 0 ? (
                 <div className="text-center py-10">
@@ -1271,110 +1315,133 @@ export default function ProfilePage() {
                     const cardContent = (
                       <>
                         <div className="p-4">
-                          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-                              <h3 className="text-base font-semibold text-slate-800 truncate">{quizTitle}</h3>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 dark:text-slate-500">
-                                <span>{favouriteCount}</span>
-                                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                  <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                </svg>
-                              </span>
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.preventDefault();
-                                  event.stopPropagation();
+                            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+                                <h3 className="text-base font-semibold text-slate-800 truncate">{quizTitle}</h3>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Button
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
                                   if (isAccountLocked) return;
                                   handleRemoveFavourite(quizId);
                                 }}
                                 disabled={isAccountLocked}
-                                className={`px-3 py-1.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 backdrop-blur text-rose-600 dark:text-rose-400 text-xs font-bold transition-all duration-100 ease-out ${isAccountLocked ? "opacity-50" : "hover:bg-rose-100/80 dark:hover:bg-rose-900/50 active:scale-95"}`}
-                              >
-                                Remove
-                              </button>
+                                variant="secondary"
+                                color="standard"
+                                className="px-3"
+                                ariaLabel="Remove from favourites"
+                                title="Remove from favourites"
+                                  icon={(
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      className="h-4 w-4"
+                                      fill="currentColor"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                    </svg>
+                                  )}
+                                >
+                                  <span className="text-sm font-semibold">{favouriteCount}</span>
+                                </Button>
+                              </div>
                             </div>
-                          </div>
                           <div className="flex flex-wrap items-center gap-2 mb-3">
-                            <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${categoryColors[quizCategory] || categoryColors.other}`}>
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {categoryIcons[quizCategory] || categoryIcons.other}
-                              </svg>
-                              <span className="capitalize">{quizCategory || "other"}</span>
-                            </div>
-                            <div className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficulty.className}`}>
-                              <span
-                                aria-hidden="true"
-                                className="h-4 w-4"
-                                style={{
-                                  backgroundColor: "currentColor",
-                                  maskImage: `url(${difficulty.icon})`,
-                                  WebkitMaskImage: `url(${difficulty.icon})`,
-                                  maskRepeat: "no-repeat",
-                                  WebkitMaskRepeat: "no-repeat",
-                                  maskPosition: "center",
-                                  WebkitMaskPosition: "center",
-                                  maskSize: "contain",
-                                  WebkitMaskSize: "contain"
-                                }}
-                              ></span>
-                              <span>{difficulty.label}</span>
-                            </div>
+                            <InfoChip
+                              variant="primary"
+                              size="sm"
+                              color={categoryChipColors[quizCategory] || categoryChipColors.other}
+                              icon={(
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  {categoryIcons[quizCategory] || categoryIcons.other}
+                                </svg>
+                              )}
+                            >
+                              {formatCategoryLabel(quizCategory)}
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color={difficulty.color}
+                              icon={renderDifficultyIcon(difficulty.icon)}
+                            >
+                              {difficulty.label}
+                            </InfoChip>
                             {creatorName && (
                               creatorIsDeleted || isAccountLocked || isMyOwnQuiz ? (
-                                <span className={`rounded-full px-3 py-1.5 text-xs font-bold border border-slate-200/80 bg-white/70 ${creatorIsDeleted ? "text-slate-400" : "text-slate-600 dark:group-hover:text-white"}`}>
-                                  {isMyOwnQuiz ? 'Created by you' : `Created by ${creatorIsDeleted ? "deleted user" : creatorName}`}
-                                </span>
+                                <InfoChip
+                                  variant="subtle"
+                                  size="sm"
+                                  color="slate"
+                                  className={creatorIsDeleted ? "text-slate-400 dark:text-slate-500" : "dark:group-hover:text-white"}
+                                >
+                                  {isMyOwnQuiz ? "Created by you" : `Created by ${creatorIsDeleted ? "deleted user" : creatorName}`}
+                                </InfoChip>
                               ) : (
-                                <button
-                                  type="button"
+                                <InfoChip
+                                  variant="subtle"
+                                  size="sm"
+                                  color="slate"
                                   onClick={(event) => {
                                     event.preventDefault();
                                     event.stopPropagation();
                                     navigate(toProfileUrl(creatorName));
                                   }}
-                                  className="rounded-full px-3 py-1.5 text-xs font-bold text-slate-600 dark:group-hover:text-white transition-all hover:bg-white/20 bg-white/70 border border-slate-200/80 active:scale-95"
+                                  className="dark:group-hover:text-white"
                                 >
                                   Created by {creatorName}
-                                </button>
+                                </InfoChip>
                               )
                             )}
                           </div>
                           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:group-hover:text-white/80">
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-3.5 w-3.5"
-                              >
-                                <path d="M9 2h10a2 2 0 0 1 2 2v10" />
-                                <rect x="3" y="7" width="12" height="14" rx="2" />
-                              </svg>
-                              <span className="font-semibold text-slate-800">{questionCount}</span>
-                              <span className="text-slate-500">Questions</span>
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <span className="font-semibold text-slate-800">
-                                {passPercent !== null ? `${passPercent}%` : "--"}
-                              </span>
-                              <span className="text-slate-500">
-                                to pass
-                              </span>
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <span className="font-semibold text-slate-800">{allowsMultiple ? "Multi" : "Single"}</span>
-                              <span className="text-slate-600">Correct</span>
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-100/70 px-2.5 py-1">
-                              <span className="font-semibold text-slate-800">{isQuizLocked ? "Locked" : "Changeable"}</span>
-                              <span className="text-slate-600">Answers</span>
-                            </span>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                              icon={(
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-3.5 w-3.5"
+                                >
+                                  <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                  <rect x="3" y="7" width="12" height="14" rx="2" />
+                                </svg>
+                              )}
+                            >
+                              {questionCount} questions
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                            >
+                              {passPercent !== null ? `${passPercent}%` : "--"} to pass
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                            >
+                              {allowsMultiple ? "Multi" : "Single"} correct
+                            </InfoChip>
+                            <InfoChip
+                              variant="secondary"
+                              size="sm"
+                              color="slate"
+                            >
+                              {isQuizLocked ? "Locked" : "Changeable"} answers
+                            </InfoChip>
                           </div>
                         </div>
                       </>
@@ -1439,72 +1506,31 @@ export default function ProfilePage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                   <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes Taken</h2>
                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="relative flex-1 sm:flex-none bg-slate-100/80 dark:bg-slate-800/40 rounded-full border border-slate-200/80 dark:border-slate-800/60 overflow-hidden group/taken-sort h-[40px]">
-                      <div className="flex items-center gap-1.5 p-1 h-full overflow-x-auto overflow-y-hidden no-scrollbar relative w-full">
-                        {['highest_score', 'category', 'difficulty', 'questions', 'taken_on'].map((option) => {
-                          const isActive = takenSortBy === option;
-                          const isAsc = isActive && takenSortDirection === "asc";
-                          const labels = {
-                            highest_score: 'Score',
-                            questions: 'Questions',
-                            taken_on: 'Taken on',
-                            category: 'Category',
-                            difficulty: 'Difficulty'
-                          };
-                          const widths = {
-                            highest_score: 'w-20',
-                            questions: 'w-20',
-                            taken_on: 'w-[84px]',
-                            category: 'w-20',
-                            difficulty: 'w-20'
-                          };
-                          return (
-                            <button
-                              key={option}
-                              disabled={isAccountLocked}
-                              onClick={() => {
-                                if (isActive) {
-                                  setTakenSortDirection(prev => prev === "desc" ? "asc" : "desc");
-                                } else {
-                                  setTakenSortBy(option);
-                                  setTakenSortDirection("desc");
-                                }
-                              }}
-                              className={`sorting-button ${isActive ? 'isActive' : ''} ${widths[option]} h-8 rounded-full text-[10px] sm:text-xs font-semibold transition-all outline-none focus:outline-none focus:ring-0 active:scale-95 select-none flex items-center justify-center gap-1.5 shrink-0 ${isAccountLocked
-                                ? "opacity-50 text-slate-400"
-                                : isActive
-                                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200/80 dark:border-slate-500'
-                                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                                }`}
-                              style={{ WebkitTapHighlightColor: 'transparent' }}
-                            >
-                              <span className="leading-none">{labels[option] || option}</span>
-                              {isActive && (
-                                <span className="flex items-center justify-center shrink-0">
-                                  {isAsc ? (
-                                    <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M10 5l4 6H6l4-6z" />
-                                    </svg>
-                                  ) : (
-                                    <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M10 15l-4-6h8l-4 6z" />
-                                    </svg>
-                                  )}
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {/* Fixed Shadows for Mobile Scroll */}
-                      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-slate-100/95 dark:from-slate-800/95 to-transparent pointer-events-none sm:hidden z-10" />
-                      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-slate-100/95 dark:from-slate-800/95 to-transparent pointer-events-none sm:hidden z-10" />
-                    </div>
-                    <div className={`px-4 py-2.5 rounded-full border flex items-center h-[40px] cursor-default shrink-0 ${isAccountLocked ? 'bg-slate-50/80 border-slate-200/60 dark:bg-slate-900/40 dark:border-slate-800/40' : 'bg-slate-100/80 border-slate-200/80 dark:bg-slate-800/50 dark:border-slate-700/50'}`}>
-                      <span className={`font-semibold text-[10px] sm:text-xs whitespace-nowrap leading-none ${isAccountLocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
-                        {takenQuizzes.length} {takenQuizzes.length === 1 ? 'quiz' : 'quizzes'}
-                      </span>
-                    </div>
+                    <InfoChip
+                      variant="subtle"
+                      size="md"
+                      color="slate"
+                      className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : undefined}
+                    >
+                      {formatQuizCountLabel(takenQuizzes.length)}
+                    </InfoChip>
+                    <SortingChipBar
+                      chips={takenSortChips}
+                      activeValue={takenSortBy}
+                      direction={takenSortDirection}
+                      disabled={isAccountLocked}
+                      ariaLabel="Sort taken quizzes"
+                      className="flex-1 sm:flex-none"
+                      showMobileFade
+                      onChipClick={(value) => {
+                        if (takenSortBy === value) {
+                          setTakenSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                          return;
+                        }
+                        setTakenSortBy(value);
+                        setTakenSortDirection("desc");
+                      }}
+                    />
                   </div>
                 </div>
 
@@ -1529,15 +1555,15 @@ export default function ProfilePage() {
                         };
                         return categoryColors[favoriteCat] || categoryColors.other;
                       })()}>
-                        {(() => {
+                        {formatCategoryLabel((() => {
                           if (takenQuizzes.length === 0) return "--";
                           const counts = {};
                           takenQuizzes.forEach(q => {
-                            const cat = q.category || 'other';
+                            const cat = q.category || "other";
                             counts[cat] = (counts[cat] || 0) + 1;
                           });
                           return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
-                        })()}
+                        })())}
                       </span>
                     </div>
                   </div>
@@ -1622,18 +1648,17 @@ export default function ProfilePage() {
                     const takenContent = (
                       <div className="flex flex-col gap-4">
                         <div className="flex items-start justify-between gap-4">
-                          <div>
+                          <div className="min-w-0 flex-1 text-left">
                             <h3 className="text-lg font-bold text-slate-800 mb-1 line-clamp-1">{quiz.title}</h3>
                             <div className="text-xs font-medium text-slate-500 dark:group-hover:text-white/80 text-left">
-                              Took on {new Date(quiz.attempted_at).toLocaleDateString("en-GB", {
+                              Taken on {new Date(quiz.attempted_at).toLocaleDateString("en-GB", {
                                 day: "numeric",
                                 month: "short",
                                 year: "numeric"
                               })}
                             </div>
                           </div>
-                          <button
-                            type="button"
+                          <Button
                             onClick={(event) => {
                               event.preventDefault();
                               event.stopPropagation();
@@ -1641,59 +1666,65 @@ export default function ProfilePage() {
                               handleToggleFavourite(quiz, isFavourited);
                             }}
                             disabled={isAccountLocked}
-                            className="h-10 px-3 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 backdrop-blur text-slate-500 dark:text-slate-400 transition-all duration-100 ease-out hover:text-amber-500 dark:hover:text-amber-400 hover:bg-white dark:hover:bg-slate-700/80 active:scale-95 flex items-center gap-2 disabled:opacity-50"
-                            aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                            variant="secondary"
+                            color="standard"
+                            className="px-3"
+                            ariaLabel={isFavourited ? "Remove from favourites" : "Add to favourites"}
                             title={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                            icon={(
+                              <svg
+                                viewBox="0 0 24 24"
+                                className="h-4 w-4"
+                                fill={isFavourited ? "currentColor" : "none"}
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                              </svg>
+                            )}
                           >
-                            <svg
-                              viewBox="0 0 24 24"
-                              className="h-4 w-4"
-                              fill={isFavourited ? "currentColor" : "none"}
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                            </svg>
                             <span className="text-sm font-semibold">{favouriteCount}</span>
-                          </button>
+                          </Button>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                          <div className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all duration-200 ease-in-out ${categoryColors[quizCategory] || categoryColors.other}`}>
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                              {categoryIcons[quizCategory] || categoryIcons.other}
-                            </svg>
-                            <span className="capitalize">{quizCategory}</span>
-                          </div>
-
-                          <div className={`inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-slate-700 transition-all duration-200 ease-in-out ${difficulty.className}`}>
-                            <span
-                              aria-hidden="true"
-                              className="h-3.5 w-3.5"
-                              style={{
-                                backgroundColor: "currentColor",
-                                maskImage: `url(${difficulty.icon})`,
-                                WebkitMaskImage: `url(${difficulty.icon})`,
-                                maskRepeat: "no-repeat",
-                                WebkitMaskRepeat: "no-repeat",
-                                maskPosition: "center",
-                                WebkitMaskPosition: "center",
-                                maskSize: "contain",
-                                WebkitMaskSize: "contain"
-                              }}
-                            ></span>
-                            <span>{difficulty.label}</span>
-                          </div>
-                          {isMastered && (
-                            <div className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700 border border-amber-200 dark:bg-amber-900/40 dark:text-amber-200 dark:border-amber-800/60">
-                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
-                                <path d="M5 16h14l-1 7H6l-1-7z" />
+                          <InfoChip
+                            variant="primary"
+                            size="sm"
+                            color={categoryChipColors[quizCategory] || categoryChipColors.other}
+                            icon={(
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                {categoryIcons[quizCategory] || categoryIcons.other}
                               </svg>
-                              <span>Mastered</span>
-                            </div>
+                            )}
+                          >
+                            {formatCategoryLabel(quizCategory)}
+                          </InfoChip>
+
+                          <InfoChip
+                            variant="secondary"
+                            size="sm"
+                            color={difficulty.color}
+                            icon={renderDifficultyIcon(difficulty.icon, "h-3.5 w-3.5")}
+                          >
+                            {difficulty.label}
+                          </InfoChip>
+                          {isMastered && (
+                            <InfoChip
+                              variant="primary"
+                              size="sm"
+                              color="amber"
+                              icon={(
+                                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                                  <path d="M5 16h14l-1 7H6l-1-7z" />
+                                </svg>
+                              )}
+                            >
+                              Mastered
+                            </InfoChip>
                           )}
                         </div>
 
@@ -1781,17 +1812,17 @@ export default function ProfilePage() {
               </p>
               {isOwnProfile && !isAccountLocked && (
                 <div className="mt-6">
-                  <Link
+                  <Button
                     to="/"
-                    className="inline-flex items-center justify-center rounded-xl bg-slate-800 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+                    variant="primary"
+                    color="standard"
                   >
                     Take a quiz
-                  </Link>
+                  </Button>
                 </div>
               )}
             </div>
           )}
-        </main>
         {selectedQuizForStats && (
           <QuizStats
             quiz={selectedQuizForStats}
@@ -1829,29 +1860,30 @@ export default function ProfilePage() {
                   attempts, and leaderboard entries will be permanently removed.
                 </p>
                 <div className="flex gap-3">
-                  <button
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors"
-                    type="button"
+                  <Button
+                    className="flex-1"
+                    variant="primary"
+                    color="red"
                     onClick={handleDeleteQuiz}
                   >
                     Delete Quiz
-                  </button>
-                  <button
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-white/70 border border-slate-200/80 text-slate-700 font-semibold hover:bg-white transition-colors"
-                    type="button"
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    variant="secondary"
+                    color="standard"
                     onClick={() => {
                       setShowDeleteConfirm(false);
                       setQuizToDelete(null);
                     }}
                   >
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
           )
         }
-      </div >
-    </>
+    </PageShell>
   );
 }

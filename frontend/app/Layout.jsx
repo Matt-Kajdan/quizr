@@ -12,6 +12,7 @@ import NavBar from "./NavBar";
 import { LogOut, Sun, Moon } from "lucide-react";
 
 function Layout() {
+    const gitBranch = import.meta.env.DEV ? import.meta.env.VITE_GIT_BRANCH : "";
     const location = useLocation();
     const navigate = useNavigate();
     const user = useAuth();
@@ -59,6 +60,11 @@ function Layout() {
 
     return (
         <div className={`flex flex-col min-h-screen ${isMobile ? 'pb-16' : 'pt-16'}`}>
+            {gitBranch && (
+                <div className="pointer-events-none fixed left-2 top-2 z-[100] text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-500">
+                    {gitBranch}
+                </div>
+            )}
             {isMobile && !hideNavbar && !isQuizEditor && (
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80 pt-[env(safe-area-inset-top)]">
                     <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-3">

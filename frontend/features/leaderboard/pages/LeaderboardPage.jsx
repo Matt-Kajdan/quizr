@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getLeaderboard } from "@features/quizzes/api/quizzes";
+import { PageShell } from "@shared/components/PageShell";
+import { PageHeader } from "@shared/components/PageHeader";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 const columns = [
@@ -182,29 +184,10 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <>
-      <div className="fixed inset-0 -top-20" style={opalBackdropStyle}></div>
-      <div className="fixed inset-0 -top-20 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-      </div>
-      <div className="relative min-h-screen pt-16 sm:pt-20">
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:py-12 min-h-full">
-          <div className="mb-9 sm:mb-12 text-center mt-0">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-slate-800 mb-3 sm:mb-4 select-none">
-              Leaderboard
-            </h1>
-            <p className="text-slate-600 text-base sm:text-lg select-none">All quizzes combined</p>
-          </div>
+    <PageShell>
+      <PageHeader title="Leaderboard" subtitle="All quizzes combined" />
 
-          <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
+      <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
             <div className="rounded-2xl border border-slate-200/80 bg-white/60 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[640px] text-sm sm:text-base">
@@ -331,8 +314,6 @@ export default function LeaderboardPage() {
               </button>
             </div>
           )}
-        </main>
-      </div>
-    </>
+    </PageShell>
   );
 }

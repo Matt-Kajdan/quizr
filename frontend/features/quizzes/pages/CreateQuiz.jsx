@@ -8,9 +8,11 @@ import {
   withEditorQuestionId,
 } from "@features/quizzes/components/questionEditorUtils";
 import { DIFFICULTY_ICONS } from "@shared/assets/icons";
+import { PageShell } from "@shared/components/PageShell";
 import { useAuth } from "@shared/auth/useAuth";
 import { auth } from "@shared/auth/firebase";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
+import { PageHeader } from "@shared/components/PageHeader";
 import { LogOut } from "lucide-react";
 
 export default function CreateQuiz() {
@@ -45,10 +47,6 @@ export default function CreateQuiz() {
   const [ignoreBlocker, setIgnoreBlocker] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [isQuestionDragging, setIsQuestionDragging] = useState(false);
-  const opalBackdropStyle = {
-    backgroundColor: "var(--opal-bg-color)",
-    backgroundImage: "var(--opal-backdrop-image)"
-  };
 
   useEffect(() => {
     const currentCount = questions.length;
@@ -339,19 +337,9 @@ export default function CreateQuiz() {
 
   return (
     <>
-      <div className="fixed inset-0" style={opalBackdropStyle}></div>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-      </div>
-      <div className={`relative min-h-screen pt-16 sm:pt-20`}>
+      <PageShell
+        mainClassName={questions.length > 0 && isMobile ? "pt-20 sm:pt-8" : undefined}
+      >
         {/* Mobile Top Bar */}
         {questions.length > 0 && isMobile && (
           <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80 pt-[env(safe-area-inset-top)]">
@@ -395,15 +383,9 @@ export default function CreateQuiz() {
             </div>
           </div>
         )}
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 min-h-full">
-          <div className="mb-9 sm:mb-12 text-center mt-0">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-slate-800 mb-3 sm:mb-4 select-none">
-              Create New Quiz
-            </h1>
-            <p className="text-slate-600 text-base sm:text-lg select-none">Design your own quiz</p>
-          </div>
+        <PageHeader title="Create New Quiz" subtitle="Design your own quiz" />
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
             <div className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
               <label className="block text-slate-800 font-semibold mb-3 text-lg">
                 Quiz Title
@@ -688,9 +670,8 @@ export default function CreateQuiz() {
                 </div>
               </div>
             )}
-          </form>
-        </main>
-      </div>
+        </form>
+      </PageShell>
     </>
   );
 }

@@ -1,0 +1,89 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { SortingChipBar } from "@shared/components/SortingChipBar";
+
+const chips = [
+  { value: "date", label: "Newest", reverseLabel: "Oldest" },
+  { value: "stars", label: "Likes" },
+];
+
+describe("SortingChipBar", () => {
+  it("renders all chips and marks the active one as pressed", () => {
+    render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="date"
+        direction="desc"
+        onChipClick={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Newest" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Likes" }).getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("shows the reverse label only for the active ascending chip", () => {
+    render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="date"
+        direction="asc"
+        onChipClick={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Oldest" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Newest" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Likes" })).toBeTruthy();
+  });
+
+  it("shows the direction arrow only on the active chip", () => {
+    const { container } = render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="stars"
+        direction="desc"
+        onChipClick={vi.fn()}
+      />
+    );
+
+    const newestButton = screen.getByRole("button", { name: "Newest" });
+    const likesButton = screen.getByRole("button", { name: "Likes" });
+
+    expect(newestButton.querySelector("svg")).toBeNull();
+    expect(likesButton.querySelector("svg")).toBeTruthy();
+    expect(container.querySelectorAll("svg")).toHaveLength(1);
+  });
+
+  it("calls onChipClick with the clicked chip value", () => {
+    const onChipClick = vi.fn();
+
+    render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="date"
+        direction="desc"
+        onChipClick={onChipClick}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Likes" }));
+
+    expect(onChipClick).toHaveBeenCalledWith("stars");
+  });
+
+  it("disables all chips when the bar is disabled", () => {
+    render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="date"
+        direction="desc"
+        disabled
+        onChipClick={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Newest" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("button", { name: "Likes" }).hasAttribute("disabled")).toBe(true);
+  });
+});

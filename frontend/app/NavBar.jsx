@@ -2,6 +2,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "@shared/auth/authService";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { useAuth } from "@shared/auth/useAuth";
+import { Button } from "@shared/components/Button";
 import { useTheme } from "@shared/state/useTheme";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import UserSearchBar from "@features/users/components/UserSearchBar";
@@ -47,6 +48,26 @@ function NavBar({ accountStatus, accountUsername }) {
       searchInput.focus();
     }
   };
+
+  const desktopNavLinks = [
+    { to: "/", label: "Home", minWidthClass: "min-w-[5.5rem]" },
+    { to: "/quizzes/create", label: "Create Quiz", minWidthClass: "min-w-[7.5rem]" },
+    { to: "/friends", label: "Friends", minWidthClass: "min-w-[6.5rem]", requiresAuth: true },
+    { to: "/leaderboard", label: "Leaderboard", minWidthClass: "min-w-[8.5rem]", requiresAuth: true },
+  ];
+
+  function isDesktopNavActive(to) {
+    if (to === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname === to || location.pathname.startsWith(`${to}/`);
+  }
+
+  function handleDesktopNavClick(event, to) {
+    if (!isDesktopNavActive(to)) return;
+    event.preventDefault();
+    navigate(0);
+  }
 
   if (isMobile) {
     return (
@@ -103,60 +124,26 @@ function NavBar({ accountStatus, accountUsername }) {
           <div className="flex items-center gap-1.5">
             {!isAccountLocked && (
               <>
-                <NavLink
-                  to="/"
-                  onClick={(event) => {
-                    if (location.pathname === "/") {
-                      event.preventDefault();
-                      navigate(0);
-                    }
-                  }}
-                  className={({ isActive }) =>
-                    `text-sm transition-all duration-200 h-11 px-4 min-w-[5.5rem] justify-center rounded-xl inline-flex items-center ${isActive
-                      ? "text-slate-900 dark:text-slate-100 font-bold hover:text-slate-900 dark:hover:text-slate-100 dark:hover:bg-slate-800/40"
-                      : "text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 dark:hover:bg-slate-800/40"
-                    }`
-                  }
-                >
-                  Home
-                </NavLink>
-                <NavLink
-                  to="/quizzes/create"
-                  className={({ isActive }) =>
-                    `text-sm transition-all duration-200 h-11 px-4 min-w-[7.5rem] justify-center rounded-xl inline-flex items-center ${isActive
-                      ? "text-slate-900 dark:text-slate-100 font-bold hover:text-slate-900 dark:hover:text-slate-100 dark:hover:bg-slate-800/40"
-                      : "text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 dark:hover:bg-slate-800/40"
-                    }`
-                  }
-                >
-                  Create Quiz
-                </NavLink>
-                {user && (
-                  <NavLink
-                    to="/friends"
-                    className={({ isActive }) =>
-                      `text-sm transition-all duration-200 h-11 px-4 min-w-[6.5rem] justify-center rounded-xl inline-flex items-center ${isActive
-                        ? "text-slate-900 dark:text-slate-100 font-bold hover:text-slate-900 dark:hover:text-slate-100 dark:hover:bg-slate-800/40"
-                        : "text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 dark:hover:bg-slate-800/40"
-                      }`
-                    }
-                  >
-                    Friends
-                  </NavLink>
-                )}
-                {user && (
-                  <NavLink
-                    to="/leaderboard"
-                    className={({ isActive }) =>
-                      `text-sm transition-all duration-200 h-11 px-4 min-w-[8.5rem] justify-center rounded-xl inline-flex items-center ${isActive
-                        ? "text-slate-900 dark:text-slate-100 font-bold hover:text-slate-900 dark:hover:text-slate-100 dark:hover:bg-slate-800/40"
-                        : "text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 dark:hover:bg-slate-800/40"
-                      }`
-                    }
-                  >
-                    Leaderboard
-                  </NavLink>
-                )}
+                {desktopNavLinks.map((link) => {
+                  if (link.requiresAuth && !user) return null;
+                  if (link.isProfile && !username) return null;
+
+                  const isActive = isDesktopNavActive(link.to);
+
+                  return (
+                    <Button
+                      key={link.to}
+                      to={link.to}
+                      onClick={(event) => handleDesktopNavClick(event, link.to)}
+                      variant="subtle"
+                      color="standard"
+                      bold={isActive}
+                      className={`h-11 ${link.minWidthClass}`}
+                    >
+                      {link.label}
+                    </Button>
+                  );
+                })}
               </>
             )}
           </div>
@@ -167,34 +154,36 @@ function NavBar({ accountStatus, accountUsername }) {
 
           <div className="flex items-center gap-3">
             {user && (
-              <button
-                type="button"
+              <Button
                 onClick={toggleTheme}
-                className="h-10 w-10 inline-flex items-center justify-center rounded-xl text-slate-700 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-colors"
+                variant="subtle"
+                color="standard"
+                ariaLabel="Toggle theme"
+                icon={theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
               >
-                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
+              </Button>
             )}
             {user && username && (
-              <NavLink
+              <Button
                 to={toProfileUrl(username)}
-                className={({ isActive }) =>
-                  `text-sm transition-all duration-200 h-11 px-4 min-w-[6.5rem] justify-center rounded-xl inline-flex items-center ${isActive
-                    ? "text-slate-900 dark:text-slate-100 font-bold hover:text-slate-900 dark:hover:text-slate-100 dark:hover:bg-slate-800/40"
-                    : "text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 dark:hover:bg-slate-800/40"
-                  }`
-                }
+                onClick={(event) => handleDesktopNavClick(event, toProfileUrl(username))}
+                variant="subtle"
+                color="standard"
+                bold={isDesktopNavActive(toProfileUrl(username))}
+                className="h-11 min-w-[6.5rem]"
               >
                 {profileLabel}
-              </NavLink>
+              </Button>
             )}
+
             {user && (
-              <button
+              <Button
                 onClick={() => logout()}
-                className="bg-slate-800 dark:bg-slate-900 text-white dark:text-slate-100 px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-colors hover:bg-slate-700 dark:hover:bg-slate-700"
+                variant="primary"
+                color="standard"
               >
                 Sign out
-              </button>
+              </Button>
             )}
           </div>
         </div>

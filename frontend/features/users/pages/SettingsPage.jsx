@@ -4,6 +4,8 @@ import { updatePassword, updateEmail, EmailAuthProvider, reauthenticateWithCrede
 import { PasswordInput } from "@shared/components/PasswordInput";
 import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
+import { PageShell } from "@shared/components/PageShell";
+import { PageHeader } from "@shared/components/PageHeader";
 import { scheduleAccountDeletion } from "@features/users/api/users";
 import { useUser } from "@shared/state/useUser";
 import { formatUsernameInput, trimTrailingSpace, toProfileUrl } from "@shared/utils/usernameValidation";
@@ -272,24 +274,11 @@ export default function SettingsPage() {
   }
 
   return (
-    <>
-      <div
-        className="fixed inset-0 -top-20"
-        style={{
-          backgroundColor: "var(--opal-bg-color)",
-          backgroundImage: "var(--opal-backdrop-image)"
-        }}
-      ></div>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
-        <div className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
-      </div>
-      <div className="relative min-h-screen pt-16 sm:pt-20">
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <h1 className="text-4xl font-semibold text-slate-800 mb-8">
-            Settings
-          </h1>
+    <PageShell>
+      <PageHeader
+        title="Settings"
+        subtitle="Manage your account and profile preferences "
+      />
           {isAccountLocked && (
             <div className="mb-6 bg-amber-100/70 border border-amber-200/80 rounded-3xl p-4 backdrop-blur">
               <p className="text-amber-700">Your account is scheduled for deletion. Manage the countdown from your profile.</p>
@@ -578,8 +567,6 @@ export default function SettingsPage() {
               )}
             </div>
           )}
-        </main>
-      </div>
-    </>
+    </PageShell>
   );
 }
