@@ -84,6 +84,7 @@ export function SelectDropdown({
         onClick={() => setIsOpen((prev) => !prev)}
         className={joinClasses(
           "text-left",
+          "cursor-pointer active:scale-[0.98] [-webkit-tap-highlight-color:transparent]",
           "bg-white dark:bg-slate-950",
           "border border-slate-200/80 dark:border-slate-700/60",
           "text-slate-800 dark:text-slate-100",
@@ -98,41 +99,44 @@ export function SelectDropdown({
           ? renderTrigger({ isOpen, selectedOption, selectedLabel })
           : selectedLabel}
       </button>
-      {isOpen && (
-        <div
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          className={joinClasses(
-            "absolute left-0 right-0 top-full z-50 mt-2 overflow-y-auto [&::-webkit-scrollbar]:hidden",
-            "bg-white dark:bg-slate-950",
-            "border border-slate-200/80 dark:border-slate-700/60",
-            "shadow-lg",
-            menuClassName
-          )}
-        >
-          {options.map((option) => {
-            const optionValue = getOptionValue(option);
-            const optionLabel = getOptionLabel(option);
-            const isActive = optionValue === value;
+      <div
+        aria-hidden={!isOpen}
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        className={joinClasses(
+          "absolute left-0 right-0 top-full z-50 mt-2 overflow-y-auto [&::-webkit-scrollbar]:hidden",
+          "origin-top transition-[opacity,transform,visibility] duration-150 ease-out",
+          isOpen
+            ? "visible translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none invisible -translate-y-1 scale-[0.98] opacity-0",
+          "bg-white dark:bg-slate-950",
+          "border border-slate-200/80 dark:border-slate-700/60",
+          "shadow-lg",
+          menuClassName
+        )}
+      >
+        {options.map((option) => {
+          const optionValue = getOptionValue(option);
+          const optionLabel = getOptionLabel(option);
+          const isActive = optionValue === value;
 
-            return (
-              <button
-                key={String(optionValue)}
-                type="button"
-                onClick={() => {
-                  onChange(optionValue, option);
-                  setIsOpen(false);
-                }}
-                className={joinClasses(
-                  getOptionClassName({ isActive, roundedClassName: itemRoundedClassName }),
-                  optionClassName
-                )}
-              >
-                {optionLabel}
-              </button>
-            );
-          })}
-        </div>
-      )}
+          return (
+            <button
+              key={String(optionValue)}
+              type="button"
+              onClick={() => {
+                onChange(optionValue, option);
+                setIsOpen(false);
+              }}
+              className={joinClasses(
+                getOptionClassName({ isActive, roundedClassName: itemRoundedClassName }),
+                optionClassName
+              )}
+            >
+              {optionLabel}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
