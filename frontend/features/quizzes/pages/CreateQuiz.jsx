@@ -316,6 +316,11 @@ export default function CreateQuiz() {
   const passLabel = `${reqToPass}/${questionCount} (${passPercent}%)`;
   const quizTitleLabel = title.trim() || "Untitled quiz";
   const questionBarClass = categoryBarColors[category] || categoryBarColors.other;
+  const selectedDifficultyIndex = Math.max(
+    0,
+    difficultyOptions.findIndex((option) => option.value === difficulty)
+  );
+  const selectedDifficultyOption = difficultyOptions[selectedDifficultyIndex] || difficultyOptions[1];
 
   return (
     <>
@@ -434,7 +439,15 @@ export default function CreateQuiz() {
                         Difficulty
                       </label>
                       <div className="w-full border border-slate-200/80 bg-white/70 rounded-xl p-1">
-                        <div className="grid grid-cols-3 gap-1">
+                        <div className="relative grid grid-cols-3 gap-1">
+                          <div
+                            aria-hidden="true"
+                            className={`pointer-events-none absolute inset-y-0 rounded-lg shadow-sm transition-[left,background-color,border-color] duration-180 ease-out bg-gradient-to-r ${selectedDifficultyOption.gradient} ${selectedDifficultyOption.border}`}
+                            style={{
+                              left: `calc(${selectedDifficultyIndex} * ((100% - 0.5rem) / 3 + 0.25rem))`,
+                              width: "calc((100% - 0.5rem) / 3)"
+                            }}
+                          />
                           {difficultyOptions.map((option) => {
                             const isActive = difficulty === option.value;
                             return (
@@ -443,8 +456,8 @@ export default function CreateQuiz() {
                                 type="button"
                                 onClick={() => setDifficulty(option.value)}
                                 aria-pressed={isActive}
-                                className={`flex min-h-[42px] items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wide ${isActive
-                                  ? `bg-gradient-to-r ${option.gradient} ${option.border} text-white shadow-sm`
+                                className={`relative z-10 flex min-h-[42px] select-none items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wide transition-colors duration-150 ${isActive
+                                  ? "text-white"
                                   : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-200 dark:hover:bg-slate-800/60 dark:hover:text-slate-200"
                                   }`}
                               >
@@ -511,7 +524,7 @@ export default function CreateQuiz() {
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-3 select-none">
                       <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white/60 divide-y divide-slate-200/80 dark:divide-slate-800/80 transition-colors hover:border-slate-300/80">
                         <label className="flex items-start gap-3 p-3 cursor-pointer">
                       <input
