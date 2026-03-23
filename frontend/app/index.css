@@ -555,3 +555,23 @@ html.dark body div[class*="focus-within:shadow"]:focus-within {
   box-shadow: 0 0 16px -2px rgba(255, 255, 255, 0.15) !important;
   outline: none !important;
 }
+
+::selection {
+  background-color: #475569;
+  color: #f8fafc;
+}
+
+::-moz-selection {
+  background-color: #475569;
+  color: #f8fafc;
+}
+
+html.dark ::selection {
+  background-color: #ffffff;
+  color: #020617;
+}
+
+html.dark ::-moz-selection {
+  background-color: #ffffff;
+  color: #020617;
+}
