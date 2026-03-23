@@ -161,7 +161,7 @@ export default function UserSearchBar({ excludeUsername }) {
                 to={toProfileUrl(u.username)}
                 onMouseDown={handleResultMouseDown}
                 onClick={handleResultClick}
-                className="w-full text-left px-4 py-3 text-sm text-slate-800 dark:text-slate-100 hover:bg-slate-100/80 dark:hover:bg-slate-900/60 flex items-center gap-3 transition-colors"
+                className="w-full text-left px-4 py-3 text-sm text-slate-800 visited:text-slate-800 hover:bg-slate-100/80 hover:text-slate-800 dark:text-slate-100 dark:visited:text-slate-100 dark:hover:bg-slate-900/60 dark:hover:text-slate-100 flex items-center gap-3 transition-colors"
               >
                 <div className={`w-9 h-9 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(u.id || u._id)} flex items-center justify-center flex-shrink-0`}>
                   {u.profile_pic ? (

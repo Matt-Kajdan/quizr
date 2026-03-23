@@ -269,11 +269,11 @@ export default function LeaderboardPage() {
                               ? (currentPage - 1) * itemsPerPage + index + 1
                               : sortedRows.length - ((currentPage - 1) * itemsPerPage + index)}
                           </td>
-                          <td className="px-3 sm:px-4 py-3 font-medium text-slate-800 text-left w-[220px] max-w-[220px]">
+                          <td className="p-0 font-medium text-slate-800 text-left w-[220px] max-w-[220px]">
                             {entry.user_data?.username ? (
                               <Link
                                 to={toProfileUrl(entry.user_data.username)}
-                                className="flex items-center gap-3 min-w-0 cursor-pointer text-slate-800 hover:text-slate-800 hover:font-semibold"
+                                className="flex w-full items-center gap-3 px-3 py-3 min-w-0 cursor-pointer text-slate-800 hover:text-slate-800 hover:font-semibold sm:px-4"
                               >
                                 <div
                                   className={`h-9 w-9 shrink-0 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm shadow-sm`}
@@ -297,7 +297,7 @@ export default function LeaderboardPage() {
                                 </span>
                               </Link>
                             ) : (
-                              <div className="flex items-center gap-3 min-w-0 text-slate-700">
+                              <div className="flex items-center gap-3 min-w-0 px-3 py-3 text-slate-700 sm:px-4">
                                 <div
                                   className={`h-9 w-9 shrink-0 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm shadow-sm`}
                                 >
