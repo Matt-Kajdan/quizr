@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getLeaderboard } from "@features/quizzes/api/quizzes";
 import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
+import { PaginationControl } from "@shared/components/PaginationControl";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
@@ -201,33 +202,12 @@ export default function LeaderboardPage() {
       <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-sm">
             <div className="mb-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
               {totalPages > 1 && (
-              <div className="flex h-11 w-[210px] items-center justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white/70 text-sm font-medium text-slate-600 backdrop-blur">
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="flex h-full min-w-[44px] items-center justify-center bg-white/70 text-slate-700 transition-colors hover:bg-white disabled:opacity-40"
-                  aria-label="Previous page"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <span className="px-3 text-center">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage >= totalPages}
-                  className="flex h-full min-w-[44px] items-center justify-center bg-white/70 text-slate-700 transition-colors hover:bg-white disabled:opacity-40"
-                  aria-label="Next page"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
+                <PaginationControl
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                />
               )}
               <SelectDropdown
                 className="w-full max-w-[232px]"
@@ -347,32 +327,13 @@ export default function LeaderboardPage() {
           </div>
           {/* Pagination */}
           {sortedRows.length > itemsPerPage && (
-            <div className="mt-4 flex items-center justify-center gap-4">
-              <button
-                type="button"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-xl bg-white/70 backdrop-blur border border-slate-200/80 text-slate-700 hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center min-w-[36px] min-h-[36px]"
-                aria-label="Previous page"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <span className="text-sm text-slate-600 font-medium">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                type="button"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage >= totalPages}
-                className="p-2 rounded-xl bg-white/70 backdrop-blur border border-slate-200/80 text-slate-700 hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center min-w-[36px] min-h-[36px]"
-                aria-label="Next page"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+            <div className="mt-4 flex items-center justify-center">
+              <PaginationControl
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              />
             </div>
           )}
     </PageShell>
