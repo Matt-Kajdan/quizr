@@ -4,6 +4,7 @@ import { getQuizzes } from "@features/quizzes/api/quizzes";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { CATEGORY_ICONS } from "@shared/assets/icons";
 import { InfoChip } from "@shared/components/InfoChip";
+import { SearchField } from "@shared/components/SearchField";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 import {
@@ -395,32 +396,14 @@ export function Home() {
                   />
                 </div>
 
-                <div className="relative min-w-0 flex-1 xl:min-w-[16rem]">
-                  <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-slate-400 dark:text-slate-500">
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-                    </svg>
-                  </span>
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      aria-label="Clear search"
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-200/70 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-700/60 dark:hover:text-slate-300"
-                    >
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6l12 12M18 6L6 18" />
-                      </svg>
-                    </button>
-                  )}
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Search quizzes"
-                    className={`w-full rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 py-2.5 pl-10 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/30 dark:focus:ring-white/40 focus:shadow-[0_0_12px_-2px_rgba(100,116,139,0.25)] dark:focus:shadow-[0_0_16px_-2px_rgba(255,255,255,0.15)] transition-all ${searchQuery ? "pr-10" : "pr-4"}`}
-                  />
-                </div>
+                <SearchField
+                  className="min-w-0 flex-1 xl:min-w-[16rem]"
+                  inputClassName="!rounded-2xl py-2.5"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  onClear={() => setSearchQuery("")}
+                  placeholder="Search quizzes"
+                />
               </div>
             </div>
           )}

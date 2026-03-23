@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { apiFetch } from "@shared/api/apiClient";
+import { SearchField } from "@shared/components/SearchField";
 
 export default function UserSearchBar({ excludeUsername }) {
   const [q, setQ] = useState("");
@@ -120,50 +121,29 @@ export default function UserSearchBar({ excludeUsername }) {
 
   return (
     <div className="relative w-full max-w-md">
-      <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-slate-400 dark:text-slate-500">
-        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-        </svg>
-      </span>
-      {q && (
-        <button
-          type="button"
-          aria-label="Clear search"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => {
-            setQ("");
-            setUsers([]);
-            setOpen(false);
-            setShowLoading(false);
-            inputRef.current?.focus();
-          }}
-          className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-200/70 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-700/60 dark:hover:text-slate-300"
-        >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
-      )}
-      <input
+      <SearchField
         ref={inputRef}
-        type="text"
         value={q}
         onChange={(e) => setQ(e.target.value)}
+        onClear={() => {
+          setQ("");
+          setUsers([]);
+          setOpen(false);
+          setShowLoading(false);
+          inputRef.current?.focus();
+        }}
         onFocus={() => {
           if (users.length) setOpen(true);
         }}
         onBlur={() => {
           setTimeout(() => setOpen(false), 120);
         }}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            setOpen(false);
-            e.currentTarget.blur();
-          }
+        onEscape={() => {
+          setOpen(false);
         }}
         placeholder="Search users"
         id="mobile-search-input"
-        className={`w-full rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 py-2 pl-10 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/30 dark:focus:ring-white/40 focus:shadow-[0_0_12px_-2px_rgba(100,116,139,0.25)] dark:focus:shadow-[0_0_16px_-2px_rgba(255,255,255,0.15)] transition-all ${q ? "pr-10" : "pr-4"}`}
+        className="max-w-md"
       />
 
       {open && (
