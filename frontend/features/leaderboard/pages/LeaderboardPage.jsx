@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getLeaderboard } from "@features/quizzes/api/quizzes";
 import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
+import { SelectDropdown } from "@shared/components/SelectDropdown";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 const columns = [
@@ -28,8 +29,6 @@ export default function LeaderboardPage() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [pageSizeOpen, setPageSizeOpen] = useState(false);
-  const pageSizeRef = useRef(null);
   const avatarGradients = [
     "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
     "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
@@ -67,17 +66,6 @@ export default function LeaderboardPage() {
     return () => {
       mounted = false;
     };
-  }, []);
-
-  useEffect(() => {
-    function handleOutsideClick(event) {
-      if (pageSizeRef.current && !pageSizeRef.current.contains(event.target)) {
-        setPageSizeOpen(false);
-      }
-    }
-
-    document.addEventListener("click", handleOutsideClick);
-    return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
   const rows = useMemo(() => {
@@ -146,7 +134,6 @@ export default function LeaderboardPage() {
   function handleItemsPerPageChange(value) {
     setItemsPerPage(value);
     setCurrentPage(1);
-    setPageSizeOpen(false);
   }
 
   function renderSortIcon(key) {
@@ -242,36 +229,27 @@ export default function LeaderboardPage() {
                 </button>
               </div>
               )}
-              <div ref={pageSizeRef} className="relative w-full max-w-[232px]">
-                <button
-                  type="button"
-                  aria-haspopup="true"
-                  onClick={() => setPageSizeOpen((prev) => !prev)}
-                  className="category-dropdown-button w-full h-11 bg-white/70 text-slate-800 rounded-2xl border border-slate-200/80 backdrop-blur text-left focus:outline-none focus:ring-0 appearance-none transition-all duration-200 hover:bg-white/90 hover:border-slate-300 hover:shadow-sm text-sm font-semibold cursor-pointer flex items-center justify-between px-4 relative"
-                >
-                  <span>Display on one page</span>
-                  <span className="flex items-center gap-3">
-                    <span className="text-slate-500">{itemsPerPage}</span>
-                    <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </span>
-                </button>
-                {pageSizeOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-2xl border border-slate-200/80 shadow-lg z-50 overflow-hidden">
-                    {PAGE_SIZE_OPTIONS.map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        onClick={() => handleItemsPerPageChange(option)}
-                        className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors hover:bg-slate-100 ${itemsPerPage === option ? "bg-slate-100 text-slate-900" : "text-slate-700"}`}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
+              <SelectDropdown
+                className="w-full max-w-[232px]"
+                value={itemsPerPage}
+                options={PAGE_SIZE_OPTIONS}
+                onChange={handleItemsPerPageChange}
+                buttonClassName="category-dropdown-button w-full h-11 rounded-2xl text-sm font-semibold cursor-pointer flex items-center justify-between px-4 relative"
+                menuClassName="rounded-2xl overflow-hidden"
+                optionClassName="font-medium"
+                itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
+                renderTrigger={({ isOpen, selectedLabel }) => (
+                  <>
+                    <span>Display on one page</span>
+                    <span className="flex items-center gap-3">
+                      <span className="text-slate-500">{selectedLabel}</span>
+                      <svg className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </span>
+                  </>
                 )}
-              </div>
+              />
             </div>
             <div className="rounded-2xl border border-slate-200/80 bg-white/60 overflow-hidden">
               <div className="overflow-x-auto">
