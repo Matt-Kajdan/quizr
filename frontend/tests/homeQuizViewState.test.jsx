@@ -42,6 +42,7 @@ function getState(overrides = {}) {
     quizzes,
     selectedCategory: "all",
     favouriteIds: ["quiz-2"],
+    accountUsername: "alice",
     sortBy: "newest",
     sortDirection: "desc",
     searchQuery: "",
@@ -82,6 +83,15 @@ describe("home quiz view state", () => {
     expect(state.hasSearchMatches).toBe(false);
     expect(state.showSearchEmptyState).toBe(true);
     expect(state.matchReasonsById).toEqual({});
+  });
+
+  it("supports filtering to the current user's quizzes", () => {
+    const state = getState({
+      selectedCategory: "your-quizzes"
+    });
+
+    expect(state.visibleQuizzes.map((quiz) => quiz._id)).toEqual(["quiz-3", "quiz-1"]);
+    expect(state.showSearchEmptyState).toBe(false);
   });
 
   it("recomputes search results when the active category changes", () => {
