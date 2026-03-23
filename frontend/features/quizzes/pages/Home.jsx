@@ -1,21 +1,42 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getQuizzes } from "@features/quizzes/api/quizzes";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { CATEGORY_ICONS } from "@shared/assets/icons";
 import { InfoChip } from "@shared/components/InfoChip";
+import { SearchField } from "@shared/components/SearchField";
+import { SelectDropdown } from "@shared/components/SelectDropdown";
+import { SortingChipBar } from "@shared/components/SortingChipBar";
+import {
+  formatCategoryLabel,
+  getFavouriteCount,
+  getHomeQuizViewState
+} from "@features/quizzes/utils/homeQuizViewState";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
+const sortOptions = [
+  { value: "newest", label: "Newest", reverseLabel: "Oldest" },
+  { value: "stars", label: "Likes" },
+  { value: "questions", label: "Questions" },
+  { value: "difficulty", label: "Difficulty" }
+];
+
+function getQuizAuthorUsername(quiz) {
+  const username = quiz?.created_by?.user_data?.username;
+  return typeof username === "string" ? username : "";
+}
+
 export function Home() {
   const isMobile = useIsMobile();
-  const [loading, setLoading] = useState(true)
-  const [quizzes, setQuizzes] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [quizzes, setQuizzes] = useState([]);
   const { favouriteIds, setFavouriteIds, accountUsername, isLoading: isUserLoading } = useUser();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const returnTo = `${location.pathname}${location.search || ""}`;
@@ -33,7 +54,6 @@ export function Home() {
   const logoHoverGradient = `
     linear-gradient(120deg, rgba(215, 55, 165, 1), rgba(235, 175, 55, 1) 38%, rgba(55, 140, 225, 1) 58%, rgba(45, 175, 120, 1))
   `;
-
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -135,7 +155,7 @@ export function Home() {
     }
   };
 
-  const categories = [
+  const categories = useMemo(() => [
     "all",
     "favourites",
     ...new Set(
@@ -143,26 +163,13 @@ export function Home() {
         .map((quiz) => quiz.category)
         .filter((category) => category && category !== "favourites")
     )
-  ];
+  ], [quizzes]);
 
   const countLabel = selectedCategory === "all"
     ? "Total Quizzes"
     : selectedCategory === "favourites"
       ? "Favourite Quizzes"
       : `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Quizzes`;
-
-  const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
-
-  const getFavouriteCount = (quiz) => Math.max(
-    0,
-    quiz.favourited_count ??
-    (Array.isArray(quiz.favourites) ? quiz.favourites.length : (quiz.favouritesCount ?? 0))
-  );
-
-  const formatCategoryLabel = (category) => {
-    if (!category) return "Other";
-    return category.charAt(0).toUpperCase() + category.slice(1);
-  };
 
   const getCategoryChipColor = (category) => (
     category === "art"
@@ -184,30 +191,19 @@ export function Home() {
         : "amber"
   );
 
-  const filteredQuizzes = (selectedCategory === "all"
-    ? quizzes
-    : selectedCategory === "favourites"
-      ? quizzes.filter((quiz) => favouriteIds.includes(quiz._id))
-      : quizzes.filter((quiz) => quiz.category === selectedCategory)
-  ).sort((a, b) => {
-    if (sortBy === "stars") {
-      return sortDirection === "desc"
-        ? getFavouriteCount(b) - getFavouriteCount(a)
-        : getFavouriteCount(a) - getFavouriteCount(b);
-    }
-    if (sortBy === "questions") {
-      const getCount = (q) => q.questions?.length || 0;
-      return sortDirection === "desc" ? getCount(b) - getCount(a) : getCount(a) - getCount(b);
-    }
-    if (sortBy === "difficulty") {
-      const getDiff = (q) => difficultyOrder[q.difficulty] || 0;
-      return sortDirection === "desc" ? getDiff(b) - getDiff(a) : getDiff(a) - getDiff(b);
-    }
-    // Default to date (newest/oldest)
-    const dateA = new Date(a.created_at || 0);
-    const dateB = new Date(b.created_at || 0);
-    return sortDirection === "desc" ? dateB - dateA : dateA - dateB;
-  });
+  const {
+    visibleQuizzes,
+    hasSearchMatches,
+    showSearchEmptyState,
+    matchReasonsById
+  } = useMemo(() => getHomeQuizViewState({
+    quizzes,
+    selectedCategory,
+    favouriteIds,
+    sortBy,
+    sortDirection,
+    searchQuery
+  }), [favouriteIds, quizzes, searchQuery, selectedCategory, sortBy, sortDirection]);
 
   const handleCardMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -230,18 +226,6 @@ export function Home() {
     event.currentTarget.style.transform = '';
   };
 
-  const handleOutsideClick = (event) => {
-    const dropdown = document.getElementById('category-dropdown');
-    const button = event.target.closest('button');
-    if (dropdown && !dropdown.contains(event.target) && (!button || button.getAttribute('aria-haspopup') !== 'true')) {
-      dropdown.classList.add('hidden');
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
-  }, []);
   const handleLogoMouseMove = (event) => {
     if (isMobile) return;
     const rect = event.currentTarget.getBoundingClientRect();
@@ -340,112 +324,86 @@ export function Home() {
             <p className="text-slate-600 text-base sm:text-lg px-4">Challenge yourself and expand your knowledge</p>
           </div>
           {quizzes.length > 0 && (
-            <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 sm:gap-6 w-full">
-              <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-4 w-full sm:w-auto">
-                {/* Total Quizzes Card */}
-                <div className="total-quizzes-card bg-white/70 backdrop-blur-lg rounded-xl sm:rounded-2xl px-4 border border-slate-200/80 flex flex-col justify-center min-w-[130px] h-[72px] flex-1 sm:flex-none sm:shrink-0 cursor-default focus:outline-none">
-                  <div className="text-xl sm:text-2xl font-bold text-slate-900">{filteredQuizzes.length}</div>
-                  <div className="text-slate-500 text-xs sm:text-sm whitespace-nowrap">{countLabel}</div>
-                </div>
-
-                {/* Category filter drop down */}
-                <div className="relative flex-1 sm:flex-none sm:w-72 min-w-[170px]">
-                  <button
-                    type="button"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    onClick={() => {
-                      const dropdown = document.getElementById('category-dropdown');
-                      dropdown.classList.toggle('hidden');
-                    }}
-                    className="category-dropdown-button w-full h-[72px] bg-white/70 text-slate-800 rounded-2xl border border-slate-200/80 backdrop-blur text-left focus:outline-none focus:ring-0 appearance-none transition-all duration-200 hover:bg-white/90 hover:border-slate-300 hover:shadow-sm text-base sm:text-sm font-semibold cursor-pointer flex flex-col sm:flex-row items-center justify-center sm:justify-between px-4 sm:px-8 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
+            <div className="relative z-30 mb-6 sm:mb-8 overflow-visible rounded-[28px] border border-slate-200/80 bg-white/70 p-3 backdrop-blur-lg shadow-sm">
+              <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5 xl:flex-none">
+                  <InfoChip
+                    variant="subtle"
+                    size="md"
+                    color="slate"
+                    className="w-[188px] shrink-0 justify-center px-3.5 text-slate-600 dark:text-slate-200"
+                    icon={(
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-4 w-4"
+                      >
+                        <rect x="4" y="5" width="16" height="14" rx="2" />
+                        <path d="M8 9h8M8 13h5" />
+                      </svg>
+                    )}
                   >
-                    <span className="truncate text-center w-full">
-                      {selectedCategory === "all"
-                        ? "All Categories"
-                        : selectedCategory === "favourites"
-                          ? "Favourites"
-                          : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+                    <span className="inline-flex max-w-full items-center gap-1 overflow-hidden">
+                      <span className="tabular-nums">{visibleQuizzes.length}</span>
+                      <span className="truncate">{countLabel}</span>
                     </span>
-                    <svg className="w-4 h-4 text-slate-500 flex-shrink-0 mt-1 sm:mt-0 sm:absolute sm:right-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div id="category-dropdown" className="hidden absolute top-full left-0 right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-2xl border border-slate-200/80 shadow-lg z-50 max-h-64 overflow-y-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {categories.map((category) => (
-                      <button
-                        key={category}
-                        onClick={() => {
-                          setSelectedCategory(category);
-                          const dropdown = document.getElementById('category-dropdown');
-                          dropdown.classList.add('hidden');
-                        }}
-                        className={`w-full text-left px-4 py-3 text-xs sm:text-sm font-semibold transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-600/50 first:rounded-t-2xl last:rounded-b-2xl ${selectedCategory === category
-                          ? 'bg-slate-100/80 dark:bg-slate-500/70 text-slate-900 dark:text-white'
-                          : 'text-slate-700 dark:text-slate-200'
-                          }`}
-                      >
-                        {category === "all"
-                          ? "All Categories"
-                          : category === "favourites"
-                            ? "Favourites"
-                            : category.charAt(0).toUpperCase() + category.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                  </InfoChip>
+                  <SelectDropdown
+                    className="min-w-[180px]"
+                    value={selectedCategory}
+                    options={categories}
+                    onChange={setSelectedCategory}
+                    getOptionValue={(category) => category}
+                    getOptionLabel={(category) => (
+                      category === "all"
+                        ? "All Categories"
+                        : category === "favourites"
+                          ? "Favourites"
+                          : category.charAt(0).toUpperCase() + category.slice(1)
+                    )}
+                    buttonClassName="category-dropdown-button h-10 min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
+                    menuClassName="z-[70] max-h-64 rounded-2xl [&::-webkit-scrollbar]:hidden"
+                    optionClassName="text-xs sm:text-sm font-semibold"
+                    itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
+                    renderTrigger={({ isOpen, selectedLabel }) => (
+                      <>
+                        <span className="truncate pr-4">{selectedLabel}</span>
+                        <svg className={`h-4 w-4 flex-shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    )}
+                  />
+                  <SortingChipBar
+                  chips={sortOptions}
+                  activeValue={sortBy}
+                  direction={sortDirection}
+                  onChipClick={(nextSortBy) => {
+                    if (nextSortBy === sortBy) {
+                      setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                      return;
+                    }
 
-              {/* Sorting Bar */}
-              {/* Sorting Bar Wrapper */}
-              <div className="relative w-full sm:flex-1 h-[72px] group/sort-wrapper bg-white/70 dark:bg-slate-800/40 backdrop-blur-lg rounded-2xl border border-slate-200/80 dark:border-slate-800/60 overflow-hidden">
-                <div className="sorting-bar-container flex items-center gap-1.5 p-1 h-full w-full overflow-x-auto sm:overflow-x-visible overflow-y-hidden no-scrollbar relative">
-                  {[
-                    { id: 'newest', label: 'Date', options: { desc: 'Newest', asc: 'Oldest' }, width: 'w-[120px]' },
-                    { id: 'stars', label: 'Likes', width: 'w-[100px]' },
-                    { id: 'questions', label: 'Questions', width: 'w-[140px]' },
-                    { id: 'difficulty', label: 'Difficulty', width: 'w-[130px]' }
-                  ].map((option) => {
-                    const isActive = sortBy === option.id;
-                    const isAsc = isActive && sortDirection === "asc";
-                    return (
-                      <button
-                        key={option.id}
-                        onClick={() => {
-                          if (isActive) {
-                            setSortDirection(prev => prev === "desc" ? "asc" : "desc");
-                          } else {
-                            setSortBy(option.id);
-                            setSortDirection("desc");
-                          }
-                        }}
-                        className={`sorting-button h-full ${option.width} sm:flex-1 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shrink-0 sm:shrink transition-[background-color,color,transform,shadow] duration-200 [outline:none] [box-shadow:none] [ring:none] [-webkit-tap-highlight-color:transparent] ${isActive ? 'bg-white/90 dark:bg-slate-700/90 text-slate-900 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-700/50 isActive' : 'text-slate-900 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 border border-transparent hover:bg-slate-200/50 dark:hover:bg-transparent'}`}
-                      >
-                        <span className="truncate leading-none">
-                          {option.id === 'newest'
-                            ? (isActive ? option.options[sortDirection] : 'Date')
-                            : option.label}
-                        </span>
-                        {isActive && (
-                          <span className="flex items-center justify-center shrink-0">
-                            {isAsc ? (
-                              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 5l4 6H6l4-6z" />
-                              </svg>
-                            ) : (
-                              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 15l-4-6h8l-4 6z" />
-                              </svg>
-                            )}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+                    setSortBy(nextSortBy);
+                    setSortDirection("desc");
+                  }}
+                  showMobileFade
+                  className="w-full md:w-auto md:flex-none md:max-w-max"
+                  />
                 </div>
-                {/* Fixed Shadows for Mobile Scroll */}
-                <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white/90 dark:from-slate-800/90 to-transparent pointer-events-none sm:hidden z-10" />
-                <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white/90 dark:from-slate-800/90 to-transparent pointer-events-none sm:hidden z-10" />
+
+                <SearchField
+                  className="min-w-0 flex-1 xl:min-w-[16rem]"
+                  inputClassName="!rounded-2xl py-2.5"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  onClear={() => setSearchQuery("")}
+                  placeholder="Search quizzes"
+                />
               </div>
             </div>
           )}
@@ -468,9 +426,33 @@ export function Home() {
               </div>
             </div>
           )}
-          {quizzes.length > 0 && (
+          {quizzes.length > 0 && showSearchEmptyState && (
+            <div className="mx-auto max-w-md px-4 py-12 sm:py-16">
+              <div className="rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white/70 p-8 text-center shadow-sm backdrop-blur-lg">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100/90 text-slate-500">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-6 w-6"
+                  >
+                    <path d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                    <path d="M8.5 11.5h5" />
+                  </svg>
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-slate-900">No results found</h3>
+                <p className="text-sm text-slate-600 sm:text-base">
+                  No results for these search criteria.
+                </p>
+              </div>
+            </div>
+          )}
+          {quizzes.length > 0 && !showSearchEmptyState && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {filteredQuizzes.map((quiz) => {
+              {visibleQuizzes.map((quiz) => {
                 const gradient = categoryGradients[quiz.category] || categoryGradients.other;
                 const categoryLabel = quiz.category || "other";
                 const categoryIcon = categoryIcons[quiz.category] || categoryIcons.other;
@@ -478,7 +460,7 @@ export function Home() {
                 const difficulty = difficultyChips[difficultyKey];
                 const isFavourited = favouriteIds.includes(quiz._id);
                 const favouriteCount = getFavouriteCount(quiz);
-                const authorUsername = quiz?.created_by?.user_data?.username;
+                const authorUsername = getQuizAuthorUsername(quiz);
                 const authorIsDeleted = quiz?.created_by?.authId === "deleted-user"
                   || authorUsername === "__deleted__";
                 const authorName = authorIsDeleted
@@ -493,6 +475,7 @@ export function Home() {
                   && Boolean(accountUsername)
                   && authorUsername === accountUsername;
                 const canNavigateToAuthor = !authorIsDeleted && Boolean(authorUsername);
+                const matchReasons = matchReasonsById[quiz._id] || [];
                 return (
                   <Link
                     key={quiz._id}
@@ -505,7 +488,7 @@ export function Home() {
                     onTouchEnd={handleCardTouchEnd}
                   >
                     <div
-                      className="relative z-10 bg-white/70 dark:bg-slate-800/80backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-4 px-4 pb-1.5 sm:pt-5 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-[200px] flex flex-col"
+                      className="relative z-10 bg-white/70 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-4 px-4 pb-1.5 sm:pt-5 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-[200px] flex flex-col"
                       style={{ "--shadow-color": gradient.hover.primary }}
                     >
                       <div
@@ -519,6 +502,14 @@ export function Home() {
                         }}
                       ></div>
                       <div className="relative z-10 flex-1 flex flex-col">
+                        {hasSearchMatches && matchReasons.length > 0 && (
+                          <div
+                            className="-mx-4 -mt-4 mb-3 flex items-center border-b border-slate-200/70 px-4 py-1.5 text-[11px] font-semibold tracking-[0.01em] text-slate-500 dark:border-slate-700/60 dark:text-slate-300 sm:-mx-6 sm:-mt-5 sm:px-6"
+                            style={{ backgroundColor: `rgb(${gradient.hover.primary} / 0.08)` }}
+                          >
+                            {`Matching ${matchReasons.join(", ")}`}
+                          </div>
+                        )}
                         <div className="flex items-center justify-between mb-3 sm:mb-4">
                           <div className="flex flex-wrap items-center gap-2">
                             <InfoChip

@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams, useBlocker } from "react-router-do
 import { apiFetch } from "@shared/api/apiClient";
 import { DIFFICULTY_ICONS } from "@shared/assets/icons";
 import { PageShell } from "@shared/components/PageShell";
+import { SelectDropdown } from "@shared/components/SelectDropdown";
 import { useAuth } from "@shared/auth/useAuth";
 import { auth } from "@shared/auth/firebase";
 import { getQuizById, updateQuiz } from "@features/quizzes/api/quizzes";
@@ -249,25 +250,6 @@ export default function EditQuiz() {
       prevQuestionCountRef.current = currentCount;
     }
   }, [questions.length]);
-
-  // Click outside to close dropdowns
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      const categoryDropdown = document.getElementById('category-dropdown-edit');
-      const answersDropdown = document.getElementById('answers-dropdown-edit');
-      const button = event.target.closest('button');
-      const isDropdownButton = button && (button.getAttribute('aria-haspopup') === 'true');
-
-      if (categoryDropdown && !categoryDropdown.contains(event.target) && !isDropdownButton) {
-        categoryDropdown.classList.add('hidden');
-      }
-      if (answersDropdown && !answersDropdown.contains(event.target) && !isDropdownButton) {
-        answersDropdown.classList.add('hidden');
-      }
-    };
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
-  }, []);
 
   function normalizeAnswerCount(question, count) {
     const answers = Array.isArray(question.answers) ? question.answers : [];
@@ -641,75 +623,46 @@ export default function EditQuiz() {
                   <label className="block text-slate-600 dark:text-slate-400 font-medium mb-2 text-sm">
                     Category
                   </label>
-                  <button
-                    type="button"
-                    aria-haspopup="true"
-                    onClick={() => {
-                      const dropdown = document.getElementById('category-dropdown-edit');
-                      dropdown.classList.toggle('hidden');
-                    }}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/60 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 text-left focus:outline-none focus:ring-0 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:border-slate-300 dark:hover:border-slate-600 flex items-center justify-between"
-                  >
-                    <span>{categories.find(c => c.value === category)?.label || category}</span>
-                    <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div id="category-dropdown-edit" className="hidden absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-950 rounded-xl border border-slate-200/80 dark:border-slate-700/60 shadow-lg z-50 max-h-64 overflow-y-auto">
-                    {categories.map((item) => (
-                      <button
-                        key={item.value}
-                        type="button"
-                        onClick={() => {
-                          setCategory(item.value);
-                          document.getElementById('category-dropdown-edit').classList.add('hidden');
-                        }}
-                        className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/60 first:rounded-t-xl last:rounded-b-xl ${category === item.value
-                          ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'
-                          : 'text-slate-700 dark:text-slate-300'
-                          }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
+                  <SelectDropdown
+                    value={category}
+                    options={categories}
+                    onChange={setCategory}
+                    buttonClassName="w-full rounded-xl px-4 py-3 text-left flex items-center justify-between"
+                    menuClassName="max-h-64 rounded-xl"
+                    optionClassName="font-medium"
+                    itemRoundedClassName="first:rounded-t-xl last:rounded-b-xl"
+                    renderTrigger={({ isOpen, selectedOption }) => (
+                      <>
+                        <span>{selectedOption?.label || category}</span>
+                        <svg className={`w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    )}
+                  />
                 </div>
                     <div className="relative">
                       <label className="block text-slate-600 dark:text-slate-400 font-medium mb-2 text-sm">
                         Answers per question
                       </label>
-                      <button
-                        type="button"
-                        aria-haspopup="true"
-                        onClick={() => {
-                          const dropdown = document.getElementById('answers-dropdown-edit');
-                          dropdown.classList.toggle('hidden');
-                        }}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/60 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 text-left focus:outline-none focus:ring-0 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:border-slate-300 dark:hover:border-slate-600 flex items-center justify-between"
-                      >
-                        <span>{answersPerQuestion} answers</span>
-                        <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                      <div id="answers-dropdown-edit" className="hidden absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-950 rounded-xl border border-slate-200/80 dark:border-slate-700/60 shadow-lg z-50 max-h-64 overflow-y-auto">
-                        {ANSWER_COUNT_OPTIONS.map((count) => (
-                          <button
-                            key={count}
-                            type="button"
-                            onClick={() => {
-                              handleAnswersPerQuestionChange(count);
-                              document.getElementById('answers-dropdown-edit').classList.add('hidden');
-                            }}
-                            className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/60 first:rounded-t-xl last:rounded-b-xl ${answersPerQuestion === count
-                              ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'
-                              : 'text-slate-700 dark:text-slate-300'
-                              }`}
-                          >
-                            {count} answers
-                          </button>
-                        ))}
-                      </div>
+                      <SelectDropdown
+                        value={answersPerQuestion}
+                        options={ANSWER_COUNT_OPTIONS}
+                        onChange={handleAnswersPerQuestionChange}
+                        getOptionLabel={(count) => `${count} answers`}
+                        buttonClassName="w-full rounded-xl px-4 py-3 text-left flex items-center justify-between"
+                        menuClassName="max-h-64 rounded-xl"
+                        optionClassName="font-medium"
+                        itemRoundedClassName="first:rounded-t-xl last:rounded-b-xl"
+                        renderTrigger={({ isOpen, selectedLabel }) => (
+                          <>
+                            <span>{selectedLabel}</span>
+                            <svg className={`w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </>
+                        )}
+                      />
                     </div>
                     <div>
                       <label className="block text-slate-600 font-medium mb-2 text-sm">

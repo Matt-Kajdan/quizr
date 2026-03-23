@@ -33,7 +33,7 @@ export function SortingChipBar({
   return (
     <div
       className={joinClasses(
-        "relative min-w-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100/80 h-10 dark:border-slate-800/60 dark:bg-slate-800/40",
+        "relative min-w-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100/80 h-10 dark:border-slate-700/60 dark:bg-slate-950",
         className
       )}
       role="group"
@@ -59,8 +59,8 @@ export function SortingChipBar({
               className={joinClasses(
                 "inline-flex h-8 shrink-0 select-none items-center justify-center gap-1.5 rounded-xl border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,transform,box-shadow,border-color] duration-200 active:scale-95 sm:text-xs",
                 isActive
-                  ? "border-slate-200/80 bg-white text-slate-800 shadow-sm dark:border-slate-500 dark:bg-slate-600 dark:text-slate-100"
-                  : "border-transparent text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700/40 dark:hover:text-slate-200",
+                  ? "border-slate-200/80 bg-white text-slate-800 shadow-sm dark:border-slate-600/70 dark:bg-slate-800 dark:text-slate-100"
+                  : "border-transparent text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200",
                 disabled || chip.disabled
                   ? "cursor-not-allowed opacity-50"
                   : "cursor-pointer"
@@ -78,8 +78,8 @@ export function SortingChipBar({
       </div>
       {showMobileFade && (
         <>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-slate-100/95 to-transparent dark:from-slate-800/95 sm:hidden" />
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-slate-100/95 to-transparent dark:from-slate-800/95 sm:hidden" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-slate-100/95 to-transparent dark:from-slate-950 sm:hidden" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-slate-100/95 to-transparent dark:from-slate-950 sm:hidden" />
         </>
       )}
     </div>
