@@ -48,6 +48,7 @@ export function getHomeQuizViewState({
   quizzes,
   selectedCategory,
   favouriteIds,
+  accountUsername,
   sortBy,
   sortDirection,
   searchQuery
@@ -56,6 +57,8 @@ export function getHomeQuizViewState({
     ? quizzes
     : selectedCategory === "favourites"
       ? quizzes.filter((quiz) => favouriteIds.includes(quiz._id))
+      : selectedCategory === "your-quizzes"
+        ? quizzes.filter((quiz) => getQuizAuthorUsername(quiz) === accountUsername)
       : quizzes.filter((quiz) => quiz.category === selectedCategory);
 
   const baseVisibleQuizzes = [...categoryFilteredQuizzes].sort((a, b) => {

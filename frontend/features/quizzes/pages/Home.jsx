@@ -158,17 +158,20 @@ export function Home() {
   const categories = useMemo(() => [
     "all",
     "favourites",
+    ...(accountUsername ? ["your-quizzes"] : []),
     ...new Set(
       quizzes
         .map((quiz) => quiz.category)
         .filter((category) => category && category !== "favourites")
     )
-  ], [quizzes]);
+  ], [accountUsername, quizzes]);
 
   const countLabel = selectedCategory === "all"
     ? "Total Quizzes"
     : selectedCategory === "favourites"
       ? "Favourite Quizzes"
+      : selectedCategory === "your-quizzes"
+        ? "Your Quizzes"
       : `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Quizzes`;
 
   const getCategoryChipColor = (category) => (
@@ -200,10 +203,11 @@ export function Home() {
     quizzes,
     selectedCategory,
     favouriteIds,
+    accountUsername,
     sortBy,
     sortDirection,
     searchQuery
-  }), [favouriteIds, quizzes, searchQuery, selectedCategory, sortBy, sortDirection]);
+  }), [accountUsername, favouriteIds, quizzes, searchQuery, selectedCategory, sortBy, sortDirection]);
 
   const handleCardMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -363,6 +367,8 @@ export function Home() {
                         ? "All Categories"
                         : category === "favourites"
                           ? "Favourites"
+                          : category === "your-quizzes"
+                            ? "Your quizzes"
                           : category.charAt(0).toUpperCase() + category.slice(1)
                     )}
                     buttonClassName="category-dropdown-button h-10 min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
