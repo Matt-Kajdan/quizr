@@ -321,7 +321,7 @@ export function Home() {
                     variant="subtle"
                     size="md"
                     color="slate"
-                    className="w-[188px] shrink-0 justify-center px-3.5 text-slate-600 dark:text-slate-200"
+                    className="hidden w-[188px] shrink-0 justify-center px-3.5 text-slate-600 dark:text-slate-200 min-[438px]:inline-flex"
                     icon={(
                       <svg
                         viewBox="0 0 24 24"
@@ -363,7 +363,12 @@ export function Home() {
                     itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
                     renderTrigger={({ isOpen, selectedLabel }) => (
                       <>
-                        <span className="truncate pr-4">{selectedLabel}</span>
+                        <span className="flex min-w-0 items-center gap-2 pr-4 max-[437px]:flex-1 max-[437px]:justify-between">
+                          <span className="truncate">{selectedLabel}</span>
+                          <span className="hidden shrink-0 tabular-nums text-slate-500 max-[437px]:inline">
+                            {visibleQuizzes.length}
+                          </span>
+                        </span>
                         <svg className={`h-4 w-4 flex-shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
