@@ -1020,13 +1020,13 @@ export default function ProfilePage() {
           )}
           <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center justify-center gap-2 sm:justify-start">
+              <div className="relative flex items-center justify-center gap-2 sm:flex-1 sm:justify-start">
                 <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Quizzes created</h2>
                 <InfoChip
                   variant="subtle"
                   size="md"
                   color="slate"
-                  className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}
+                  className={`sm:ml-auto ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
                   icon={(
                     <svg
                       viewBox="0 0 24 24"
@@ -1258,76 +1258,140 @@ export default function ProfilePage() {
                               </div>
                             </div>
                             {isOwnProfile && !isAccountLocked && (
-                              <InfoChipGroup className="w-full">
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (isAccountLocked) return;
-                                    handleViewStats(quiz._id);
-                                  }}
-                                  disabled={isAccountLocked}
-                                  variant="secondary"
-                                  color="standard"
-                                  className="min-w-0 flex-1 !rounded-none !border-0 !bg-transparent !shadow-none max-[380px]:hidden"
-                                  icon={(
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                  )}
-                                >
-                                  Details
-                                </Button>
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (isAccountLocked) return;
-                                    handleViewStats(quiz._id);
-                                  }}
-                                  disabled={isAccountLocked}
-                                  variant="secondary"
-                                  color="standard"
-                                  ariaLabel="Quiz details"
-                                  className="hidden flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none max-[380px]:inline-flex"
-                                  icon={(
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                  )}
-                                />
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigate(`/quiz/${quiz._id}/edit`, {
-                                      state: { from: "profile", returnTo: toProfileUrl(routeUsername) }
-                                    });
-                                  }}
-                                  variant="secondary"
-                                  color="standard"
-                                  ariaLabel="Edit quiz"
-                                  className="w-10 flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none"
-                                  icon={(
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
-                                    </svg>
-                                  )}
-                                />
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setQuizToDelete(quiz);
-                                    setShowDeleteConfirm(true);
-                                  }}
-                                  variant="secondary"
-                                  color="red"
-                                  ariaLabel="Delete quiz"
-                                  className="w-10 flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none"
-                                  icon={(
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                  )}
-                                />
-                              </InfoChipGroup>
+                              <>
+                                {/* Mobile: grouped buttons */}
+                                <InfoChipGroup className="w-full sm:hidden">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAccountLocked) return;
+                                      handleViewStats(quiz._id);
+                                    }}
+                                    disabled={isAccountLocked}
+                                    variant="secondary"
+                                    color="standard"
+                                    className="min-w-0 flex-1 !rounded-none !border-0 !bg-transparent !shadow-none max-[380px]:hidden"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                      </svg>
+                                    )}
+                                  >
+                                    Details
+                                  </Button>
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAccountLocked) return;
+                                      handleViewStats(quiz._id);
+                                    }}
+                                    disabled={isAccountLocked}
+                                    variant="secondary"
+                                    color="standard"
+                                    ariaLabel="Quiz details"
+                                    className="hidden flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none max-[380px]:inline-flex"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                      </svg>
+                                    )}
+                                  />
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate(`/quiz/${quiz._id}/edit`, {
+                                        state: { from: "profile", returnTo: toProfileUrl(routeUsername) }
+                                      });
+                                    }}
+                                    variant="secondary"
+                                    color="standard"
+                                    ariaLabel="Edit quiz"
+                                    className="w-10 flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
+                                      </svg>
+                                    )}
+                                  />
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setQuizToDelete(quiz);
+                                      setShowDeleteConfirm(true);
+                                    }}
+                                    variant="secondary"
+                                    color="red"
+                                    ariaLabel="Delete quiz"
+                                    className="w-10 flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                      </svg>
+                                    )}
+                                  />
+                                </InfoChipGroup>
+                                {/* Desktop: 2-row layout */}
+                                <div className="hidden flex-col gap-2 sm:flex">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAccountLocked) return;
+                                      handleViewStats(quiz._id);
+                                    }}
+                                    disabled={isAccountLocked}
+                                    variant="secondary"
+                                    color="standard"
+                                    size="compact"
+                                    className="w-full"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                      </svg>
+                                    )}
+                                  >
+                                    View details
+                                  </Button>
+                                  <div className="flex gap-2">
+                                    <Button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/quiz/${quiz._id}/edit`, {
+                                          state: { from: "profile", returnTo: toProfileUrl(routeUsername) }
+                                        });
+                                      }}
+                                      variant="secondary"
+                                      color="standard"
+                                      size="compact"
+                                      className="flex-1"
+                                      icon={(
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
+                                        </svg>
+                                      )}
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setQuizToDelete(quiz);
+                                        setShowDeleteConfirm(true);
+                                      }}
+                                      variant="secondary"
+                                      color="red"
+                                      size="compact"
+                                      className="flex-1"
+                                      icon={(
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                      )}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </div>
+                                </div>
+                              </>
                             )}
                             <div className="mt-2 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
                               <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1352,13 +1416,13 @@ export default function ProfilePage() {
 
           {isOwnProfile && (
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
-              <div className="relative mb-8 flex items-center justify-center sm:justify-start">
+              <div className="relative mb-8 flex items-center justify-center gap-2 sm:justify-start">
                 <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Favourites</h2>
                 <InfoChip
                   variant="subtle"
                   size="md"
                   color="slate"
-                  className={`absolute right-0 ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
+                  className={`sm:ml-auto ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
                   icon={(
                     <svg
                       viewBox="0 0 24 24"
@@ -1427,7 +1491,7 @@ export default function ProfilePage() {
                                 disabled={isAccountLocked}
                                 variant="subtle"
                                 color="standard"
-                                className="h-8 px-2.5 text-xs"
+                                className="h-8 px-2.5 text-xs sm:h-10 sm:border-slate-300/80 sm:shadow-sm sm:hover:border-slate-400/80 sm:hover:bg-slate-100/80 dark:sm:border-slate-700/70 dark:sm:hover:bg-slate-800/80"
                                 ariaLabel="Remove from favourites"
                                 title="Remove from favourites"
                                   icon={(
@@ -1601,13 +1665,13 @@ export default function ProfilePage() {
             <>
               <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
                 <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center justify-center gap-2 sm:justify-start">
+                  <div className="relative flex items-center justify-center gap-2 sm:flex-1 sm:justify-start">
                     <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Quizzes Taken</h2>
                     <InfoChip
                       variant="subtle"
                       size="md"
                       color="slate"
-                      className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}
+                      className={`sm:ml-auto ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
                       icon={(
                         <svg
                           viewBox="0 0 24 24"
@@ -1783,7 +1847,7 @@ export default function ProfilePage() {
                             disabled={isAccountLocked}
                             variant="subtle"
                             color="standard"
-                            className="h-8 px-2.5 text-xs"
+                            className="h-8 px-2.5 text-xs sm:h-10 sm:border-slate-300/80 sm:shadow-sm sm:hover:border-slate-400/80 sm:hover:bg-slate-100/80 dark:sm:border-slate-700/70 dark:sm:hover:bg-slate-800/80"
                             ariaLabel={isFavourited ? "Remove from favourites" : "Add to favourites"}
                             title={isFavourited ? "Remove from favourites" : "Add to favourites"}
                             icon={(

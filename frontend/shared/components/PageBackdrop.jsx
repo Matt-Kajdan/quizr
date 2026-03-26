@@ -21,9 +21,6 @@ export function PageBackdrop() {
   return (
     <>
       <div className="fixed inset-0 sm:hidden" style={mobileBackdropStyle}></div>
-      <div className="pointer-events-none fixed inset-0 overflow-hidden sm:hidden">
-        <div className="absolute inset-[-35%]" style={mobileBackdropPatternStyle}></div>
-      </div>
       <div className="fixed inset-0 hidden sm:block" style={desktopBackdropStyle}></div>
 
       <div className="pointer-events-none fixed inset-0 hidden overflow-hidden sm:block dark:hidden">

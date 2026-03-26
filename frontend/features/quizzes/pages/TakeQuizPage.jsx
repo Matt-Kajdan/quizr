@@ -252,8 +252,7 @@ function TakeQuizPage() {
         : phase === "done"
             ? `Attempt ${currentUserAttemptCount} - your results`
             : "Ready to take on this quiz?";
-    const introSecondaryButtonClass = "w-full sm:h-12 sm:rounded-2xl sm:text-lg";
-    const introPrimaryButtonClass = "order-first col-span-2 w-full sm:order-none sm:col-span-1 sm:h-12 sm:rounded-2xl sm:text-lg";
+
 
     function handleQuizSort(key) {
         setQuizSortConfig((prev) => {
@@ -725,113 +724,111 @@ function TakeQuizPage() {
                                         </InfoChip>
                                     )}
                                 </div>
-                                <div className="hidden flex-wrap items-center gap-2 sm:flex">
-                                    {canNavigateToAuthor ? (
+                                {/* Desktop header ribbon: chips left, author + owner actions right */}
+                                <div className="hidden items-center justify-between gap-3 sm:flex">
+                                    {/* LEFT: category + difficulty */}
+                                    <div className="flex items-center gap-2">
                                         <InfoChip
-                                            onClick={() => {
-                                                navigate(toProfileUrl(authorName));
-                                            }}
-                                            variant="subtle"
+                                            variant="primary"
                                             size="sm"
-                                            color="slate"
-                                            className="hidden self-start sm:inline-flex sm:self-auto"
+                                            color={getCategoryChipColor(quiz.category)}
+                                            icon={(
+                                                <svg className="w-4 h-4 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    {categoryIcons[quiz.category] || categoryIcons.other}
+                                                </svg>
+                                            )}
                                         >
-                                            Created by {isQuizOwner ? "you" : authorName}
+                                            {formatCategoryLabel(quiz.category)}
                                         </InfoChip>
-                                    ) : (
                                         <InfoChip
-                                            variant="subtle"
+                                            variant="secondary"
                                             size="sm"
-                                            color="slate"
-                                            className="hidden self-start text-slate-500 sm:inline-flex sm:self-auto"
+                                            color={getDifficultyChipColor(difficultyKey)}
+                                            icon={(
+                                                <svg
+                                                    className="h-4 w-4 text-current"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth={1.8}
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    aria-hidden="true"
+                                                >
+                                                    {difficulty.icon}
+                                                </svg>
+                                            )}
                                         >
-                                            Created by {authorName}
+                                            {difficulty.label}
                                         </InfoChip>
-                                    )}
-                                    {isQuizOwner && (
-                                        <>
-                                            <button
-                                                className="rounded-xl border border-slate-200/80 bg-white/40 dark:bg-slate-950/40 dark:border-slate-900/60 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors hover:bg-white/80 dark:hover:bg-slate-950/60 hover:border-slate-200/80 flex items-center justify-center gap-2"
-                                                type="button"
-                                                onClick={() =>
-                                                    navigate(`/quiz/${id}/edit`, {
-                                                        state: {
-                                                            from: "quiz",
-                                                            returnTo: `/quiz/${id}`,
-                                                            quizReturnTo: returnTo,
-                                                        },
-                                                    })
-                                                }
+                                    </div>
+                                    {/* RIGHT: created by + owner actions */}
+                                    <div className="flex items-center gap-2">
+                                        {canNavigateToAuthor ? (
+                                            <InfoChip
+                                                onClick={() => { navigate(toProfileUrl(authorName)); }}
+                                                variant="subtle"
+                                                size="sm"
+                                                color="slate"
                                             >
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z"
-                                                    />
-                                                </svg>
-                                                <span>Edit</span>
-                                            </button>
-                                            <button
-                                                className="rounded-xl border border-slate-200/80 bg-white/40 dark:bg-slate-950/40 dark:border-slate-900/60 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors hover:bg-white/80 dark:hover:bg-slate-950/60 hover:border-slate-200/80 flex items-center justify-center gap-2"
-                                                type="button"
-                                                onClick={() => setShowDeleteConfirm(true)}
+                                                Created by {isQuizOwner ? "you" : authorName}
+                                            </InfoChip>
+                                        ) : (
+                                            <InfoChip
+                                                variant="subtle"
+                                                size="sm"
+                                                color="slate"
+                                                className="text-slate-500"
                                             >
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
+                                                Created by {authorName}
+                                            </InfoChip>
+                                        )}
+                                        {isQuizOwner && (
+                                            <>
+                                                <Button
+                                                    variant="secondary"
+                                                    size="compact"
+                                                    onClick={() =>
+                                                        navigate(`/quiz/${id}/edit`, {
+                                                            state: {
+                                                                from: "quiz",
+                                                                returnTo: `/quiz/${id}`,
+                                                                quizReturnTo: returnTo,
+                                                            },
+                                                        })
+                                                    }
+                                                    icon={(
+                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
+                                                        </svg>
+                                                    )}
                                                 >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                                    />
-                                                </svg>
-                                                <span>Delete</span>
-                                            </button>
-                                        </>
-                                    )}
+                                                    Edit
+                                                </Button>
+                                                <Button
+                                                    variant="secondary"
+                                                    size="compact"
+                                                    onClick={() => setShowDeleteConfirm(true)}
+                                                    icon={(
+                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    )}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="p-6 sm:p-8">
-                                <div className="mb-5 grid w-full grid-cols-2 items-stretch gap-2.5 sm:mb-6 sm:grid-cols-3 sm:gap-4">
-                                    <Button
-                                        variant="secondary"
-                                        size="compact"
-                                        className={introSecondaryButtonClass}
-                                        onClick={() => navigate(returnTo)}
-                                    >
-                                        <span className="inline-flex items-center justify-center gap-2">
-                                            <svg
-                                                className="hidden h-5 w-5 sm:block"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth={2}
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                aria-hidden="true"
-                                            >
-                                                <path d="M10 8l-4 4 4 4" />
-                                                <path d="M6 12h8" />
-                                                <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
-                                            </svg>
-                                            <span>Exit</span>
-                                        </span>
-                                    </Button>
+                                {/* Mobile CTA buttons — compact size */}
+                                <div className="mb-5 grid w-full grid-cols-2 items-stretch gap-2.5 sm:hidden">
                                     <Button
                                         variant="primary"
                                         size="compact"
-                                        className={introPrimaryButtonClass}
+                                        className="col-span-2 w-full"
                                         onClick={startQuiz}
                                     >
                                         Take the quiz
@@ -839,22 +836,18 @@ function TakeQuizPage() {
                                     <Button
                                         variant="secondary"
                                         size="compact"
-                                        className={introSecondaryButtonClass}
+                                        className="w-full"
+                                        onClick={() => navigate(returnTo)}
+                                    >
+                                        Exit
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
+                                        size="compact"
+                                        className="w-full"
                                         onClick={handleToggleFavourite}
                                     >
-                                        <span className="inline-flex items-center justify-center gap-2">
-                                            <svg
-                                                className="hidden h-5 w-5 sm:block"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                fill={isFavourited ? "currentColor" : "none"}
-                                                strokeWidth={2}
-                                                aria-hidden="true"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                            </svg>
-                                            <span>{isFavourited ? "Remove from favourites" : "Add to favourites"}</span>
-                                        </span>
+                                        {isFavourited ? "Remove from favourites" : "Add to favourites"}
                                     </Button>
                                 </div>
                                 <div className="text-xs text-slate-600 dark:text-slate-400 divide-y divide-slate-200/80 dark:divide-slate-800/90 sm:hidden">
@@ -1007,6 +1000,45 @@ function TakeQuizPage() {
                                         </div>
                                     </div>
                                 </div>
+                                {/* Desktop CTA buttons — large size, below info cards */}
+                                <div className="mt-6 mb-2 hidden w-full gap-4 sm:flex">
+                                    <Button
+                                        variant="secondary"
+                                        size="lg"
+                                        className="flex-1"
+                                        onClick={() => navigate(returnTo)}
+                                        icon={(
+                                            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                <path d="M10 8l-4 4 4 4" />
+                                                <path d="M6 12h8" />
+                                                <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
+                                            </svg>
+                                        )}
+                                    >
+                                        Exit
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        size="lg"
+                                        className="flex-1"
+                                        onClick={startQuiz}
+                                    >
+                                        Take the quiz
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
+                                        size="lg"
+                                        className="flex-1"
+                                        onClick={handleToggleFavourite}
+                                        icon={(
+                                            <svg className="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" fill={isFavourited ? "currentColor" : "none"} strokeWidth={2} aria-hidden="true">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                            </svg>
+                                        )}
+                                    >
+                                        {isFavourited ? "Remove from favourites" : "Add to favourites"}
+                                    </Button>
+                                </div>
                                 {isQuizOwner && (
                                     <>
                                         {showDeleteConfirm && (
@@ -1101,7 +1133,16 @@ function TakeQuizPage() {
                                                                     cellContent = quizRankMap.get(entry.userId) || index + 1;
                                                                     cellClass = "px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3";
                                                                 } else if (column.key === "username") {
-                                                                    cellContent = entry.username;
+                                                                    const canNav = entry.username && entry.username !== "Unknown";
+                                                                    cellContent = canNav ? (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="text-left font-medium hover:underline hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+                                                                            onClick={() => navigate(toProfileUrl(entry.username))}
+                                                                        >
+                                                                            {entry.username}
+                                                                        </button>
+                                                                    ) : entry.username;
                                                                     cellClass = "px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3";
                                                                 } else if (column.render) {
                                                                     cellContent = column.render(entry);
@@ -1288,31 +1329,22 @@ function TakeQuizPage() {
                             <div className="mt-6 hidden flex-wrap gap-3 sm:flex">
                                 <Button
                                     variant="secondary"
-                                    color="standard"
+                                    size="lg"
                                     onClick={returnToQuiz}
                                     className="min-w-[160px] flex-1"
-                                >
-                                    <span className="inline-flex items-center justify-center gap-2">
-                                        <svg
-                                            className="h-4 w-4"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            aria-hidden="true"
-                                        >
+                                    icon={(
+                                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                             <path d="M10 8l-4 4 4 4" />
                                             <path d="M6 12h8" />
                                             <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
                                         </svg>
-                                        <span>Exit</span>
-                                    </span>
+                                    )}
+                                >
+                                    Exit
                                 </Button>
                                 <Button
                                     variant="secondary"
-                                    color="standard"
+                                    size="lg"
                                     onClick={goBack}
                                     disabled={currentIndex === 0}
                                     className="min-w-[160px] flex-1"
@@ -1322,7 +1354,7 @@ function TakeQuizPage() {
                                 {!isLastQuestion && (
                                     <Button
                                         variant="primary"
-                                        color="standard"
+                                        size="lg"
                                         onClick={goNext}
                                         disabled={currentSelections.length === 0}
                                         className="min-w-[160px] flex-1"
@@ -1333,7 +1365,7 @@ function TakeQuizPage() {
                                 {isLastQuestion && (
                                     <Button
                                         variant="primary"
-                                        color="standard"
+                                        size="lg"
                                         onClick={submitQuiz}
                                         disabled={currentSelections.length === 0}
                                         className="min-w-[160px] flex-1"
@@ -1346,55 +1378,50 @@ function TakeQuizPage() {
                     )}
 
                     {phase === "done" && result && (
-                        <div className="relative bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm text-center">
-                            <div className="absolute left-4 top-4 flex flex-wrap gap-3">
-                                <InfoChip
-                                    variant="primary"
-                                    size="md"
-                                    color={getCategoryChipColor(quiz.category)}
-                                    icon={(
-                                        <svg className="w-5 h-5 text-current" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            {categoryIcons[quiz.category] || categoryIcons.other}
-                                        </svg>
-                                    )}
-                                >
-                                    {formatCategoryLabel(quiz.category)}
-                                </InfoChip>
-                                <InfoChip
+                        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm">
+                            {/* Summary top bar: chips left, fav right */}
+                            <div className="flex items-center justify-between gap-3 border-b border-slate-200/60 dark:border-slate-700/50 px-5 py-3">
+                                <div className="flex items-center gap-2">
+                                    <InfoChip
+                                        variant="primary"
+                                        size="sm"
+                                        color={getCategoryChipColor(quiz.category)}
+                                        icon={(
+                                            <svg className="w-4 h-4 text-current" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                {categoryIcons[quiz.category] || categoryIcons.other}
+                                            </svg>
+                                        )}
+                                    >
+                                        {formatCategoryLabel(quiz.category)}
+                                    </InfoChip>
+                                    <InfoChip
+                                        variant="secondary"
+                                        size="sm"
+                                        color={getDifficultyChipColor(difficultyKey)}
+                                        icon={(
+                                            <svg className="h-4 w-4 text-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                {difficulty.icon}
+                                            </svg>
+                                        )}
+                                    >
+                                        {difficulty.label}
+                                    </InfoChip>
+                                </div>
+                                <Button
+                                    onClick={handleToggleFavourite}
+                                    ariaLabel={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                                    title={isFavourited ? "Remove from favourites" : "Add to favourites"}
                                     variant="secondary"
-                                    size="md"
-                                    color={getDifficultyChipColor(difficultyKey)}
+                                    size="compact"
+                                    className={isFavourited ? "text-amber-500" : undefined}
                                     icon={(
-                                        <svg
-                                            className="w-5 h-5 text-current"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth={1.8}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            aria-hidden="true"
-                                        >
-                                            {difficulty.icon}
+                                        <svg className="h-4 w-4" viewBox="0 0 24 24" stroke="currentColor" fill={isFavourited ? "currentColor" : "none"} strokeWidth={2} aria-hidden="true">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
                                         </svg>
                                     )}
-                                >
-                                    {difficulty.label}
-                                </InfoChip>
+                                />
                             </div>
-                            <Button
-                                onClick={handleToggleFavourite}
-                                ariaLabel={isFavourited ? "Remove from favourites" : "Add to favourites"}
-                                title={isFavourited ? "Remove from favourites" : "Add to favourites"}
-                                variant="secondary"
-                                color="standard"
-                                className={`absolute right-4 top-4 ${isFavourited ? "text-amber-500" : undefined}`}
-                                icon={(
-                                    <svg className="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" fill={isFavourited ? "currentColor" : "none"} strokeWidth={2} aria-hidden="true">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                    </svg>
-                                )}
-                            />
+                            <div className="p-6 sm:p-8 text-center">
                             {result.correctAnswers >= quiz.req_to_pass ? (
                                 <>
                                     <div className="w-20 h-20 bg-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center border border-emerald-200/80">
@@ -1441,8 +1468,8 @@ function TakeQuizPage() {
                                         ) : (
                                             filteredSummaryItems.map((item, index) => {
                                                 const statusClasses = item.isCorrect
-                                                    ? "border-emerald-300/90 bg-emerald-100/90 dark:bg-slate-900/40 dark:border-emerald-700/70"
-                                                    : "border-rose-300/90 bg-rose-100/90 dark:bg-slate-900/40 dark:border-rose-700/70";
+                                                    ? "border-emerald-300/90 bg-emerald-50/80 dark:bg-emerald-950/30 dark:border-emerald-700/70"
+                                                    : "border-rose-300/90 bg-rose-50/80 dark:bg-rose-950/30 dark:border-rose-700/70";
                                                 return (
                                                     <div
                                                         key={item.question._id || index}
@@ -1509,27 +1536,31 @@ function TakeQuizPage() {
                                 </div>
                             )}
                             <div className="mt-6 flex gap-3 flex-wrap">
-                                <button
-                                    className="flex-1 min-w-[160px] px-6 py-3 rounded-xl bg-white/70 border border-slate-200/80 text-slate-700 font-semibold hover:bg-white/90 transition-colors"
+                                <Button
+                                    variant="secondary"
+                                    size="compact"
+                                    className="flex-1 min-w-[140px] sm:min-w-[160px]"
                                     onClick={() => navigate("/")}
-                                    type="button"
                                 >
                                     Homepage
-                                </button>
-                                <button
-                                    className="flex-1 min-w-[160px] px-6 py-3 rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white font-semibold hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 transition-colors"
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    size="compact"
+                                    className="flex-1 min-w-[140px] sm:min-w-[160px]"
                                     onClick={retakeQuiz}
-                                    type="button"
                                 >
                                     Retake quiz
-                                </button>
-                                <button
-                                    className="flex-1 min-w-[160px] px-6 py-3 rounded-xl bg-white/70 border border-slate-200/80 text-slate-700 font-semibold hover:bg-white/90 transition-colors"
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    size="compact"
+                                    className="flex-1 min-w-[140px] sm:min-w-[160px]"
                                     onClick={returnToQuiz}
-                                    type="button"
                                 >
                                     Return to quiz
-                                </button>
+                                </Button>
+                            </div>
                             </div>
                         </div>
                     )}
