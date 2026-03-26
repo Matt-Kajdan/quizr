@@ -1137,13 +1137,17 @@ function TakeQuizPage() {
                                                                     cellContent = canNav ? (
                                                                         <button
                                                                             type="button"
-                                                                            className="text-left font-medium hover:underline hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+                                                                            className="flex w-full min-w-0 items-center gap-1.5 px-2.5 py-1.5 text-left text-slate-800 transition-colors hover:font-semibold dark:text-slate-200 sm:gap-2 sm:px-4 sm:py-3"
                                                                             onClick={() => navigate(toProfileUrl(entry.username))}
                                                                         >
-                                                                            {entry.username}
+                                                                            <span className="truncate">{entry.username}</span>
                                                                         </button>
-                                                                    ) : entry.username;
-                                                                    cellClass = "px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3";
+                                                                    ) : (
+                                                                        <span className="flex min-w-0 items-center px-2.5 py-1.5 text-slate-500 sm:px-4 sm:py-3">
+                                                                            <span className="truncate">{entry.username}</span>
+                                                                        </span>
+                                                                    );
+                                                                    cellClass = "p-0 font-medium text-slate-800 w-[150px] max-w-[150px] sm:w-[220px] sm:max-w-[220px]";
                                                                 } else if (column.render) {
                                                                     cellContent = column.render(entry);
                                                                 } else {
