@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 function joinClasses(...values) {
   return values.filter(Boolean).join(" ");
 }
@@ -29,7 +31,34 @@ export function SortingChipBar({
   ariaLabel = "Sorting options",
   className,
   showMobileFade = false,
+  fillMobile = false,
 }) {
+  const scrollRef = useRef(null);
+  const [hasHorizontalOverflow, setHasHorizontalOverflow] = useState(false);
+
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return;
+
+    const updateOverflowState = () => {
+      setHasHorizontalOverflow(element.scrollWidth > element.clientWidth + 1);
+    };
+
+    updateOverflowState();
+
+    const resizeObserver = typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(updateOverflowState)
+      : null;
+
+    resizeObserver?.observe(element);
+    window.addEventListener("resize", updateOverflowState);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", updateOverflowState);
+    };
+  }, [chips, activeValue, direction, fillMobile]);
+
   return (
     <div
       className={joinClasses(
@@ -39,7 +68,10 @@ export function SortingChipBar({
       role="group"
       aria-label={ariaLabel}
     >
-      <div className="flex items-center gap-1.5 p-1 h-full overflow-x-auto overflow-y-hidden no-scrollbar">
+      <div
+        ref={scrollRef}
+        className="flex items-center gap-1.5 p-1 h-full overflow-x-auto overflow-y-hidden no-scrollbar"
+      >
         {chips.map((chip) => {
           const isActive = chip.value === activeValue;
           const widthLabel = chip.reverseLabel && chip.reverseLabel.length > chip.label.length
@@ -57,7 +89,10 @@ export function SortingChipBar({
               aria-pressed={isActive}
               onClick={() => onChipClick?.(chip.value)}
               className={joinClasses(
-                "inline-flex h-8 shrink-0 select-none items-center justify-center gap-1.5 rounded-xl border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,transform,box-shadow,border-color] duration-200 active:scale-95 sm:text-xs",
+                "inline-flex h-8 select-none items-center justify-center gap-1.5 rounded-xl border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,transform,box-shadow,border-color] duration-200 active:scale-95 sm:text-xs",
+                fillMobile
+                  ? "min-w-fit basis-0 grow sm:min-w-0 sm:basis-auto sm:grow-0 sm:shrink-0"
+                  : "shrink-0",
                 isActive
                   ? "border-slate-200/80 bg-white text-slate-800 shadow-sm dark:border-slate-600/70 dark:bg-slate-800 dark:text-slate-100"
                   : "border-transparent text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200",
@@ -76,7 +111,7 @@ export function SortingChipBar({
           );
         })}
       </div>
-      {showMobileFade && (
+      {showMobileFade && hasHorizontalOverflow && (
         <>
           <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-slate-100/95 to-transparent dark:from-slate-950 sm:hidden" />
           <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-slate-100/95 to-transparent dark:from-slate-950 sm:hidden" />

@@ -1,4 +1,5 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { logout } from "@shared/auth/authService";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { useAuth } from "@shared/auth/useAuth";
@@ -16,7 +17,10 @@ import {
   Search,
   Sun,
   Moon,
+  LogOut,
 } from "lucide-react";
+
+const COMPACT_DESKTOP_QUERY = "(max-width: 1023px)";
 
 function NavBar({ accountStatus, accountUsername }) {
   const user = useAuth();
@@ -24,9 +28,20 @@ function NavBar({ accountStatus, accountUsername }) {
   const { theme, toggleTheme, isLoading } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isCompactDesktop, setIsCompactDesktop] = useState(false);
   const username = accountUsername;
   const isAccountLocked = accountStatus === "pending_deletion";
   const profileLabel = username || "Profile";
+
+  useEffect(() => {
+    const query = window.matchMedia(COMPACT_DESKTOP_QUERY);
+    const updateIsCompactDesktop = () => setIsCompactDesktop(query.matches);
+
+    updateIsCompactDesktop();
+    query.addEventListener("change", updateIsCompactDesktop);
+
+    return () => query.removeEventListener("change", updateIsCompactDesktop);
+  }, []);
 
   if (isLoading) {
     return null;
@@ -51,10 +66,10 @@ function NavBar({ accountStatus, accountUsername }) {
   };
 
   const desktopNavLinks = [
-    { to: "/", label: "Home", minWidthClass: "min-w-[5.5rem]" },
-    { to: "/quizzes/create", label: "Create Quiz", minWidthClass: "min-w-[7.5rem]" },
-    { to: "/friends", label: "Friends", minWidthClass: "min-w-[6.5rem]", requiresAuth: true },
-    { to: "/leaderboard", label: "Leaderboard", minWidthClass: "min-w-[8.5rem]", requiresAuth: true },
+    { to: "/", label: "Home", minWidthClass: "min-w-[5.5rem]", icon: <HomeIcon size={20} /> },
+    { to: "/quizzes/create", label: "Create Quiz", minWidthClass: "min-w-[7.5rem]", icon: <PlusSquare size={20} /> },
+    { to: "/friends", label: "Friends", minWidthClass: "min-w-[6.5rem]", requiresAuth: true, icon: <Users size={20} /> },
+    { to: "/leaderboard", label: "Leaderboard", minWidthClass: "min-w-[8.5rem]", requiresAuth: true, icon: <Trophy size={20} /> },
   ];
 
   function isDesktopNavActive(to) {
@@ -69,6 +84,8 @@ function NavBar({ accountStatus, accountUsername }) {
     event.preventDefault();
     navigate(0);
   }
+
+  const showCompactDesktopNav = !isMobile && isCompactDesktop;
 
   if (isMobile) {
     return (
@@ -139,9 +156,12 @@ function NavBar({ accountStatus, accountUsername }) {
                       variant="subtle"
                       color="standard"
                       bold={isActive}
-                      className={`h-11 ${link.minWidthClass}`}
+                      icon={showCompactDesktopNav ? link.icon : undefined}
+                      ariaLabel={showCompactDesktopNav ? link.label : undefined}
+                      title={link.label}
+                      className={showCompactDesktopNav ? "h-11 w-11" : `h-11 ${link.minWidthClass}`}
                     >
-                      {link.label}
+                      {!showCompactDesktopNav ? link.label : null}
                     </Button>
                   );
                 })}
@@ -153,7 +173,7 @@ function NavBar({ accountStatus, accountUsername }) {
             {user && !isAccountLocked && <UserSearchBar excludeUsername={username} />}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3">
             {user && username && (
               <Button
                 to={toProfileUrl(username)}
@@ -161,10 +181,12 @@ function NavBar({ accountStatus, accountUsername }) {
                 variant="subtle"
                 color="standard"
                 bold={isDesktopNavActive(toProfileUrl(username))}
-                className="h-11 min-w-[6.5rem]"
-                title="Profile"
+                icon={showCompactDesktopNav ? <User size={20} /> : undefined}
+                ariaLabel={showCompactDesktopNav ? profileLabel : undefined}
+                className={showCompactDesktopNav ? "h-11 w-11" : "h-11 min-w-[6.5rem]"}
+                title={profileLabel}
               >
-                {profileLabel}
+                {!showCompactDesktopNav ? profileLabel : null}
               </Button>
             )}
             {user && !isAccountLocked && (
@@ -193,10 +215,13 @@ function NavBar({ accountStatus, accountUsername }) {
             {user && (
               <Button
                 onClick={() => logout()}
-                variant="primary"
+                variant={showCompactDesktopNav ? "subtle" : "primary"}
                 color="standard"
+                icon={showCompactDesktopNav ? <LogOut size={20} /> : undefined}
+                ariaLabel={showCompactDesktopNav ? "Sign out" : undefined}
+                title="Sign out"
               >
-                Sign out
+                {!showCompactDesktopNav ? "Sign out" : null}
               </Button>
             )}
           </div>

@@ -4,7 +4,11 @@ import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { apiFetch } from "@shared/api/apiClient";
 import { SearchField } from "@shared/components/SearchField";
 
-export default function UserSearchBar({ excludeUsername }) {
+function joinClasses(...values) {
+  return values.filter(Boolean).join(" ");
+}
+
+export default function UserSearchBar({ excludeUsername, className, inputClassName }) {
   const [q, setQ] = useState("");
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
@@ -120,7 +124,7 @@ export default function UserSearchBar({ excludeUsername }) {
   }
 
   return (
-    <div className="relative w-full max-w-md">
+    <div className={joinClasses("relative w-full max-w-md", className)}>
       <SearchField
         ref={inputRef}
         value={q}
@@ -143,11 +147,12 @@ export default function UserSearchBar({ excludeUsername }) {
         }}
         placeholder="Search users"
         id="mobile-search-input"
-        className="max-w-md"
+        className="w-full"
+        inputClassName={inputClassName}
       />
 
       {open && (
-        <div className="absolute mt-2 w-full rounded-xl border border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/80 backdrop-blur-md shadow-lg overflow-hidden z-50">
+        <div className="fixed left-0 right-0 top-[calc(env(safe-area-inset-top)+3.5rem)] z-50 overflow-hidden bg-white shadow-lg dark:bg-slate-950 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-full sm:rounded-xl sm:border sm:border-slate-200/80 sm:dark:border-slate-800/80">
           {showLoading && (
             <div className="px-4 py-3 text-sm text-slate-500 dark:text-slate-300 flex items-center gap-3 h-[60px]">Searching…</div>
           )}

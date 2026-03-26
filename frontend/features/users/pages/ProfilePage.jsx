@@ -12,6 +12,7 @@ import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourit
 import { QuizStats } from "@features/quizzes/components/QuizStats";
 import { Button } from "@shared/components/Button";
 import { InfoChip } from "@shared/components/InfoChip";
+import { InfoChipGroup } from "@shared/components/InfoChipGroup";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PageShell } from "@shared/components/PageShell";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
@@ -787,6 +788,7 @@ export default function ProfilePage() {
                             to="/settings"
                             variant="primary"
                             color="standard"
+                            className="hidden sm:inline-flex"
                             icon={(
                               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -911,8 +913,8 @@ export default function ProfilePage() {
                   document.body
                 )}
 
-                <div className="w-full sm:w-[32rem] mt-4 sm:mt-0 sm:ml-6">
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 p-4">
+                <div className="w-full sm:w-[32rem] mt-1 sm:mt-0 sm:ml-6">
+                  <div className="grid grid-cols-1 gap-x-4 gap-y-1 px-0 pt-1 pb-4 sm:grid-cols-2 sm:p-4">
                     {(() => {
                       const favsReceived = createdQuizzes.reduce((sum, q) => {
                         const v = q.favourited_count ?? (Array.isArray(q.favourites) ? q.favourites.length : (q.favouritesCount ?? 0));
@@ -940,7 +942,7 @@ export default function ProfilePage() {
                       return statsList.map((s, idx) => (
                         <div
                           key={s.label + s.value}
-                          className={`flex items-end justify-between py-1 px-1 text-sm ${idx < total - 2 ? 'border-b border-slate-200/80 dark:border-slate-800/90' : ''}`}
+                          className={`flex items-end justify-between px-1 py-1 text-sm border-slate-200/80 dark:border-slate-800/90 border-b last:border-b-0 sm:border-b-0 sm:[&:not(:nth-last-child(-n+2))]:border-b`}
                         >
                           <div className="text-sm text-slate-500 flex-1 pr-0.5 text-left">{s.label}</div>
                           <div className="text-sm font-semibold text-slate-800 w-12 text-right">{s.value}</div>
@@ -948,6 +950,24 @@ export default function ProfilePage() {
                       ));
                     })()}
                   </div>
+                  {loggedInUser && isOwnProfile && !isAccountLocked && (
+                    <div className="px-0 pb-4 sm:hidden">
+                      <Button
+                        to="/settings"
+                        variant="secondary"
+                        color="standard"
+                        className="w-full"
+                        icon={(
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        )}
+                      >
+                        Settings
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -999,17 +1019,33 @@ export default function ProfilePage() {
             </div>
           )}
           <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-              <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes created</h2>
-              <div className="flex flex-nowrap items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="relative flex items-center justify-center gap-2 sm:flex-1 sm:justify-start">
+                <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Quizzes created</h2>
                 <InfoChip
                   variant="subtle"
                   size="md"
                   color="slate"
-                  className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : undefined}
+                  className={`sm:ml-auto ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
+                  icon={(
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                    >
+                      <rect x="4" y="5" width="16" height="14" rx="2" />
+                      <path d="M8 9h8M8 13h5" />
+                    </svg>
+                  )}
                 >
-                  {formatQuizCountLabel(createdQuizzes.length)}
+                  {createdQuizzes.length}
                 </InfoChip>
+              </div>
+              <div className="flex w-full flex-nowrap items-center justify-center gap-3 sm:w-auto sm:justify-end">
                 <SortingChipBar
                   chips={createdSortChips}
                   activeValue={sortBy}
@@ -1161,15 +1197,49 @@ export default function ProfilePage() {
                               {getFavouriteCount(quiz)}
                             </InfoChip>
                           </div>
-                          <div className="px-6 pt-4 pb-3">
-                            <div className="mb-3 h-16 w-full">
+                          <div className="px-3.5 pt-1.5 pb-2 sm:px-6 sm:pt-4 sm:pb-3">
+                            <div className="mb-1 h-12 w-full sm:mb-3 sm:h-16">
                               <h3
                                 className={`${titleSizeClass} font-semibold text-slate-800 transition-colors line-clamp-2 text-center h-full w-full flex items-center justify-center`}
                               >
                                 {quiz.title}
                               </h3>
                             </div>
-                            <div className="mb-3 text-xs text-slate-600 dark:text-slate-400 divide-y divide-slate-200/80 dark:divide-slate-800/90">
+                            <div className="mb-2 flex justify-center text-xs text-slate-600 dark:text-slate-400 sm:hidden">
+                              <InfoChipGroup>
+                                <InfoChip
+                                  variant="secondary"
+                                  size="sm"
+                                  color="slate"
+                                  className="!rounded-none !border-0 !bg-transparent"
+                                  icon={(
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      className="h-3.5 w-3.5"
+                                    >
+                                      <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                      <rect x="3" y="7" width="12" height="14" rx="2" />
+                                    </svg>
+                                  )}
+                                >
+                                  {questionCount} questions
+                                </InfoChip>
+                                <InfoChip
+                                  variant="secondary"
+                                  size="sm"
+                                  color="slate"
+                                  className="!rounded-none !border-0 !bg-transparent"
+                                >
+                                  {passThresholdPercent}% to pass
+                                </InfoChip>
+                              </InfoChipGroup>
+                            </div>
+                            <div className="mb-3 hidden text-xs text-slate-600 divide-y divide-slate-200/80 dark:text-slate-400 dark:divide-slate-800/90 sm:block">
                               <div className="flex items-center justify-between py-2">
                                 <span>Questions</span>
                                 <span className="font-semibold text-slate-800">{questionCount}</span>
@@ -1188,26 +1258,44 @@ export default function ProfilePage() {
                               </div>
                             </div>
                             {isOwnProfile && !isAccountLocked && (
-                              <div className="grid gap-2">
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (isAccountLocked) return;
-                                    handleViewStats(quiz._id);
-                                  }}
-                                  disabled={isAccountLocked}
-                                  variant="secondary"
-                                  color="standard"
-                                  className="w-full"
-                                  icon={(
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                  )}
-                                >
-                                  Quiz statistics
-                                </Button>
-                                <div className="grid grid-cols-2 gap-2">
+                              <>
+                                {/* Mobile: grouped buttons */}
+                                <InfoChipGroup className="w-full sm:hidden">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAccountLocked) return;
+                                      handleViewStats(quiz._id);
+                                    }}
+                                    disabled={isAccountLocked}
+                                    variant="secondary"
+                                    color="standard"
+                                    className="min-w-0 flex-1 !rounded-none !border-0 !bg-transparent !shadow-none max-[380px]:hidden"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                      </svg>
+                                    )}
+                                  >
+                                    Details
+                                  </Button>
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAccountLocked) return;
+                                      handleViewStats(quiz._id);
+                                    }}
+                                    disabled={isAccountLocked}
+                                    variant="secondary"
+                                    color="standard"
+                                    ariaLabel="Quiz details"
+                                    className="hidden flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none max-[380px]:inline-flex"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                      </svg>
+                                    )}
+                                  />
                                   <Button
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -1217,15 +1305,14 @@ export default function ProfilePage() {
                                     }}
                                     variant="secondary"
                                     color="standard"
-                                    className="w-full"
+                                    ariaLabel="Edit quiz"
+                                    className="w-10 flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none"
                                     icon={(
                                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
                                       </svg>
                                     )}
-                                  >
-                                    Edit
-                                  </Button>
+                                  />
                                   <Button
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -1234,19 +1321,79 @@ export default function ProfilePage() {
                                     }}
                                     variant="secondary"
                                     color="red"
-                                    className="w-full"
+                                    ariaLabel="Delete quiz"
+                                    className="w-10 flex-1 !rounded-none !border-0 !bg-transparent !px-0 !shadow-none"
                                     icon={(
                                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                       </svg>
                                     )}
+                                  />
+                                </InfoChipGroup>
+                                {/* Desktop: 2-row layout */}
+                                <div className="hidden flex-col gap-2 sm:flex">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAccountLocked) return;
+                                      handleViewStats(quiz._id);
+                                    }}
+                                    disabled={isAccountLocked}
+                                    variant="secondary"
+                                    color="standard"
+                                    size="compact"
+                                    className="w-full"
+                                    icon={(
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                      </svg>
+                                    )}
                                   >
-                                    Delete
+                                    View details
                                   </Button>
+                                  <div className="flex gap-2">
+                                    <Button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/quiz/${quiz._id}/edit`, {
+                                          state: { from: "profile", returnTo: toProfileUrl(routeUsername) }
+                                        });
+                                      }}
+                                      variant="secondary"
+                                      color="standard"
+                                      size="compact"
+                                      className="flex-1"
+                                      icon={(
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z" />
+                                        </svg>
+                                      )}
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setQuizToDelete(quiz);
+                                        setShowDeleteConfirm(true);
+                                      }}
+                                      variant="secondary"
+                                      color="red"
+                                      size="compact"
+                                      className="flex-1"
+                                      icon={(
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                      )}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </div>
                                 </div>
-                              </div>
+                              </>
                             )}
-                            <div className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
+                            <div className="mt-2 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
                               <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
@@ -1269,15 +1416,29 @@ export default function ProfilePage() {
 
           {isOwnProfile && (
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-                <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Favourites</h2>
+              <div className="relative mb-8 flex items-center justify-center gap-2 sm:justify-start">
+                <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Favourites</h2>
                 <InfoChip
                   variant="subtle"
                   size="md"
                   color="slate"
-                  className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : undefined}
+                  className={`sm:ml-auto ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
+                  icon={(
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                    >
+                      <rect x="4" y="5" width="16" height="14" rx="2" />
+                      <path d="M8 9h8M8 13h5" />
+                    </svg>
+                  )}
                 >
-                  {formatQuizCountLabel(myFavourites.length)}
+                  {myFavourites.length}
                 </InfoChip>
               </div>
               {myFavourites.length === 0 ? (
@@ -1328,9 +1489,9 @@ export default function ProfilePage() {
                                   handleRemoveFavourite(quizId);
                                 }}
                                 disabled={isAccountLocked}
-                                variant="secondary"
+                                variant="subtle"
                                 color="standard"
-                                className="px-3"
+                                className="h-8 px-2.5 text-xs sm:h-10 sm:border-slate-300/80 sm:shadow-sm sm:hover:border-slate-400/80 sm:hover:bg-slate-100/80 dark:sm:border-slate-700/70 dark:sm:hover:bg-slate-800/80"
                                 ariaLabel="Remove from favourites"
                                 title="Remove from favourites"
                                   icon={(
@@ -1347,11 +1508,11 @@ export default function ProfilePage() {
                                     </svg>
                                   )}
                                 >
-                                  <span className="text-sm font-semibold">{favouriteCount}</span>
+                                  <span className="text-xs font-semibold">{favouriteCount}</span>
                                 </Button>
                               </div>
                             </div>
-                          <div className="flex flex-wrap items-center gap-2 mb-3">
+                          <div className="mb-3 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                             <InfoChip
                               variant="primary"
                               size="sm"
@@ -1399,7 +1560,7 @@ export default function ProfilePage() {
                               )
                             )}
                           </div>
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:group-hover:text-white/80">
+                          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-600 dark:group-hover:text-white/80 sm:justify-start">
                             <InfoChip
                               variant="secondary"
                               size="sm"
@@ -1503,17 +1664,33 @@ export default function ProfilePage() {
           {takenQuizzes.length > 0 ? (
             <>
               <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-                  <h2 className="text-2xl sm:text-3xl font-semibold text-slate-800">Quizzes Taken</h2>
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="relative flex items-center justify-center gap-2 sm:flex-1 sm:justify-start">
+                    <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Quizzes Taken</h2>
                     <InfoChip
                       variant="subtle"
                       size="md"
                       color="slate"
-                      className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : undefined}
+                      className={`sm:ml-auto ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
+                      icon={(
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-4 w-4"
+                        >
+                          <rect x="4" y="5" width="16" height="14" rx="2" />
+                          <path d="M8 9h8M8 13h5" />
+                        </svg>
+                      )}
                     >
-                      {formatQuizCountLabel(takenQuizzes.length)}
+                      {takenQuizzes.length}
                     </InfoChip>
+                  </div>
+                  <div className="flex w-full items-center gap-3 sm:w-auto">
                     <SortingChipBar
                       chips={takenSortChips}
                       activeValue={takenSortBy}
@@ -1534,10 +1711,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
-                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Favorite Topic</div>
-                    <div className="text-lg font-bold text-slate-800 dark:text-slate-100 capitalize">
+                <div className="mb-8 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
+                  <div className="rounded-xl border border-slate-200/60 bg-white/50 p-3 text-center shadow-sm dark:border-slate-700/40 dark:bg-slate-800/40 sm:rounded-2xl sm:p-4">
+                    <div className="mb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 sm:mb-1 sm:text-xs sm:tracking-wider">Favorite Topic</div>
+                    <div className="text-sm font-bold capitalize text-slate-800 dark:text-slate-100 sm:text-lg">
                       <span className={(() => {
                         if (takenQuizzes.length === 0) return "text-slate-800";
                         const counts = {};
@@ -1567,21 +1744,21 @@ export default function ProfilePage() {
                       </span>
                     </div>
                   </div>
-                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Average Score</div>
-                    <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                  <div className="rounded-xl border border-slate-200/60 bg-white/50 p-3 text-center shadow-sm dark:border-slate-700/40 dark:bg-slate-800/40 sm:rounded-2xl sm:p-4">
+                    <div className="mb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 sm:mb-1 sm:text-xs sm:tracking-wider">Average Score</div>
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100 sm:text-lg">
                       {Math.round(takenQuizzes.reduce((acc, q) => acc + (q.correct / q.totalQuestions) * 100, 0) / takenQuizzes.length)}%
                     </div>
                   </div>
-                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Quizzes Mastered</div>
-                    <div className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                  <div className="rounded-xl border border-slate-200/60 bg-white/50 p-3 text-center shadow-sm dark:border-slate-700/40 dark:bg-slate-800/40 sm:rounded-2xl sm:p-4">
+                    <div className="mb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 sm:mb-1 sm:text-xs sm:tracking-wider">Quizzes Mastered</div>
+                    <div className="text-sm font-bold text-amber-600 dark:text-amber-400 sm:text-lg">
                       {takenQuizzes.filter(q => q.correct === q.totalQuestions).length}
                     </div>
                   </div>
-                  <div className="bg-white/50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-200/60 dark:border-slate-700/40 text-center shadow-sm">
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Correct Answers</div>
-                    <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                  <div className="rounded-xl border border-slate-200/60 bg-white/50 p-3 text-center shadow-sm dark:border-slate-700/40 dark:bg-slate-800/40 sm:rounded-2xl sm:p-4">
+                    <div className="mb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 sm:mb-1 sm:text-xs sm:tracking-wider">Correct Answers</div>
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100 sm:text-lg">
                       {takenQuizzes.reduce((sum, q) => sum + q.correct, 0)}
                     </div>
                   </div>
@@ -1616,6 +1793,8 @@ export default function ProfilePage() {
                     return 0;
                   }).map((quiz) => {
                     const percentage = Math.round((quiz.correct / quiz.totalQuestions) * 100);
+                    const passThreshold = Number.isFinite(quiz.req_to_pass) ? quiz.req_to_pass : quiz.totalQuestions;
+                    const passed = quiz.correct >= passThreshold;
                     const isMastered = percentage === 100;
                     const isFavourited = favouriteIds.includes(quiz._id);
                     const favouriteCount = getFavouriteCount(quiz);
@@ -1666,9 +1845,9 @@ export default function ProfilePage() {
                               handleToggleFavourite(quiz, isFavourited);
                             }}
                             disabled={isAccountLocked}
-                            variant="secondary"
+                            variant="subtle"
                             color="standard"
-                            className="px-3"
+                            className="h-8 px-2.5 text-xs sm:h-10 sm:border-slate-300/80 sm:shadow-sm sm:hover:border-slate-400/80 sm:hover:bg-slate-100/80 dark:sm:border-slate-700/70 dark:sm:hover:bg-slate-800/80"
                             ariaLabel={isFavourited ? "Remove from favourites" : "Add to favourites"}
                             title={isFavourited ? "Remove from favourites" : "Add to favourites"}
                             icon={(
@@ -1685,11 +1864,11 @@ export default function ProfilePage() {
                               </svg>
                             )}
                           >
-                            <span className="text-sm font-semibold">{favouriteCount}</span>
+                            <span className="text-xs font-semibold">{favouriteCount}</span>
                           </Button>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                           <InfoChip
                             variant="primary"
                             size="sm"
@@ -1731,7 +1910,23 @@ export default function ProfilePage() {
                         <div className="space-y-2">
                           <div className="flex items-end justify-between text-xs">
                             <span className="font-semibold text-slate-600">Score</span>
-                            <span className="font-bold text-slate-800">
+                            <span className="flex items-center gap-1.5 font-bold text-slate-800">
+                              {passed && (
+                                <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                                  <svg
+                                    className="h-3.5 w-3.5"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.4"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M4.5 10.5l3.5 3.5 7-7" />
+                                  </svg>
+                                  <span>Passed</span>
+                                </span>
+                              )}
                               {quiz.correct}/{quiz.totalQuestions} <span className="text-slate-400 font-medium ml-1">({percentage}%)</span>
                             </span>
                           </div>

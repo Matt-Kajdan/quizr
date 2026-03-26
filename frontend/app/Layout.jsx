@@ -26,9 +26,11 @@ function Layout() {
         || (location.pathname.startsWith("/quiz/") && location.pathname.endsWith("/edit"));
     const showNavbar = !hideNavbar && !isUserLoading;
     const showMobileTopBar = isMobile && showNavbar && !isQuizEditor;
-    const layoutPaddingClass = isMobile
-        ? (showNavbar ? "pb-16" : "")
-        : (showNavbar ? "pt-16" : "");
+    const layoutPaddingClass = [
+        !isMobile && showNavbar ? "pt-16" : "",
+        isMobile && showNavbar ? "pb-16" : "",
+        showMobileTopBar ? "pt-[calc(env(safe-area-inset-top)+3.5rem)]" : "",
+    ].filter(Boolean).join(" ");
 
     useLayoutEffect(() => {
         const root = document.getElementById("root");
@@ -74,7 +76,10 @@ function Layout() {
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80 pt-[env(safe-area-inset-top)]">
                     <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-3">
                         <div className="flex-1 min-w-0">
-                            <UserSearchBar excludeUsername={accountUsername} />
+                            <UserSearchBar
+                                excludeUsername={accountUsername}
+                                className="w-full max-w-none"
+                            />
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                             <button

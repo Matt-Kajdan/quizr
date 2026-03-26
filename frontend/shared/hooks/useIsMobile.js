@@ -1,24 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+
+const MOBILE_MEDIA_QUERY = "(max-width: 639px)";
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      // Robust detection: combination of media query and user agent
-      const mobileQuery = window.matchMedia('(max-width: 768px)');
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      const isMobileUA = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-      
-      setIsMobile(mobileQuery.matches || isMobileUA);
+    const query = window.matchMedia(MOBILE_MEDIA_QUERY);
+    const updateIsMobile = () => {
+      const isPortraitViewport = window.innerHeight > window.innerWidth;
+      setIsMobile(query.matches || isPortraitViewport);
     };
 
-    checkMobile();
-    
-    const query = window.matchMedia('(max-width: 768px)');
-    query.addEventListener('change', checkMobile);
-    
-    return () => query.removeEventListener('change', checkMobile);
+    updateIsMobile();
+    query.addEventListener("change", updateIsMobile);
+    window.addEventListener("resize", updateIsMobile);
+
+    return () => {
+      query.removeEventListener("change", updateIsMobile);
+      window.removeEventListener("resize", updateIsMobile);
+    };
   }, []);
 
   return isMobile;

@@ -13,7 +13,7 @@ export function PasswordInput({ inputClassName, minLength, value, ...props }) {
   const [show, setShow] = useState(false);
 
   const defaultClass =
-    "w-full px-4 py-3 pr-20 rounded-xl border border-slate-200/80 bg-white/70 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70";
+    "w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 pr-20 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70";
 
   const len = (value ?? "").length;
   const showCounter = typeof minLength === "number" && typeof value === "string";
@@ -34,7 +34,7 @@ export function PasswordInput({ inputClassName, minLength, value, ...props }) {
             className={`text-xs tabular-nums select-none transition-colors ${
               isMet
                 ? "text-emerald-500"
-                : "text-slate-400"
+                : "text-slate-400 dark:text-slate-500"
             }`}
           >
             {len}
@@ -45,7 +45,7 @@ export function PasswordInput({ inputClassName, minLength, value, ...props }) {
           onClick={() => setShow((s) => !s)}
           tabIndex={-1}
           aria-label={show ? "Hide password" : "Show password"}
-          className="flex items-center px-3 text-slate-400 hover:text-slate-600 transition-colors"
+          className="flex items-center px-3 text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
         >
           {show ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>

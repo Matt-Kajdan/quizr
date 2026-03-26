@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 
 const chips = [
@@ -8,6 +8,10 @@ const chips = [
 ];
 
 describe("SortingChipBar", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders all chips and marks the active one as pressed", () => {
     render(
       <SortingChipBar
@@ -85,5 +89,59 @@ describe("SortingChipBar", () => {
 
     expect(screen.getByRole("button", { name: "Newest" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Likes" }).hasAttribute("disabled")).toBe(true);
+  });
+
+  it("can opt into mobile fill behavior without changing desktop defaults", () => {
+    render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="date"
+        direction="desc"
+        fillMobile
+        onChipClick={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Newest" }).className.includes("grow")).toBe(true);
+    expect(screen.getByRole("button", { name: "Newest" }).className.includes("sm:grow-0")).toBe(true);
+  });
+
+  it("shows mobile fade only when the chip row actually overflows", async () => {
+    const scrollWidthSpy = vi.spyOn(HTMLElement.prototype, "scrollWidth", "get");
+    const clientWidthSpy = vi.spyOn(HTMLElement.prototype, "clientWidth", "get");
+
+    scrollWidthSpy.mockReturnValue(320);
+    clientWidthSpy.mockReturnValue(320);
+
+    const { container, rerender } = render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="date"
+        direction="desc"
+        showMobileFade
+        onChipClick={vi.fn()}
+      />
+    );
+
+    expect(container.querySelectorAll(".bg-gradient-to-l")).toHaveLength(0);
+    expect(container.querySelectorAll(".bg-gradient-to-r")).toHaveLength(0);
+
+    scrollWidthSpy.mockReturnValue(420);
+    clientWidthSpy.mockReturnValue(320);
+
+    rerender(
+      <SortingChipBar
+        chips={chips}
+        activeValue="stars"
+        direction="desc"
+        showMobileFade
+        onChipClick={vi.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(container.querySelectorAll(".bg-gradient-to-l")).toHaveLength(1);
+      expect(container.querySelectorAll(".bg-gradient-to-r")).toHaveLength(1);
+    });
   });
 });

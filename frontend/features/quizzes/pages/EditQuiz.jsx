@@ -558,9 +558,7 @@ export default function EditQuiz() {
 
   return (
     <>
-      <PageShell
-        mainClassName={questions.length > 0 && isMobile ? "pt-20 sm:pt-8" : undefined}
-      >
+      <PageShell>
         {/* Mobile Top Bar */}
         {questions.length > 0 && isMobile && (
           <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80 pt-[env(safe-area-inset-top)]">
@@ -604,6 +602,9 @@ export default function EditQuiz() {
               </button>
             </div>
           </div>
+        )}
+        {questions.length > 0 && isMobile && (
+          <div aria-hidden="true" className="h-[calc(env(safe-area-inset-top)+3.5rem)] sm:hidden" />
         )}
         <PageHeader title="Edit Quiz" subtitle="Refine your quiz details" />
 
@@ -650,24 +651,30 @@ export default function EditQuiz() {
                       <label className="block text-slate-600 dark:text-slate-400 font-medium mb-2 text-sm">
                         Answers per question
                       </label>
-                      <SelectDropdown
-                        value={answersPerQuestion}
-                        options={ANSWER_COUNT_OPTIONS}
-                        onChange={handleAnswersPerQuestionChange}
-                        getOptionLabel={(count) => `${count} answers`}
-                        buttonClassName="w-full rounded-xl px-4 py-3 text-left flex items-center justify-between"
-                        menuClassName="max-h-64 rounded-xl"
-                        optionClassName="font-medium"
-                        itemRoundedClassName="first:rounded-t-xl last:rounded-b-xl"
-                        renderTrigger={({ isOpen, selectedLabel }) => (
-                          <>
-                            <span>{selectedLabel}</span>
-                            <svg className={`w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </>
-                        )}
-                      />
+                      <div className="rounded-xl border border-slate-200/80 bg-white/60 p-3">
+                        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                          <span>Options per question</span>
+                          <span>{answersPerQuestion} answers</span>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-900/80 rounded-lg overflow-hidden">
+                            <div
+                              className="h-full bg-slate-800 dark:bg-slate-100"
+                              style={{ width: `${((answersPerQuestion - ANSWER_COUNT_OPTIONS[0]) / (ANSWER_COUNT_OPTIONS[ANSWER_COUNT_OPTIONS.length - 1] - ANSWER_COUNT_OPTIONS[0])) * 100}%` }}
+                            />
+                          </div>
+                          <input
+                            type="range"
+                            draggable={false}
+                            min={ANSWER_COUNT_OPTIONS[0]}
+                            max={ANSWER_COUNT_OPTIONS[ANSWER_COUNT_OPTIONS.length - 1]}
+                            step="1"
+                            value={answersPerQuestion}
+                            onChange={(e) => handleAnswersPerQuestionChange(Number(e.target.value))}
+                            className="relative w-full h-1.5 appearance-none bg-transparent cursor-ew-resize z-10 touch-none select-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-ew-resize [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:mt-[-5px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-800 dark:[&::-webkit-slider-thumb]:bg-slate-100 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-slate-950 [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:cursor-ew-resize [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-800 dark:[&::-moz-range-thumb]:bg-slate-100 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-slate-950 [&::-moz-range-thumb]:shadow-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
                     <div>
                       <label className="block text-slate-600 font-medium mb-2 text-sm">

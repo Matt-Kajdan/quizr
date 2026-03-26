@@ -4,6 +4,7 @@ import { getQuizzes } from "@features/quizzes/api/quizzes";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { CATEGORY_ICONS } from "@shared/assets/icons";
 import { InfoChip } from "@shared/components/InfoChip";
+import { PageBackdrop } from "@shared/components/PageBackdrop";
 import { SearchField } from "@shared/components/SearchField";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
@@ -40,10 +41,6 @@ export function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   const returnTo = `${location.pathname}${location.search || ""}`;
-  const opalBackdropStyle = {
-    backgroundColor: "var(--opal-bg-color)",
-    backgroundImage: "var(--opal-backdrop-image)"
-  };
   const logoBaseGradient = `
     radial-gradient(160px 120px at 15% 30%, rgba(255, 190, 70, 1), transparent 65%),
     radial-gradient(180px 140px at 45% 20%, rgba(255, 120, 190, 1), transparent 65%),
@@ -126,6 +123,7 @@ export function Home() {
       hover: { primary: "107 114 128", secondary: "100 116 139" }
     }
   };
+  const mobileRibbonClass = "bg-transparent text-slate-600 border-slate-200/30 dark:text-slate-300 dark:border-slate-700/20";
   const categoryIcons = CATEGORY_ICONS;
   const difficultyChips = {
     easy: {
@@ -248,8 +246,8 @@ export function Home() {
     return (
       <div
         className="fixed inset-0 flex items-center justify-center"
-        style={opalBackdropStyle}
       >
+        <PageBackdrop />
         <div className="relative flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
           <p className="mt-4 text-slate-600 font-medium">Loading...</p>
@@ -259,21 +257,10 @@ export function Home() {
 
   return (
     <>
-      <div className="fixed inset-0 -top-20" style={opalBackdropStyle}></div>
-      <div className="fixed inset-0 -top-20 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: '1s' }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: '2s' }}
-        ></div>
-      </div>
+      <PageBackdrop />
       <div className="relative min-h-screen">
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-16 sm:pb-12">
-          <div className="mb-8 sm:mb-12 text-center mt-10 sm:mt-6">
+        <main className="relative mx-auto max-w-6xl px-3 pt-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-16 lg:pt-20 sm:pb-12 lg:px-8">
+          <div className="mb-7 mt-2 text-center sm:mb-12 sm:mt-6">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-3 sm:mb-4 animate-fade-in px-4">
               <span
                 className={`relative inline-block ${!isMobile ? "group" : ""} select-none`}
@@ -329,13 +316,13 @@ export function Home() {
           </div>
           {quizzes.length > 0 && (
             <div className="relative z-30 mb-6 sm:mb-8 overflow-visible rounded-[28px] border border-slate-200/80 bg-white/70 p-3 backdrop-blur-lg shadow-sm">
-              <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
-                <div className="flex min-w-0 flex-wrap items-center gap-2.5 xl:flex-none">
+              <div className="flex flex-col gap-3 min-[640px]:max-[824px]:hidden min-[1160px]:flex-row min-[1160px]:items-center">
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5 md:w-full md:justify-between min-[1160px]:w-auto min-[1160px]:flex-none min-[1160px]:justify-start">
                   <InfoChip
                     variant="subtle"
                     size="md"
                     color="slate"
-                    className="w-[188px] shrink-0 justify-center px-3.5 text-slate-600 dark:text-slate-200"
+                    className="hidden w-[188px] shrink-0 justify-center px-3.5 text-slate-600 dark:text-slate-200 min-[438px]:inline-flex"
                     icon={(
                       <svg
                         viewBox="0 0 24 24"
@@ -357,7 +344,7 @@ export function Home() {
                     </span>
                   </InfoChip>
                   <SelectDropdown
-                    className="min-w-[180px]"
+                    className="min-w-[180px] flex-1 md:max-w-[22rem] min-[1160px]:max-w-none"
                     value={selectedCategory}
                     options={categories}
                     onChange={setSelectedCategory}
@@ -371,7 +358,124 @@ export function Home() {
                             ? "Your quizzes"
                           : category.charAt(0).toUpperCase() + category.slice(1)
                     )}
-                    buttonClassName="category-dropdown-button h-10 min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
+                    buttonClassName="category-dropdown-button h-10 w-full min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
+                    menuClassName="z-[70] max-h-64 rounded-2xl [&::-webkit-scrollbar]:hidden"
+                    optionClassName="text-xs sm:text-sm font-semibold"
+                    itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
+                    renderTrigger={({ isOpen, selectedLabel }) => (
+                      <>
+                        <span className="flex min-w-0 items-center gap-2 pr-4 max-[437px]:flex-1 max-[437px]:justify-between">
+                          <span className="truncate">{selectedLabel}</span>
+                          <span className="hidden shrink-0 tabular-nums text-slate-500 max-[437px]:inline">
+                            {visibleQuizzes.length}
+                          </span>
+                        </span>
+                        <svg className={`h-4 w-4 flex-shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    )}
+                  />
+                  <SortingChipBar
+                    chips={sortOptions}
+                    activeValue={sortBy}
+                    direction={sortDirection}
+                    onChipClick={(nextSortBy) => {
+                      if (nextSortBy === sortBy) {
+                        setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                        return;
+                      }
+
+                      setSortBy(nextSortBy);
+                      setSortDirection("desc");
+                    }}
+                    showMobileFade
+                    fillMobile
+                    className="w-full sm:w-auto sm:flex-none sm:max-w-max"
+                  />
+                </div>
+
+                <SearchField
+                  className="min-w-0 flex-1 min-[1160px]:min-w-[16rem]"
+                  inputClassName="!rounded-2xl py-2.5"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  onClear={() => setSearchQuery("")}
+                  placeholder="Search quizzes"
+                />
+              </div>
+
+              <div className="hidden min-[640px]:max-[824px]:flex min-[640px]:max-[824px]:flex-col min-[640px]:max-[824px]:gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <InfoChip
+                    variant="subtle"
+                    size="md"
+                    color="slate"
+                    className="w-auto shrink-0 justify-center px-3.5 text-slate-600 dark:text-slate-200"
+                    icon={(
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-4 w-4"
+                      >
+                        <rect x="4" y="5" width="16" height="14" rx="2" />
+                        <path d="M8 9h8M8 13h5" />
+                      </svg>
+                    )}
+                  >
+                    <span className="inline-flex max-w-full items-center gap-1 overflow-hidden">
+                    <span className="tabular-nums">{visibleQuizzes.length}</span>
+                      <span className="truncate">{countLabel}</span>
+                    </span>
+                  </InfoChip>
+                  <SearchField
+                    className="min-w-0 flex-1"
+                    inputClassName="!rounded-2xl py-2.5"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    onClear={() => setSearchQuery("")}
+                    placeholder="Search quizzes"
+                  />
+                </div>
+
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <SortingChipBar
+                    chips={sortOptions}
+                    activeValue={sortBy}
+                    direction={sortDirection}
+                    onChipClick={(nextSortBy) => {
+                      if (nextSortBy === sortBy) {
+                        setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                        return;
+                      }
+
+                      setSortBy(nextSortBy);
+                      setSortDirection("desc");
+                    }}
+                    showMobileFade
+                    fillMobile
+                    className="min-w-0 flex-none sm:w-auto sm:max-w-max"
+                  />
+                  <SelectDropdown
+                    className="min-w-[180px] flex-1 max-w-none"
+                    value={selectedCategory}
+                    options={categories}
+                    onChange={setSelectedCategory}
+                    getOptionValue={(category) => category}
+                    getOptionLabel={(category) => (
+                      category === "all"
+                        ? "All Categories"
+                        : category === "favourites"
+                          ? "Favourites"
+                          : category === "your-quizzes"
+                            ? "Your quizzes"
+                          : category.charAt(0).toUpperCase() + category.slice(1)
+                    )}
+                    buttonClassName="category-dropdown-button h-10 w-full min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
                     menuClassName="z-[70] max-h-64 rounded-2xl [&::-webkit-scrollbar]:hidden"
                     optionClassName="text-xs sm:text-sm font-semibold"
                     itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
@@ -384,32 +488,7 @@ export function Home() {
                       </>
                     )}
                   />
-                  <SortingChipBar
-                  chips={sortOptions}
-                  activeValue={sortBy}
-                  direction={sortDirection}
-                  onChipClick={(nextSortBy) => {
-                    if (nextSortBy === sortBy) {
-                      setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
-                      return;
-                    }
-
-                    setSortBy(nextSortBy);
-                    setSortDirection("desc");
-                  }}
-                  showMobileFade
-                  className="w-full md:w-auto md:flex-none md:max-w-max"
-                  />
                 </div>
-
-                <SearchField
-                  className="min-w-0 flex-1 xl:min-w-[16rem]"
-                  inputClassName="!rounded-2xl py-2.5"
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  onClear={() => setSearchQuery("")}
-                  placeholder="Search quizzes"
-                />
               </div>
             </div>
           )}
@@ -494,7 +573,7 @@ export function Home() {
                     onTouchEnd={handleCardTouchEnd}
                   >
                     <div
-                      className="relative z-10 bg-white/70 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-4 px-4 pb-1.5 sm:pt-5 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-[200px] flex flex-col"
+                      className="relative z-10 bg-white/70 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl sm:rounded-3xl pt-4 px-4 pb-1.5 sm:pt-5 sm:px-6 sm:pb-2 border border-slate-200/80 hover:border-slate-300 transition-all transform group-hover:scale-[1.012] group-hover:[box-shadow:0_10px_26px_-18px_rgb(var(--shadow-color)/0.42),0_0_18px_-10px_rgb(var(--shadow-color)/0.32)] overflow-hidden h-[148px] sm:h-[200px] flex flex-col"
                       style={{ "--shadow-color": gradient.hover.primary }}
                     >
                       <div
@@ -516,7 +595,83 @@ export function Home() {
                             {`Matching ${matchReasons.join(", ")}`}
                           </div>
                         )}
-                        <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <div className={`-mx-4 -mt-4 mb-2 flex items-stretch justify-between border-b pl-2 pr-0 sm:hidden ${mobileRibbonClass}`}>
+                          <div className="flex items-center gap-1.5 py-0.5">
+                            <InfoChip
+                              variant="subtle"
+                              size="sm"
+                              color={getCategoryChipColor(quiz.category)}
+                              className="min-h-0 gap-1 px-0 py-0 text-xs"
+                              icon={(
+                                <span
+                                  className="block h-3.5 w-3.5 bg-current"
+                                  style={{
+                                    WebkitMaskImage: `url(${categoryIcon})`,
+                                    maskImage: `url(${categoryIcon})`,
+                                    WebkitMaskSize: "contain",
+                                    maskSize: "contain",
+                                    WebkitMaskRepeat: "no-repeat",
+                                    maskRepeat: "no-repeat"
+                                  }}
+                                />
+                              )}
+                            >
+                              {formatCategoryLabel(categoryLabel)}
+                            </InfoChip>
+                            <InfoChip
+                              variant="subtle"
+                              size="sm"
+                              color={getDifficultyChipColor(quiz.difficulty)}
+                              className="min-h-0 gap-1 px-0 py-0 text-xs"
+                              icon={(
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  aria-hidden="true"
+                                  className="h-3.5 w-3.5 text-current"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="1.8"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  {difficulty.iconPaths.map((path) => (
+                                    <path key={path} d={path} />
+                                  ))}
+                                </svg>
+                              )}
+                            >
+                              {difficulty.label}
+                            </InfoChip>
+                          </div>
+                          <InfoChip
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              handleToggleFavourite(quiz._id, isFavourited);
+                            }}
+                            ariaLabel={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                            variant="subtle"
+                            size="sm"
+                            color="slate"
+                            className={`min-h-0 self-stretch min-w-[3rem] justify-center !rounded-none px-3 text-xs hover:bg-white/20 dark:hover:bg-white/10 ${isFavourited ? "text-amber-500 dark:text-amber-400" : ""}`}
+                            icon={(
+                              <svg
+                                viewBox="0 0 24 24"
+                                className="h-3.5 w-3.5"
+                                fill={isFavourited ? "currentColor" : "none"}
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                              </svg>
+                            )}
+                          >
+                            {favouriteCount}
+                          </InfoChip>
+                        </div>
+                        <div className="hidden items-center justify-between mb-3 sm:mb-4 sm:flex">
                           <div className="flex flex-wrap items-center gap-2">
                             <InfoChip
                               variant="primary"
@@ -563,44 +718,45 @@ export function Home() {
                             </InfoChip>
                           </div>
                           <div className="inline-flex items-center gap-2">
-                            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-                              {favouriteCount}
-                            </span>
-                            <button
-                              type="button"
-                              aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                handleToggleFavourite(quiz._id, isFavourited);
-                              }}
-                              className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-all duration-150 ease-out group-hover:border-white/30 ${isFavourited
-                                ? "text-amber-500 hover:text-slate-700 dark:hover:text-white"
-                                : "text-slate-500 hover:text-amber-500 dark:hover:text-amber-500"
-                                }`}
-                            >
-                              <svg
-                                viewBox="0 0 24 24"
-                                className="h-4 w-4"
-                                fill={isFavourited ? "currentColor" : "none"}
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                            <div className="hidden items-center gap-2 sm:inline-flex">
+                              <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+                                {favouriteCount}
+                              </span>
+                              <button
+                                type="button"
+                                aria-label={isFavourited ? "Remove from favourites" : "Add to favourites"}
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  handleToggleFavourite(quiz._id, isFavourited);
+                                }}
+                                className={`inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white/80 p-2 backdrop-blur transition-all duration-150 ease-out group-hover:border-white/30 ${isFavourited
+                                  ? "text-amber-500 hover:text-slate-700 dark:hover:text-white"
+                                  : "text-slate-500 hover:text-amber-500 dark:hover:text-amber-500"
+                                  }`}
                               >
-                                <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                              </svg>
-                            </button>
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  className="h-4 w-4"
+                                  fill={isFavourited ? "currentColor" : "none"}
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex-1 flex items-center -translate-y-2">
-                          <h3 className="text-lg sm:text-xl font-bold text-slate-800 line-clamp-2 transition-all text-center w-full leading-tight">
+                        <div className="flex-1 flex items-center -translate-y-1.5 px-1 sm:-translate-y-2 sm:px-0">
+                          <h3 className="text-base sm:text-xl font-bold text-slate-800 line-clamp-2 transition-all text-center w-full leading-tight">
                             {quiz.title}
                           </h3>
                         </div>
-                        <div className="mt-auto -mx-5 sm:-mx-6">
-                          <div className="h-px w-full bg-slate-200/70 mb-2"></div>
-                          <div className="flex items-center justify-between gap-2 py-0.5 px-4 sm:px-5 text-xs sm:text-sm text-slate-600 dark:group-hover:text-white/90">
+                        <div className="mt-auto -mx-4 -mb-1.5 sm:-mx-6 sm:mb-0">
+                          <div className={`flex items-center justify-between gap-2 border-t px-3 py-0.5 sm:hidden ${mobileRibbonClass}`}>
                             <InfoChip
                               variant="subtle"
                               size="sm"
@@ -646,6 +802,56 @@ export function Home() {
                                 {isMyOwnQuiz ? "Created by you" : authorLabel}
                               </InfoChip>
                             )}
+                          </div>
+                          <div className="hidden sm:block">
+                            <div className="mb-2 h-px w-full bg-slate-200/70"></div>
+                            <div className="flex items-center justify-between gap-2 px-5 py-0.5 text-sm text-slate-600 dark:group-hover:text-white/90">
+                              <InfoChip
+                                variant="subtle"
+                                size="sm"
+                                color="slate"
+                                icon={(
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="h-3.5 w-3.5"
+                                  >
+                                    <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                    <rect x="3" y="7" width="12" height="14" rx="2" />
+                                  </svg>
+                                )}
+                              >
+                                {quiz?.questions?.length || 0} questions
+                              </InfoChip>
+                              {canNavigateToAuthor ? (
+                                <InfoChip
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    navigate(toProfileUrl(authorName));
+                                  }}
+                                  variant="subtle"
+                                  size="sm"
+                                  color="slate"
+                                  className="hover:[background-color:rgb(var(--shadow-color)/0.2)]"
+                                >
+                                  {isMyOwnQuiz ? "Created by you" : authorLabel}
+                                </InfoChip>
+                              ) : (
+                                <InfoChip
+                                  variant="subtle"
+                                  size="sm"
+                                  color="slate"
+                                  className="text-slate-400"
+                                >
+                                  {isMyOwnQuiz ? "Created by you" : authorLabel}
+                                </InfoChip>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

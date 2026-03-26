@@ -12,7 +12,7 @@ export function PageHeader({
   const hasSubtitle = subtitle !== undefined && subtitle !== null && subtitle !== "";
 
   return (
-    <div className={joinClasses("mb-9 text-center sm:mb-12", className)}>
+    <div className={joinClasses("mt-1.5 mb-9 text-center sm:mt-0 sm:mb-12", className)}>
       <div className="space-y-3 sm:space-y-4">
         <h1
           className={joinClasses(

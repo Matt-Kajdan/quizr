@@ -9,6 +9,7 @@ export function PaginationControl({
   totalPages,
   onPrevious,
   onNext,
+  label,
   className
 }) {
   const canGoPrevious = currentPage > 1;
@@ -44,7 +45,7 @@ export function PaginationControl({
       />
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-14 text-center">
         <span>
-          Page {currentPage} of {totalPages}
+          {label ?? `Page ${currentPage} of ${totalPages}`}
         </span>
       </div>
       <button

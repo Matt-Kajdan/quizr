@@ -13,7 +13,7 @@ const interactiveClasses = {
     amber: "border-transparent bg-amber-500 text-white visited:text-white hover:bg-amber-400 hover:text-white focus:text-white active:text-white dark:bg-amber-300 dark:text-amber-950 dark:visited:text-amber-950 dark:hover:bg-amber-100 dark:hover:text-amber-950 dark:focus:text-amber-950 dark:active:text-amber-950",
   },
   secondary: {
-    standard: "border-slate-300/80 bg-white/80 text-slate-700 visited:text-slate-700 shadow-sm hover:border-slate-400/80 hover:bg-slate-50 hover:text-slate-700 focus:text-slate-700 active:text-slate-700 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-100 dark:visited:text-slate-100 dark:hover:bg-slate-800/80 dark:hover:text-slate-100 dark:focus:text-slate-100 dark:active:text-slate-100",
+    standard: "border-slate-300/80 bg-transparent text-slate-700 visited:text-slate-700 shadow-sm hover:border-slate-400/80 hover:bg-slate-100/80 hover:text-slate-700 focus:text-slate-700 active:text-slate-700 dark:border-slate-700/70 dark:bg-transparent dark:text-slate-100 dark:visited:text-slate-100 dark:hover:bg-slate-800/80 dark:hover:text-slate-100 dark:focus:text-slate-100 dark:active:text-slate-100",
     green: "border-emerald-800/40 bg-emerald-50/90 text-emerald-800 visited:text-emerald-800 shadow-sm hover:border-emerald-800/60 hover:bg-emerald-100 hover:text-emerald-800 focus:text-emerald-800 active:text-emerald-800 dark:border-emerald-300/30 dark:bg-emerald-950/50 dark:text-emerald-300 dark:visited:text-emerald-300 dark:hover:border-emerald-300/50 dark:hover:bg-emerald-900/50 dark:hover:text-emerald-200 dark:focus:text-emerald-300 dark:active:text-emerald-300",
     red: "border-rose-700/40 bg-rose-50/90 text-rose-700 visited:text-rose-700 shadow-sm hover:border-rose-700/70 hover:bg-rose-100 hover:text-rose-700 focus:text-rose-700 active:text-rose-700 dark:border-rose-800/60 dark:bg-rose-950/40 dark:text-rose-300 dark:visited:text-rose-300 dark:hover:border-rose-400/40 dark:hover:bg-rose-900/40 dark:hover:text-rose-400 dark:focus:text-rose-300 dark:active:text-rose-300",
     amber: "border-amber-700/40 bg-amber-50/90 text-amber-700 visited:text-amber-700 shadow-sm hover:border-amber-700/60 hover:bg-amber-100 hover:text-amber-700 focus:text-amber-700 active:text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/50 dark:text-amber-300 dark:visited:text-amber-300 dark:hover:border-amber-400/40 dark:hover:bg-amber-900/50 dark:hover:text-amber-300 dark:focus:text-amber-300 dark:active:text-amber-300",
@@ -52,9 +52,34 @@ function getStyleClasses({ variant, color, disabled }) {
   return variantStyles?.[color] || variantStyles?.standard || "";
 }
 
+const sizeClasses = {
+  lg: {
+    root: "h-14 rounded-2xl text-base",
+    content: "gap-2.5 px-6",
+    icon: "h-5 w-5 [&_svg]:h-5 [&_svg]:w-5",
+    iconOnly: "w-14 px-0",
+    iconOnlyWrap: "h-14 w-14",
+  },
+  md: {
+    root: "h-10 rounded-xl text-sm",
+    content: "gap-2 px-4",
+    icon: "h-5 w-5 [&_svg]:h-5 [&_svg]:w-5",
+    iconOnly: "w-10 px-0",
+    iconOnlyWrap: "h-10 w-10",
+  },
+  compact: {
+    root: "h-9 rounded-xl text-sm",
+    content: "gap-2 px-3.5",
+    icon: "h-4 w-4 [&_svg]:h-4 [&_svg]:w-4",
+    iconOnly: "w-9 px-0",
+    iconOnlyWrap: "h-9 w-9",
+  },
+};
+
 export const Button = forwardRef(function Button({
   variant = "secondary",
   color = "standard",
+  size = "md",
   disabled = false,
   bold = false,
   icon,
@@ -71,6 +96,7 @@ export const Button = forwardRef(function Button({
   const hasChildren = Children.count(children) > 0;
   const hasIcon = Boolean(icon);
   const isIconOnly = hasIcon && !hasChildren;
+  const resolvedSize = sizeClasses[size] || sizeClasses.md;
 
   if (targetCount > 1) {
     throw new Error("Button accepts only one of to or href.");
@@ -81,10 +107,11 @@ export const Button = forwardRef(function Button({
   }
 
   const classes = joinClasses(
-    "relative inline-flex h-10 shrink-0 select-none items-center justify-center rounded-xl border text-sm leading-none transition-[background-color,color,border-color,box-shadow,transform,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/70",
+    "relative inline-flex shrink-0 select-none items-center justify-center border leading-none transition-[background-color,color,border-color,box-shadow,transform,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/70",
+    resolvedSize.root,
     disabled ? "cursor-default" : "cursor-pointer active:scale-[0.98]",
     bold ? "!font-bold" : "!font-semibold",
-    hasChildren ? "gap-2 px-4" : "w-10 px-0",
+    hasChildren ? resolvedSize.content : resolvedSize.iconOnly,
     getStyleClasses({ variant, color, disabled }),
     className
   );
@@ -95,8 +122,9 @@ export const Button = forwardRef(function Button({
         <span
           aria-hidden="true"
           className={joinClasses(
-            "flex shrink-0 items-center justify-center [&_svg]:h-5 [&_svg]:w-5",
-            hasChildren ? "h-5 w-5" : "h-10 w-10"
+            "flex shrink-0 items-center justify-center",
+            resolvedSize.icon,
+            hasChildren ? resolvedSize.icon : resolvedSize.iconOnlyWrap
           )}
         >
           {icon}
