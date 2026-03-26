@@ -29,6 +29,7 @@ export function SortingChipBar({
   ariaLabel = "Sorting options",
   className,
   showMobileFade = false,
+  fillMobile = false,
 }) {
   return (
     <div
@@ -57,7 +58,10 @@ export function SortingChipBar({
               aria-pressed={isActive}
               onClick={() => onChipClick?.(chip.value)}
               className={joinClasses(
-                "inline-flex h-8 shrink-0 select-none items-center justify-center gap-1.5 rounded-xl border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,transform,box-shadow,border-color] duration-200 active:scale-95 sm:text-xs",
+                "inline-flex h-8 select-none items-center justify-center gap-1.5 rounded-xl border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,transform,box-shadow,border-color] duration-200 active:scale-95 sm:text-xs",
+                fillMobile
+                  ? "min-w-fit basis-0 grow sm:min-w-0 sm:basis-auto sm:grow-0 sm:shrink-0"
+                  : "shrink-0",
                 isActive
                   ? "border-slate-200/80 bg-white text-slate-800 shadow-sm dark:border-slate-600/70 dark:bg-slate-800 dark:text-slate-100"
                   : "border-transparent text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200",

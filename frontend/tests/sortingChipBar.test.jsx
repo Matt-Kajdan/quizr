@@ -86,4 +86,19 @@ describe("SortingChipBar", () => {
     expect(screen.getByRole("button", { name: "Newest" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Likes" }).hasAttribute("disabled")).toBe(true);
   });
+
+  it("can opt into mobile fill behavior without changing desktop defaults", () => {
+    render(
+      <SortingChipBar
+        chips={chips}
+        activeValue="date"
+        direction="desc"
+        fillMobile
+        onChipClick={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Newest" }).className.includes("grow")).toBe(true);
+    expect(screen.getByRole("button", { name: "Newest" }).className.includes("sm:grow-0")).toBe(true);
+  });
 });

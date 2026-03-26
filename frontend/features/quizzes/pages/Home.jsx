@@ -4,6 +4,7 @@ import { getQuizzes } from "@features/quizzes/api/quizzes";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { CATEGORY_ICONS } from "@shared/assets/icons";
 import { InfoChip } from "@shared/components/InfoChip";
+import { PageBackdrop } from "@shared/components/PageBackdrop";
 import { SearchField } from "@shared/components/SearchField";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
@@ -40,10 +41,6 @@ export function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   const returnTo = `${location.pathname}${location.search || ""}`;
-  const opalBackdropStyle = {
-    backgroundColor: "var(--opal-bg-color)",
-    backgroundImage: "var(--opal-backdrop-image)"
-  };
   const logoBaseGradient = `
     radial-gradient(160px 120px at 15% 30%, rgba(255, 190, 70, 1), transparent 65%),
     radial-gradient(180px 140px at 45% 20%, rgba(255, 120, 190, 1), transparent 65%),
@@ -248,8 +245,8 @@ export function Home() {
     return (
       <div
         className="fixed inset-0 flex items-center justify-center"
-        style={opalBackdropStyle}
       >
+        <PageBackdrop />
         <div className="relative flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
           <p className="mt-4 text-slate-600 font-medium">Loading...</p>
@@ -259,21 +256,10 @@ export function Home() {
 
   return (
     <>
-      <div className="fixed inset-0 -top-20" style={opalBackdropStyle}></div>
-      <div className="fixed inset-0 -top-20 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-amber-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-rose-200/30 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: '1s' }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-[30rem] h-[30rem] -translate-x-1/2 -translate-y-1/2 bg-sky-200/25 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: '2s' }}
-        ></div>
-      </div>
+      <PageBackdrop />
       <div className="relative min-h-screen">
-        <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-16 sm:pb-12">
-          <div className="mb-8 sm:mb-12 text-center mt-10 sm:mt-6">
+        <main className="relative mx-auto max-w-6xl px-3 pt-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-20 sm:pb-12 lg:px-8">
+          <div className="mb-7 mt-2 text-center sm:mb-12 sm:mt-6">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-3 sm:mb-4 animate-fade-in px-4">
               <span
                 className={`relative inline-block ${!isMobile ? "group" : ""} select-none`}
@@ -329,8 +315,8 @@ export function Home() {
           </div>
           {quizzes.length > 0 && (
             <div className="relative z-30 mb-6 sm:mb-8 overflow-visible rounded-[28px] border border-slate-200/80 bg-white/70 p-3 backdrop-blur-lg shadow-sm">
-              <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
-                <div className="flex min-w-0 flex-wrap items-center gap-2.5 xl:flex-none">
+              <div className="flex flex-col gap-3 min-[1160px]:flex-row min-[1160px]:items-center">
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5 md:w-full md:justify-between min-[1160px]:w-auto min-[1160px]:flex-none min-[1160px]:justify-start">
                   <InfoChip
                     variant="subtle"
                     size="md"
@@ -357,7 +343,7 @@ export function Home() {
                     </span>
                   </InfoChip>
                   <SelectDropdown
-                    className="min-w-[180px]"
+                    className="min-w-[180px] flex-1 md:max-w-[22rem] min-[1160px]:max-w-none"
                     value={selectedCategory}
                     options={categories}
                     onChange={setSelectedCategory}
@@ -371,7 +357,7 @@ export function Home() {
                             ? "Your quizzes"
                           : category.charAt(0).toUpperCase() + category.slice(1)
                     )}
-                    buttonClassName="category-dropdown-button h-10 min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
+                    buttonClassName="category-dropdown-button h-10 w-full min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
                     menuClassName="z-[70] max-h-64 rounded-2xl [&::-webkit-scrollbar]:hidden"
                     optionClassName="text-xs sm:text-sm font-semibold"
                     itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
@@ -398,12 +384,13 @@ export function Home() {
                     setSortDirection("desc");
                   }}
                   showMobileFade
-                  className="w-full md:w-auto md:flex-none md:max-w-max"
+                  fillMobile
+                  className="w-full sm:w-auto sm:flex-none sm:max-w-max"
                   />
                 </div>
 
                 <SearchField
-                  className="min-w-0 flex-1 xl:min-w-[16rem]"
+                  className="min-w-0 flex-1 min-[1160px]:min-w-[16rem]"
                   inputClassName="!rounded-2xl py-2.5"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}

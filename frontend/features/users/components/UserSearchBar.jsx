@@ -4,7 +4,11 @@ import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { apiFetch } from "@shared/api/apiClient";
 import { SearchField } from "@shared/components/SearchField";
 
-export default function UserSearchBar({ excludeUsername }) {
+function joinClasses(...values) {
+  return values.filter(Boolean).join(" ");
+}
+
+export default function UserSearchBar({ excludeUsername, className, inputClassName }) {
   const [q, setQ] = useState("");
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
@@ -120,7 +124,7 @@ export default function UserSearchBar({ excludeUsername }) {
   }
 
   return (
-    <div className="relative w-full max-w-md">
+    <div className={joinClasses("relative w-full max-w-md", className)}>
       <SearchField
         ref={inputRef}
         value={q}
@@ -143,7 +147,8 @@ export default function UserSearchBar({ excludeUsername }) {
         }}
         placeholder="Search users"
         id="mobile-search-input"
-        className="max-w-md"
+        className="w-full"
+        inputClassName={inputClassName}
       />
 
       {open && (
