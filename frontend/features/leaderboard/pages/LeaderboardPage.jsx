@@ -288,7 +288,7 @@ export default function LeaderboardPage() {
                                 className="flex w-full min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-800 hover:text-slate-800 hover:font-semibold sm:gap-3 sm:px-4 sm:py-3"
                               >
                                 <div
-                                  className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-[24%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[10px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
+                                  className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-[18%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[9px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
                                 >
                                   {entry.user_data?.profile_pic ? (
                                     <img
@@ -311,7 +311,7 @@ export default function LeaderboardPage() {
                             ) : (
                               <div className="flex min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-700 sm:gap-3 sm:px-4 sm:py-3">
                                 <div
-                                  className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-[24%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[10px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
+                                  className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-[18%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[9px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
                                 >
                                   <span>?</span>
                                 </div>

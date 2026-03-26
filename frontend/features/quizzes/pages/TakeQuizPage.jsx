@@ -6,6 +6,7 @@ import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { Button } from "@shared/components/Button";
 import { FilterChipGroup } from "@shared/components/FilterChipGroup";
 import { InfoChip } from "@shared/components/InfoChip";
+import { InfoChipGroup } from "@shared/components/InfoChipGroup";
 import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
 import { useUser } from "@shared/state/useUser";
@@ -250,8 +251,8 @@ function TakeQuizPage() {
         : phase === "done"
             ? `Attempt ${currentUserAttemptCount} - your results`
             : "Ready to take on this quiz?";
-    const introSecondaryButtonClass = "h-10 w-full rounded-xl text-sm sm:h-12 sm:rounded-2xl sm:text-lg";
-    const introPrimaryButtonClass = "order-first col-span-2 h-10 w-full rounded-xl text-sm dark:bg-blue-950/60 dark:text-white dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 sm:order-none sm:col-span-1 sm:h-12 sm:rounded-2xl sm:text-lg";
+    const introSecondaryButtonClass = "w-full sm:h-12 sm:rounded-2xl sm:text-lg";
+    const introPrimaryButtonClass = "order-first col-span-2 w-full sm:order-none sm:col-span-1 sm:h-12 sm:rounded-2xl sm:text-lg";
 
     function handleQuizSort(key) {
         setQuizSortConfig((prev) => {
@@ -581,8 +582,8 @@ function TakeQuizPage() {
 
             {phase === "intro" && (
                         <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 sm:px-8 ${activeCategoryStyle.header}`}>
-                                <div className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-700">
+                            <div className={`px-6 py-4 sm:px-8 ${activeCategoryStyle.header}`}>
+                                <div className="flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-700 sm:hidden">
                                     <InfoChip
                                         variant="primary"
                                         size="sm"
@@ -618,23 +619,112 @@ function TakeQuizPage() {
                                     >
                                         {difficulty.label}
                                     </InfoChip>
-                                    {canNavigateToAuthor ? (
-                                        <button
-                                            type="button"
+                                </div>
+                                <div className="mt-3 flex justify-center sm:hidden">
+                                    {isQuizOwner ? (
+                                        <InfoChipGroup className="mx-auto w-fit max-w-full">
+                                            {canNavigateToAuthor ? (
+                                                <InfoChip
+                                                    onClick={() => {
+                                                        navigate(toProfileUrl(authorName));
+                                                    }}
+                                                    variant="subtle"
+                                                    size="sm"
+                                                    color="slate"
+                                                    className="!rounded-none !border-0 !bg-transparent px-3"
+                                                >
+                                                    Created by {isQuizOwner ? "you" : authorName}
+                                                </InfoChip>
+                                            ) : (
+                                                <InfoChip
+                                                    variant="subtle"
+                                                    size="sm"
+                                                    color="slate"
+                                                    className="!rounded-none !border-0 !bg-transparent px-3 text-slate-500"
+                                                >
+                                                    Created by {authorName}
+                                                </InfoChip>
+                                            )}
+                                            <InfoChip
+                                                onClick={() =>
+                                                    navigate(`/quiz/${id}/edit`, {
+                                                        state: {
+                                                            from: "quiz",
+                                                            returnTo: `/quiz/${id}`,
+                                                            quizReturnTo: returnTo,
+                                                        },
+                                                    })
+                                                }
+                                                variant="subtle"
+                                                size="sm"
+                                                color="slate"
+                                                className="!rounded-none !border-0 !bg-transparent px-3"
+                                                icon={(
+                                                    <svg
+                                                        className="h-4 w-4"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        strokeWidth={2}
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M16.862 4.487a2 2 0 112.828 2.828L8.828 18.175a4 4 0 01-1.414.944l-3.536 1.178 1.178-3.536a4 4 0 01.944-1.414L16.862 4.487z"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            >
+                                                Edit
+                                            </InfoChip>
+                                            <InfoChip
+                                                onClick={() => setShowDeleteConfirm(true)}
+                                                variant="subtle"
+                                                size="sm"
+                                                color="slate"
+                                                className="!rounded-none !border-0 !bg-transparent px-3"
+                                                icon={(
+                                                    <svg
+                                                        className="h-4 w-4"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        strokeWidth={2}
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            >
+                                                Delete
+                                            </InfoChip>
+                                        </InfoChipGroup>
+                                    ) : canNavigateToAuthor ? (
+                                        <InfoChip
                                             onClick={() => {
                                                 navigate(toProfileUrl(authorName));
                                             }}
-                                            className="inline-flex min-w-0 flex-1 items-center rounded-xl border border-transparent bg-transparent px-3 py-1.5 text-xs font-semibold leading-none text-slate-600 transition-[background-color,color,border-color,box-shadow] duration-150 hover:bg-slate-200/80 dark:text-slate-300 dark:hover:bg-slate-700/65 sm:hidden"
+                                            variant="subtle"
+                                            size="sm"
+                                            color="slate"
                                         >
-                                            <span className="block truncate">Created by {isQuizOwner ? "you" : authorName}</span>
-                                        </button>
+                                            Created by {authorName}
+                                        </InfoChip>
                                     ) : (
-                                        <span className="inline-flex min-w-0 flex-1 items-center rounded-xl border border-transparent bg-transparent px-3 py-1.5 text-xs font-semibold leading-none text-slate-500 dark:text-slate-400 sm:hidden">
-                                            <span className="block truncate">Created by {authorName}</span>
-                                        </span>
+                                        <InfoChip
+                                            variant="subtle"
+                                            size="sm"
+                                            color="slate"
+                                            className="text-slate-500"
+                                        >
+                                            Created by {authorName}
+                                        </InfoChip>
                                     )}
                                 </div>
-                                <div className="flex flex-wrap items-center gap-2">
+                                <div className="hidden flex-wrap items-center gap-2 sm:flex">
                                     {canNavigateToAuthor ? (
                                         <InfoChip
                                             onClick={() => {
@@ -865,6 +955,7 @@ function TakeQuizPage() {
                                 <div className="mt-5 grid w-full grid-cols-2 items-stretch gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-4">
                                     <Button
                                         variant="secondary"
+                                        size="compact"
                                         className={introSecondaryButtonClass}
                                         onClick={() => navigate(returnTo)}
                                     >
@@ -888,6 +979,7 @@ function TakeQuizPage() {
                                     </Button>
                                     <Button
                                         variant="primary"
+                                        size="compact"
                                         className={introPrimaryButtonClass}
                                         onClick={startQuiz}
                                     >
@@ -895,6 +987,7 @@ function TakeQuizPage() {
                                     </Button>
                                     <Button
                                         variant="secondary"
+                                        size="compact"
                                         className={introSecondaryButtonClass}
                                         onClick={handleToggleFavourite}
                                     >

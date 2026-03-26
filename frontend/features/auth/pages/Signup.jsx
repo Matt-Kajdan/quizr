@@ -81,7 +81,7 @@ export function Signup() {
       subtitle="Join Quizr and start playing"
     >
       <form onSubmit={handleSubmit} className="space-y-3">
-        <label htmlFor="username" className="block text-sm text-slate-600">Username</label>
+        <label htmlFor="username" className="block text-sm text-slate-600 dark:text-slate-400">Username</label>
         <input
           id="username"
           type="text"
@@ -106,12 +106,12 @@ export function Signup() {
             if (warning) setUsernameWarning(warning);
           }}
           onFocus={() => setUsernameWarning(null)}
-          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70"
+          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
         />
         <p className={`mt-0.5 min-h-[1.25rem] pl-0.5 text-xs ${usernameWarning ? "text-rose-500" : "text-transparent"}`}>
           {usernameWarning || "\u00A0"}
         </p>
-        <label htmlFor="email" className="block text-sm text-slate-600">Email</label>
+        <label htmlFor="email" className="block text-sm text-slate-600 dark:text-slate-400">Email</label>
         <input
           id="email"
           type="email"
@@ -122,20 +122,20 @@ export function Signup() {
               setEmailWarning("Please enter a valid email address.");
             }
           }}
-          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70"
+          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
         />
         <p className={`mt-0.5 min-h-[1.25rem] pl-0.5 text-xs ${emailWarning ? "text-rose-500" : "text-transparent"}`}>
           {emailWarning || "\u00A0"}
         </p>
-        <label htmlFor="password" className="block text-sm text-slate-600">Password</label>
+        <label htmlFor="password" className="block text-sm text-slate-600 dark:text-slate-400">Password</label>
         <PasswordInput
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           minLength={12}
         />
-        <p className="mt-0.5 min-h-[1.25rem] pl-0.5 text-xs text-slate-500">Must be at least 12 characters long.</p>
-        <label htmlFor="confirmPassword" className="block text-sm text-slate-600">Confirm Password</label>
+        <p className="mt-0.5 min-h-[1.25rem] pl-0.5 text-xs text-slate-500 dark:text-slate-500">Must be at least 12 characters long.</p>
+        <label htmlFor="confirmPassword" className="block text-sm text-slate-600 dark:text-slate-400">Confirm Password</label>
         <PasswordInput
           id="confirmPassword"
           value={confirmPassword}
@@ -156,7 +156,7 @@ export function Signup() {
           type="submit"
           value="Sign up"
           disabled={!username || !email || !password || !confirmPassword}
-          className="mt-2 w-full cursor-pointer rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white px-6 py-3 font-semibold transition-colors hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-2 w-full cursor-pointer rounded-xl border border-transparent bg-slate-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-300"
         />
       </form>
       {error && (
@@ -170,11 +170,11 @@ export function Signup() {
           <Link to="/login" className="underline underline-offset-4 hover:text-rose-600">Log in</Link>
         </p>
       )}
-      <p className="mt-4 text-sm text-slate-600">
+      <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
         Already have an account?{" "}
         <Link
           to="/login"
-          className="px-1 pb-2 pt-0.5 text-slate-800 underline underline-offset-4 hover:text-slate-600"
+          className="px-1 pb-2 pt-0.5 text-slate-800 underline underline-offset-4 hover:text-slate-600 dark:text-slate-100 dark:hover:text-slate-300"
         >
           Log in
         </Link>

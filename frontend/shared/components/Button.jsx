@@ -52,9 +52,27 @@ function getStyleClasses({ variant, color, disabled }) {
   return variantStyles?.[color] || variantStyles?.standard || "";
 }
 
+const sizeClasses = {
+  md: {
+    root: "h-10 rounded-xl text-sm",
+    content: "gap-2 px-4",
+    icon: "h-5 w-5 [&_svg]:h-5 [&_svg]:w-5",
+    iconOnly: "w-10 px-0",
+    iconOnlyWrap: "h-10 w-10",
+  },
+  compact: {
+    root: "h-9 rounded-xl text-sm",
+    content: "gap-2 px-3.5",
+    icon: "h-4 w-4 [&_svg]:h-4 [&_svg]:w-4",
+    iconOnly: "w-9 px-0",
+    iconOnlyWrap: "h-9 w-9",
+  },
+};
+
 export const Button = forwardRef(function Button({
   variant = "secondary",
   color = "standard",
+  size = "md",
   disabled = false,
   bold = false,
   icon,
@@ -71,6 +89,7 @@ export const Button = forwardRef(function Button({
   const hasChildren = Children.count(children) > 0;
   const hasIcon = Boolean(icon);
   const isIconOnly = hasIcon && !hasChildren;
+  const resolvedSize = sizeClasses[size] || sizeClasses.md;
 
   if (targetCount > 1) {
     throw new Error("Button accepts only one of to or href.");
@@ -81,10 +100,11 @@ export const Button = forwardRef(function Button({
   }
 
   const classes = joinClasses(
-    "relative inline-flex h-10 shrink-0 select-none items-center justify-center rounded-xl border text-sm leading-none transition-[background-color,color,border-color,box-shadow,transform,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/70",
+    "relative inline-flex shrink-0 select-none items-center justify-center border leading-none transition-[background-color,color,border-color,box-shadow,transform,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/70",
+    resolvedSize.root,
     disabled ? "cursor-default" : "cursor-pointer active:scale-[0.98]",
     bold ? "!font-bold" : "!font-semibold",
-    hasChildren ? "gap-2 px-4" : "w-10 px-0",
+    hasChildren ? resolvedSize.content : resolvedSize.iconOnly,
     getStyleClasses({ variant, color, disabled }),
     className
   );
@@ -95,8 +115,9 @@ export const Button = forwardRef(function Button({
         <span
           aria-hidden="true"
           className={joinClasses(
-            "flex shrink-0 items-center justify-center [&_svg]:h-5 [&_svg]:w-5",
-            hasChildren ? "h-5 w-5" : "h-10 w-10"
+            "flex shrink-0 items-center justify-center",
+            resolvedSize.icon,
+            hasChildren ? resolvedSize.icon : resolvedSize.iconOnlyWrap
           )}
         >
           {icon}

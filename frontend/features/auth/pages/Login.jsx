@@ -79,33 +79,33 @@ export function Login() {
               </p>
               <button
                 onClick={handleBackToLogin}
-                className="mt-4 text-sm text-slate-600 underline underline-offset-4 hover:text-slate-800"
+                className="mt-4 text-sm text-slate-600 underline underline-offset-4 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
               >
                 Back to log in
               </button>
             </div>
           ) : (
             <form onSubmit={handleForgotSubmit} className="mt-5 space-y-4">
-              <label htmlFor="forgot-email" className="block text-sm text-slate-600">Email</label>
+              <label htmlFor="forgot-email" className="block text-sm text-slate-600 dark:text-slate-400">Email</label>
               <input
                 id="forgot-email"
                 type="email"
                 required
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70"
+                className="mt-2 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
               />
               <input
                 type="submit"
                 disabled={forgotLoading}
                 value={forgotLoading ? "Sending..." : "Send reset link"}
-                className="mt-2 w-full cursor-pointer rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white px-6 py-3 font-semibold transition-colors hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 disabled:opacity-60"
+                className="mt-2 w-full cursor-pointer rounded-xl border border-transparent bg-slate-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-slate-700 disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-300"
               />
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 <button
                   type="button"
                   onClick={handleBackToLogin}
-                  className="underline underline-offset-4 hover:text-slate-800"
+                  className="underline underline-offset-4 hover:text-slate-800 dark:hover:text-slate-200"
                 >
                   Back to log in
                 </button>
@@ -116,18 +116,18 @@ export function Login() {
       ) : (
         <>
           <form onSubmit={handleSubmit} className="space-y-3">
-            <label htmlFor="identifier" className="block text-sm text-slate-600">Email or username</label>
+            <label htmlFor="identifier" className="block text-sm text-slate-600 dark:text-slate-400">Email or username</label>
             <input
               id="identifier"
               type="text"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70"
+              className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
             />
             <p className="mt-0.5 min-h-[1.25rem] pl-0.5 text-xs text-transparent">
               &nbsp;
             </p>
-            <label htmlFor="password" className="block text-sm text-slate-600">Password</label>
+            <label htmlFor="password" className="block text-sm text-slate-600 dark:text-slate-400">Password</label>
             <PasswordInput
               id="password"
               value={password}
@@ -137,7 +137,7 @@ export function Login() {
               <button
                 type="button"
                 onClick={() => { setIsForgotMode(true); setError(null); }}
-                className="px-2 pb-2 pt-0.5 text-xs text-slate-500 underline underline-offset-4 hover:text-slate-700"
+                className="px-2 pb-2 pt-0.5 text-xs text-slate-500 underline underline-offset-4 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300"
               >
                 Forgot password?
               </button>
@@ -148,7 +148,7 @@ export function Login() {
               type="submit"
               value="Log in"
               disabled={!identifier || !password}
-              className="mt-2 w-full cursor-pointer rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white px-6 py-3 font-semibold transition-colors hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2 w-full cursor-pointer rounded-xl border border-transparent bg-slate-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-300"
             />
           </form>
           {error && (
@@ -156,11 +156,11 @@ export function Login() {
               {error}
             </p>
           )}
-          <p className="mt-4 text-sm text-slate-600">
+          <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
             Don&apos;t have an account?{" "}
             <Link
               to="/signup"
-              className="px-1 pb-2 pt-0.5 text-slate-800 underline underline-offset-4 hover:text-slate-600"
+              className="px-1 pb-2 pt-0.5 text-slate-800 underline underline-offset-4 hover:text-slate-600 dark:text-slate-100 dark:hover:text-slate-300"
             >
               Sign up
             </Link>

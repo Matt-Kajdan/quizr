@@ -12,6 +12,7 @@ import { removeFavourite, toggleFavourite } from "@features/quizzes/api/favourit
 import { QuizStats } from "@features/quizzes/components/QuizStats";
 import { Button } from "@shared/components/Button";
 import { InfoChip } from "@shared/components/InfoChip";
+import { InfoChipGroup } from "@shared/components/InfoChipGroup";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PageShell } from "@shared/components/PageShell";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
@@ -1249,7 +1250,7 @@ export default function ProfilePage() {
                               </div>
                             </div>
                             {isOwnProfile && !isAccountLocked && (
-                              <div className="flex w-full overflow-hidden rounded-xl border border-slate-200/80 bg-white/70 dark:border-slate-800/80 dark:bg-slate-900/40">
+                              <InfoChipGroup className="w-full">
                                 <Button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1285,7 +1286,6 @@ export default function ProfilePage() {
                                     </svg>
                                   )}
                                 />
-                                <div className="w-px shrink-0 bg-slate-200/80 dark:bg-slate-800/80" />
                                 <Button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1303,7 +1303,6 @@ export default function ProfilePage() {
                                     </svg>
                                   )}
                                 />
-                                <div className="w-px shrink-0 bg-slate-200/80 dark:bg-slate-800/80" />
                                 <Button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1320,7 +1319,7 @@ export default function ProfilePage() {
                                     </svg>
                                   )}
                                 />
-                              </div>
+                              </InfoChipGroup>
                             )}
                             <div className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
                               <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
