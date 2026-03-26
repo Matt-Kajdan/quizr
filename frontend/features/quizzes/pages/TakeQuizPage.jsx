@@ -802,6 +802,60 @@ function TakeQuizPage() {
                                 </div>
                             </div>
                             <div className="p-6 sm:p-8">
+                                <div className="mb-5 grid w-full grid-cols-2 items-stretch gap-2.5 sm:mb-6 sm:grid-cols-3 sm:gap-4">
+                                    <Button
+                                        variant="secondary"
+                                        size="compact"
+                                        className={introSecondaryButtonClass}
+                                        onClick={() => navigate(returnTo)}
+                                    >
+                                        <span className="inline-flex items-center justify-center gap-2">
+                                            <svg
+                                                className="hidden h-5 w-5 sm:block"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M10 8l-4 4 4 4" />
+                                                <path d="M6 12h8" />
+                                                <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
+                                            </svg>
+                                            <span>Exit</span>
+                                        </span>
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        size="compact"
+                                        className={introPrimaryButtonClass}
+                                        onClick={startQuiz}
+                                    >
+                                        Take the quiz
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
+                                        size="compact"
+                                        className={introSecondaryButtonClass}
+                                        onClick={handleToggleFavourite}
+                                    >
+                                        <span className="inline-flex items-center justify-center gap-2">
+                                            <svg
+                                                className="hidden h-5 w-5 sm:block"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                fill={isFavourited ? "currentColor" : "none"}
+                                                strokeWidth={2}
+                                                aria-hidden="true"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                            </svg>
+                                            <span>{isFavourited ? "Remove from favourites" : "Add to favourites"}</span>
+                                        </span>
+                                    </Button>
+                                </div>
                                 <div className="text-xs text-slate-600 dark:text-slate-400 divide-y divide-slate-200/80 dark:divide-slate-800/90 sm:hidden">
                                     <div className="flex items-center justify-between gap-4 py-2">
                                         <span>Questions</span>
@@ -952,62 +1006,9 @@ function TakeQuizPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-5 grid w-full grid-cols-2 items-stretch gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-4">
-                                    <Button
-                                        variant="secondary"
-                                        size="compact"
-                                        className={introSecondaryButtonClass}
-                                        onClick={() => navigate(returnTo)}
-                                    >
-                                        <span className="inline-flex items-center justify-center gap-2">
-                                            <svg
-                                                className="hidden h-5 w-5 sm:block"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth={2}
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                aria-hidden="true"
-                                            >
-                                                <path d="M10 8l-4 4 4 4" />
-                                                <path d="M6 12h8" />
-                                                <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
-                                            </svg>
-                                            <span>Exit</span>
-                                        </span>
-                                    </Button>
-                                    <Button
-                                        variant="primary"
-                                        size="compact"
-                                        className={introPrimaryButtonClass}
-                                        onClick={startQuiz}
-                                    >
-                                        Take the quiz
-                                    </Button>
-                                    <Button
-                                        variant="secondary"
-                                        size="compact"
-                                        className={introSecondaryButtonClass}
-                                        onClick={handleToggleFavourite}
-                                    >
-                                        <span className="inline-flex items-center justify-center gap-2">
-                                            <svg
-                                                className="hidden h-5 w-5 sm:block"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                fill={isFavourited ? "currentColor" : "none"}
-                                                strokeWidth={2}
-                                                aria-hidden="true"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                            </svg>
-                                            <span>{isFavourited ? "Remove from favourites" : "Add to favourites"}</span>
-                                        </span>
-                                    </Button>
-                                    {isQuizOwner && (
-                                        <>
-                                            {showDeleteConfirm && (
+                                {isQuizOwner && (
+                                    <>
+                                        {showDeleteConfirm && (
                                                 <div
                                                     className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md"
                                                 >
@@ -1054,10 +1055,9 @@ function TakeQuizPage() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
+                                        )}
+                                    </>
+                                )}
                                 <div className="mt-8">
                                     <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-3">Leaderboard</h3>
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/60">
