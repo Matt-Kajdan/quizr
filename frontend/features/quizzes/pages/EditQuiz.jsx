@@ -558,9 +558,7 @@ export default function EditQuiz() {
 
   return (
     <>
-      <PageShell
-        mainClassName={questions.length > 0 && isMobile ? "pt-20 sm:pt-8" : undefined}
-      >
+      <PageShell>
         {/* Mobile Top Bar */}
         {questions.length > 0 && isMobile && (
           <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80 pt-[env(safe-area-inset-top)]">
@@ -604,6 +602,9 @@ export default function EditQuiz() {
               </button>
             </div>
           </div>
+        )}
+        {questions.length > 0 && isMobile && (
+          <div aria-hidden="true" className="h-[calc(env(safe-area-inset-top)+3.5rem)] sm:hidden" />
         )}
         <PageHeader title="Edit Quiz" subtitle="Refine your quiz details" />
 
