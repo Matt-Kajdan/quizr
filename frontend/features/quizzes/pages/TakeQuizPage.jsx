@@ -233,7 +233,7 @@ function TakeQuizPage() {
             label: "Top score",
             render: (entry) => (
                 <span
-                    className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-xs font-semibold ${entry.isPassing
+                    className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-semibold sm:rounded-lg sm:px-2.5 sm:py-1 sm:text-xs ${entry.isPassing
                         ? "border-emerald-200/80 bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/60 dark:border-emerald-800/80 dark:!text-white"
                         : "border-rose-200/80 bg-rose-100/80 text-rose-700 dark:bg-rose-900/60 dark:border-rose-800/80 dark:!text-white"
                         }`}
@@ -250,6 +250,8 @@ function TakeQuizPage() {
         : phase === "done"
             ? `Attempt ${currentUserAttemptCount} - your results`
             : "Ready to take on this quiz?";
+    const introSecondaryButtonClass = "h-10 w-full rounded-xl text-sm sm:h-12 sm:rounded-2xl sm:text-lg";
+    const introPrimaryButtonClass = "order-first col-span-2 h-10 w-full rounded-xl text-sm dark:bg-blue-950/60 dark:text-white dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 sm:order-none sm:col-span-1 sm:h-12 sm:rounded-2xl sm:text-lg";
 
     function handleQuizSort(key) {
         setQuizSortConfig((prev) => {
@@ -447,6 +449,9 @@ function TakeQuizPage() {
         0,
         ...activeQuestions.map((item) => item.answers.length)
     );
+    const passPercent = quiz.questions.length > 0
+        ? Math.round((quiz.req_to_pass / quiz.questions.length) * 100)
+        : 0;
     const isLocked = lockAnswers && currentIndex <= lockedUntil;
     const activeCategoryStyle = categoryStyles[quiz.category] || categoryStyles.other;
 
@@ -577,11 +582,12 @@ function TakeQuizPage() {
             {phase === "intro" && (
                         <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
                             <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 sm:px-8 ${activeCategoryStyle.header}`}>
-                                <div className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
+                                <div className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-700">
                                     <InfoChip
                                         variant="primary"
                                         size="sm"
                                         color={getCategoryChipColor(quiz.category)}
+                                        className="shrink-0"
                                         icon={(
                                             <svg className="w-4 h-4 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 {categoryIcons[quiz.category] || categoryIcons.other}
@@ -594,6 +600,7 @@ function TakeQuizPage() {
                                         variant="secondary"
                                         size="sm"
                                         color={getDifficultyChipColor(difficultyKey)}
+                                        className="shrink-0"
                                         icon={(
                                             <svg
                                                 className="h-4 w-4 text-current"
@@ -611,6 +618,21 @@ function TakeQuizPage() {
                                     >
                                         {difficulty.label}
                                     </InfoChip>
+                                    {canNavigateToAuthor ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                navigate(toProfileUrl(authorName));
+                                            }}
+                                            className="inline-flex min-w-0 flex-1 items-center rounded-xl border border-transparent bg-transparent px-3 py-1.5 text-xs font-semibold leading-none text-slate-600 transition-[background-color,color,border-color,box-shadow] duration-150 hover:bg-slate-200/80 dark:text-slate-300 dark:hover:bg-slate-700/65 sm:hidden"
+                                        >
+                                            <span className="block truncate">Created by {isQuizOwner ? "you" : authorName}</span>
+                                        </button>
+                                    ) : (
+                                        <span className="inline-flex min-w-0 flex-1 items-center rounded-xl border border-transparent bg-transparent px-3 py-1.5 text-xs font-semibold leading-none text-slate-500 dark:text-slate-400 sm:hidden">
+                                            <span className="block truncate">Created by {authorName}</span>
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2">
                                     {canNavigateToAuthor ? (
@@ -621,7 +643,7 @@ function TakeQuizPage() {
                                             variant="subtle"
                                             size="sm"
                                             color="slate"
-                                            className="self-start sm:self-auto"
+                                            className="hidden self-start sm:inline-flex sm:self-auto"
                                         >
                                             Created by {isQuizOwner ? "you" : authorName}
                                         </InfoChip>
@@ -630,7 +652,7 @@ function TakeQuizPage() {
                                             variant="subtle"
                                             size="sm"
                                             color="slate"
-                                            className="self-start sm:self-auto text-slate-500"
+                                            className="hidden self-start text-slate-500 sm:inline-flex sm:self-auto"
                                         >
                                             Created by {authorName}
                                         </InfoChip>
@@ -690,7 +712,37 @@ function TakeQuizPage() {
                                 </div>
                             </div>
                             <div className="p-6 sm:p-8">
-                                <div className="grid gap-4 sm:grid-cols-2 text-slate-700 text-sm sm:text-base">
+                                <div className="text-xs text-slate-600 dark:text-slate-400 divide-y divide-slate-200/80 dark:divide-slate-800/90 sm:hidden">
+                                    <div className="flex items-center justify-between gap-4 py-2">
+                                        <span>Questions</span>
+                                        <span className="text-right font-semibold text-slate-800 dark:text-slate-100">{quiz.questions.length}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 py-2">
+                                        <span>Options per question</span>
+                                        <span className="text-right font-semibold text-slate-800 dark:text-slate-100">{optionsPerQuestion}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 py-2">
+                                        <span>Pass threshold</span>
+                                        <span className="text-right font-semibold text-slate-800 dark:text-slate-100">{passPercent}% ({quiz.req_to_pass}) to pass</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 py-2">
+                                        <span>Multiple correct</span>
+                                        <span className="text-right font-semibold text-slate-800 dark:text-slate-100">{quiz.allow_multiple_correct ? "Allowed" : "Single answer"}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 py-2">
+                                        <span>Select all correct</span>
+                                        <span className="text-right font-semibold text-slate-800 dark:text-slate-100">{quiz.require_all_correct ? "Required" : "Not required"}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 py-2">
+                                        <span>Answer lock</span>
+                                        <span className="text-right font-semibold text-slate-800 dark:text-slate-100">{lockAnswers ? "Locked after Next" : "Can change answers"}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 py-2">
+                                        <span>Question order</span>
+                                        <span className="text-right font-semibold text-slate-800 dark:text-slate-100">{randomQuestionOrder ? "Questions in random order" : "Order of questions set"}</span>
+                                    </div>
+                                </div>
+                                <div className="hidden gap-4 text-slate-700 text-sm sm:grid sm:grid-cols-2 sm:text-base">
                                     <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/60 dark:bg-slate-900/40 dark:border-slate-800/80 px-4 py-3">
                                         <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50">
                                             <svg
@@ -731,7 +783,7 @@ function TakeQuizPage() {
                                         <div className="text-left pl-1">
                                             <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-500">Pass threshold</div>
                                             <div className="text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                                                <span>{Math.round((quiz.req_to_pass / quiz.questions.length) * 100)}%</span>
+                                                <span>{passPercent}%</span>
                                                 <span className="inline-flex items-center gap-1 text-slate-500 dark:text-slate-400">
                                                     (
                                                     <svg
@@ -810,51 +862,56 @@ function TakeQuizPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-6 grid gap-4 sm:grid-cols-3 w-full items-stretch">
-                                    <button
-                                        className="w-full h-full rounded-2xl bg-white/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors flex items-center justify-center gap-2 px-6 py-5 text-lg leading-tight"
-                                        type="button"
+                                <div className="mt-5 grid w-full grid-cols-2 items-stretch gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-4">
+                                    <Button
+                                        variant="secondary"
+                                        className={introSecondaryButtonClass}
                                         onClick={() => navigate(returnTo)}
                                     >
-                                        <svg
-                                            className="w-5 h-5"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            aria-hidden="true"
-                                        >
-                                            <path d="M10 8l-4 4 4 4" />
-                                            <path d="M6 12h8" />
-                                            <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
-                                        </svg>
-                                        <span>Exit</span>
-                                    </button>
-                                    <button
-                                        className="w-full h-full rounded-2xl bg-slate-800 dark:bg-blue-950/60 text-white font-semibold hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 transition-colors flex items-center justify-center px-6 py-5 text-xl leading-tight"
+                                        <span className="inline-flex items-center justify-center gap-2">
+                                            <svg
+                                                className="hidden h-5 w-5 sm:block"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M10 8l-4 4 4 4" />
+                                                <path d="M6 12h8" />
+                                                <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
+                                            </svg>
+                                            <span>Exit</span>
+                                        </span>
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        className={introPrimaryButtonClass}
                                         onClick={startQuiz}
                                     >
                                         Take the quiz
-                                    </button>
-                                    <button
-                                        className="w-full h-full rounded-2xl bg-white/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors flex items-center justify-center gap-2 px-6 py-5 text-lg leading-tight"
-                                        type="button"
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
+                                        className={introSecondaryButtonClass}
                                         onClick={handleToggleFavourite}
                                     >
-                                        <svg
-                                            className="w-5 h-5"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            fill={isFavourited ? "currentColor" : "none"}
-                                            strokeWidth={2}
-                                            aria-hidden="true"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
-                                        </svg>
-                                        <span>{isFavourited ? "Remove from favourites" : "Add to favourites"}</span>
-                                    </button>
+                                        <span className="inline-flex items-center justify-center gap-2">
+                                            <svg
+                                                className="hidden h-5 w-5 sm:block"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                fill={isFavourited ? "currentColor" : "none"}
+                                                strokeWidth={2}
+                                                aria-hidden="true"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
+                                            </svg>
+                                            <span>{isFavourited ? "Remove from favourites" : "Add to favourites"}</span>
+                                        </span>
+                                    </Button>
                                     {isQuizOwner && (
                                         <>
                                             {showDeleteConfirm && (
@@ -911,19 +968,20 @@ function TakeQuizPage() {
                                 <div className="mt-8">
                                     <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-3">Leaderboard</h3>
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/60">
-                                        <table className="w-full text-sm sm:text-base">
+                                        <div className="overflow-x-auto">
+                                        <table className="w-full min-w-[460px] text-[11px] sm:min-w-[520px] sm:text-base">
                                             <thead className="bg-slate-100/70 text-left text-slate-600">
                                                 <tr>
                                                     {quizColumns.map((column) => (
                                                         <th
                                                             key={column.key}
-                                                            className={`px-4 py-3 text-left ${column.key === "username" ? "w-[220px] max-w-[220px]" : ""
+                                                            className={`px-2.5 py-1.5 text-left sm:px-4 sm:py-3 ${column.key === "username" ? "w-[150px] max-w-[150px] sm:w-[220px] sm:max-w-[220px]" : ""
                                                                 }`}
                                                         >
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleQuizSort(column.key)}
-                                                                className="inline-flex items-center gap-2 text-left font-semibold text-slate-700 hover:text-slate-900"
+                                                                className="inline-flex items-center gap-1 text-left font-semibold text-slate-700 hover:text-slate-900 sm:gap-2"
                                                             >
                                                                 <span>{column.label}</span>
                                                                 <span className="text-xs text-slate-400">{renderQuizSortIcon(column.key)}</span>
@@ -935,7 +993,7 @@ function TakeQuizPage() {
                                             <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/50 text-slate-700">
                                                 {sortedQuizLeaderboard.length === 0 ? (
                                                     <tr>
-                                                        <td className="px-4 py-4 text-center text-slate-500" colSpan={quizColumns.length}>
+                                                        <td className="px-2.5 py-2 text-center text-slate-500 sm:px-4 sm:py-4" colSpan={quizColumns.length}>
                                                             No attempts yet.
                                                         </td>
                                                     </tr>
@@ -944,13 +1002,13 @@ function TakeQuizPage() {
                                                         <tr key={entry.userId}>
                                                             {quizColumns.map((column) => {
                                                                 let cellContent;
-                                                                let cellClass = "px-4 py-3 text-left text-slate-700";
+                                                                let cellClass = "px-2.5 py-1.5 text-left text-slate-700 sm:px-4 sm:py-3";
                                                                 if (column.key === "rank") {
                                                                     cellContent = quizRankMap.get(entry.userId) || index + 1;
-                                                                    cellClass = "px-4 py-3 text-left font-medium text-slate-800";
+                                                                    cellClass = "px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3";
                                                                 } else if (column.key === "username") {
                                                                     cellContent = entry.username;
-                                                                    cellClass = "px-4 py-3 text-left font-medium text-slate-800";
+                                                                    cellClass = "px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3";
                                                                 } else if (column.render) {
                                                                     cellContent = column.render(entry);
                                                                 } else {
@@ -967,6 +1025,7 @@ function TakeQuizPage() {
                                                 )}
                                             </tbody>
                                         </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -14,7 +14,7 @@ const columns = [
   { key: "avgPercent", label: "Avg. score", isNumeric: true },
   { key: "attemptsCount", label: "Attempts", isNumeric: true },
   { key: "quizzesTaken", label: "Quizzes taken", isNumeric: true },
-  { key: "attemptsOnTheirQuizzes", label: "Own quiz attempts", isNumeric: true },
+  { key: "attemptsOnTheirQuizzes", label: "Own attempts", isNumeric: true },
   { key: "quizzesCreated", label: "Created", isNumeric: true }
 ];
 
@@ -200,17 +200,26 @@ export default function LeaderboardPage() {
       <PageHeader title="Leaderboard" subtitle="All quizzes combined" />
 
       <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-sm">
-            <div className="mb-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <div className="mb-4 flex items-center gap-3 sm:justify-end">
               {totalPages > 1 && (
                 <PaginationControl
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  label={(
+                    <>
+                      <span className="sm:hidden">{currentPage} of {totalPages}</span>
+                      <span className="hidden sm:inline">Page {currentPage} of {totalPages}</span>
+                    </>
+                  )}
+                  className="w-full sm:w-[210px]"
                 />
               )}
               <SelectDropdown
-                className="w-full max-w-[232px]"
+                className={totalPages > 1
+                  ? "w-[110px] shrink-0 sm:w-full sm:max-w-[232px]"
+                  : "w-full sm:max-w-[232px]"}
                 value={itemsPerPage}
                 options={PAGE_SIZE_OPTIONS}
                 onChange={handleItemsPerPageChange}
@@ -220,7 +229,10 @@ export default function LeaderboardPage() {
                 itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
                 renderTrigger={({ isOpen, selectedLabel }) => (
                   <>
-                    <span>Display on one page</span>
+                    <span>
+                      <span className="sm:hidden">#</span>
+                      <span className="hidden sm:inline">Display on one page</span>
+                    </span>
                     <span className="flex items-center gap-3">
                       <span className="text-slate-500">{selectedLabel}</span>
                       <svg className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,21 +243,21 @@ export default function LeaderboardPage() {
                 )}
               />
             </div>
-            <div className="rounded-2xl border border-slate-200/80 bg-white/60 overflow-hidden">
+            <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/60">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[760px] border-collapse text-sm sm:text-base">
+                <table className="w-full min-w-[660px] border-collapse text-[11px] sm:min-w-[760px] sm:text-base">
                   <thead className="bg-slate-100/70 text-left text-slate-600">
                     <tr>
                       {columns.map((column) => (
                         <th
                           key={column.key}
-                          className={`h-16 p-0 align-middle ${column.key === "username" ? "text-left w-[220px] max-w-[220px]" : ""
+                          className={`h-auto p-0 align-middle ${column.key === "username" ? "text-left w-[160px] max-w-[160px] sm:w-[220px] sm:max-w-[220px]" : ""
                             }`}
                         >
                           <button
                             type="button"
                             onClick={() => handleSort(column.key)}
-                            className={`flex h-full min-h-[64px] w-full items-center gap-2 px-3 py-3 text-left font-semibold text-slate-700 transition-colors hover:bg-slate-200/40 hover:text-slate-900 sm:px-4 ${column.key === "username" ? "justify-start" : "justify-between"}`}
+                            className={`flex h-full min-h-0 w-full items-center gap-1 px-2.5 py-1.5 text-left font-semibold text-slate-700 transition-colors hover:bg-slate-200/40 hover:text-slate-900 sm:min-h-[64px] sm:gap-2 sm:px-4 sm:py-3 ${column.key === "username" ? "justify-start" : "justify-between"}`}
                           >
                             <span className={`${column.key === "rank" ? "w-full" : ""}`}>{column.label}</span>
                             <span className="text-xs text-slate-400 shrink-0">{renderSortIcon(column.key)}</span>
@@ -257,26 +269,26 @@ export default function LeaderboardPage() {
                   <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/50 text-slate-700 text-left">
                     {sortedRows.length === 0 ? (
                       <tr>
-                        <td className="px-3 sm:px-4 py-4 text-center text-slate-500" colSpan={columns.length}>
+                        <td className="px-2.5 py-2 text-center text-slate-500 sm:px-4 sm:py-4" colSpan={columns.length}>
                           No leaderboard data yet.
                         </td>
                       </tr>
                     ) : (
                       paginatedRows.map((entry, index) => (
                         <tr key={entry.user_id}>
-                          <td className="px-3 sm:px-4 py-3 font-medium text-slate-800 text-left">
+                          <td className="px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3">
                             {sortConfig.direction === "desc"
                               ? (currentPage - 1) * itemsPerPage + index + 1
                               : sortedRows.length - ((currentPage - 1) * itemsPerPage + index)}
                           </td>
-                          <td className="p-0 font-medium text-slate-800 text-left w-[220px] max-w-[220px]">
+                          <td className="p-0 font-medium text-slate-800 text-left w-[160px] max-w-[160px] sm:w-[220px] sm:max-w-[220px]">
                             {entry.user_data?.username ? (
                               <Link
                                 to={toProfileUrl(entry.user_data.username)}
-                                className="flex w-full items-center gap-3 px-3 py-3 min-w-0 cursor-pointer text-slate-800 hover:text-slate-800 hover:font-semibold sm:px-4"
+                                className="flex w-full min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-800 hover:text-slate-800 hover:font-semibold sm:gap-3 sm:px-4 sm:py-3"
                               >
                                 <div
-                                  className={`h-9 w-9 shrink-0 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm shadow-sm`}
+                                  className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-[24%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[10px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
                                 >
                                   {entry.user_data?.profile_pic ? (
                                     <img
@@ -297,9 +309,9 @@ export default function LeaderboardPage() {
                                 </span>
                               </Link>
                             ) : (
-                              <div className="flex items-center gap-3 min-w-0 px-3 py-3 text-slate-700 sm:px-4">
+                              <div className="flex min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-700 sm:gap-3 sm:px-4 sm:py-3">
                                 <div
-                                  className={`h-9 w-9 shrink-0 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(entry.user_id)} flex items-center justify-center text-white font-semibold text-sm shadow-sm`}
+                                  className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-[24%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[10px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
                                 >
                                   <span>?</span>
                                 </div>
@@ -309,14 +321,14 @@ export default function LeaderboardPage() {
                               </div>
                             )}
                           </td>
-                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.totalCorrect}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">
+                          <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.totalCorrect}</td>
+                          <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">
                             {Math.round(entry.avgPercent)}%
                           </td>
-                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.attemptsCount}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.quizzesTaken}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.attemptsOnTheirQuizzes || 0}</td>
-                          <td className="px-3 sm:px-4 py-3 text-left text-slate-600 dark:text-slate-400">{entry.quizzesCreated}</td>
+                          <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.attemptsCount}</td>
+                          <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.quizzesTaken}</td>
+                          <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.attemptsOnTheirQuizzes || 0}</td>
+                          <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.quizzesCreated}</td>
                         </tr>
                       ))
                     )}
@@ -333,6 +345,7 @@ export default function LeaderboardPage() {
                 totalPages={totalPages}
                 onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                className="w-full sm:w-[210px]"
               />
             </div>
           )}
