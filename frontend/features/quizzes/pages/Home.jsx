@@ -123,7 +123,7 @@ export function Home() {
       hover: { primary: "107 114 128", secondary: "100 116 139" }
     }
   };
-  const mobileRibbonClass = "bg-white/70 text-slate-600 border-slate-200/40 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700/20";
+  const mobileRibbonClass = "bg-transparent text-slate-600 border-slate-200/30 dark:text-slate-300 dark:border-slate-700/20";
   const categoryIcons = CATEGORY_ICONS;
   const difficultyChips = {
     easy: {
