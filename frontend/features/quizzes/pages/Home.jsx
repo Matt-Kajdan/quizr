@@ -258,7 +258,7 @@ export function Home() {
     <>
       <PageBackdrop />
       <div className="relative min-h-screen">
-        <main className="relative mx-auto max-w-6xl px-3 pt-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-20 sm:pb-12 lg:px-8">
+        <main className="relative mx-auto max-w-6xl px-3 pt-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-16 lg:pt-20 sm:pb-12 lg:px-8">
           <div className="mb-7 mt-2 text-center sm:mb-12 sm:mt-6">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-3 sm:mb-4 animate-fade-in px-4">
               <span
@@ -315,7 +315,7 @@ export function Home() {
           </div>
           {quizzes.length > 0 && (
             <div className="relative z-30 mb-6 sm:mb-8 overflow-visible rounded-[28px] border border-slate-200/80 bg-white/70 p-3 backdrop-blur-lg shadow-sm">
-              <div className="flex flex-col gap-3 min-[1160px]:flex-row min-[1160px]:items-center">
+              <div className="flex flex-col gap-3 min-[640px]:max-[824px]:hidden min-[1160px]:flex-row min-[1160px]:items-center">
                 <div className="flex min-w-0 flex-wrap items-center gap-2.5 md:w-full md:justify-between min-[1160px]:w-auto min-[1160px]:flex-none min-[1160px]:justify-start">
                   <InfoChip
                     variant="subtle"
@@ -371,21 +371,21 @@ export function Home() {
                     )}
                   />
                   <SortingChipBar
-                  chips={sortOptions}
-                  activeValue={sortBy}
-                  direction={sortDirection}
-                  onChipClick={(nextSortBy) => {
-                    if (nextSortBy === sortBy) {
-                      setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
-                      return;
-                    }
+                    chips={sortOptions}
+                    activeValue={sortBy}
+                    direction={sortDirection}
+                    onChipClick={(nextSortBy) => {
+                      if (nextSortBy === sortBy) {
+                        setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                        return;
+                      }
 
-                    setSortBy(nextSortBy);
-                    setSortDirection("desc");
-                  }}
-                  showMobileFade
-                  fillMobile
-                  className="w-full sm:w-auto sm:flex-none sm:max-w-max"
+                      setSortBy(nextSortBy);
+                      setSortDirection("desc");
+                    }}
+                    showMobileFade
+                    fillMobile
+                    className="w-full sm:w-auto sm:flex-none sm:max-w-max"
                   />
                 </div>
 
@@ -397,6 +397,92 @@ export function Home() {
                   onClear={() => setSearchQuery("")}
                   placeholder="Search quizzes"
                 />
+              </div>
+
+              <div className="hidden min-[640px]:max-[824px]:flex min-[640px]:max-[824px]:flex-col min-[640px]:max-[824px]:gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <InfoChip
+                    variant="subtle"
+                    size="md"
+                    color="slate"
+                    className="w-auto shrink-0 justify-center px-3.5 text-slate-600 dark:text-slate-200"
+                    icon={(
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-4 w-4"
+                      >
+                        <rect x="4" y="5" width="16" height="14" rx="2" />
+                        <path d="M8 9h8M8 13h5" />
+                      </svg>
+                    )}
+                  >
+                    <span className="inline-flex max-w-full items-center gap-1 overflow-hidden">
+                    <span className="tabular-nums">{visibleQuizzes.length}</span>
+                      <span className="truncate">{countLabel}</span>
+                    </span>
+                  </InfoChip>
+                  <SearchField
+                    className="min-w-0 flex-1"
+                    inputClassName="!rounded-2xl py-2.5"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    onClear={() => setSearchQuery("")}
+                    placeholder="Search quizzes"
+                  />
+                </div>
+
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <SortingChipBar
+                    chips={sortOptions}
+                    activeValue={sortBy}
+                    direction={sortDirection}
+                    onChipClick={(nextSortBy) => {
+                      if (nextSortBy === sortBy) {
+                        setSortDirection((prev) => prev === "desc" ? "asc" : "desc");
+                        return;
+                      }
+
+                      setSortBy(nextSortBy);
+                      setSortDirection("desc");
+                    }}
+                    showMobileFade
+                    fillMobile
+                    className="min-w-0 flex-none sm:w-auto sm:max-w-max"
+                  />
+                  <SelectDropdown
+                    className="min-w-[180px] flex-1 max-w-none"
+                    value={selectedCategory}
+                    options={categories}
+                    onChange={setSelectedCategory}
+                    getOptionValue={(category) => category}
+                    getOptionLabel={(category) => (
+                      category === "all"
+                        ? "All Categories"
+                        : category === "favourites"
+                          ? "Favourites"
+                          : category === "your-quizzes"
+                            ? "Your quizzes"
+                          : category.charAt(0).toUpperCase() + category.slice(1)
+                    )}
+                    buttonClassName="category-dropdown-button h-10 w-full min-w-[180px] rounded-2xl text-sm font-semibold cursor-pointer inline-flex items-center justify-between px-4 relative active:scale-95 [-webkit-tap-highlight-color:transparent]"
+                    menuClassName="z-[70] max-h-64 rounded-2xl [&::-webkit-scrollbar]:hidden"
+                    optionClassName="text-xs sm:text-sm font-semibold"
+                    itemRoundedClassName="first:rounded-t-2xl last:rounded-b-2xl"
+                    renderTrigger={({ isOpen, selectedLabel }) => (
+                      <>
+                        <span className="truncate pr-4">{selectedLabel}</span>
+                        <svg className={`h-4 w-4 flex-shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    )}
+                  />
+                </div>
               </div>
             </div>
           )}
