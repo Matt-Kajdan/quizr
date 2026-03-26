@@ -4,6 +4,7 @@ import { apiFetch } from "@shared/api/apiClient";
 import { useAuth } from "@shared/auth/useAuth";
 import { toggleFavourite } from "@features/quizzes/api/favourites";
 import { Button } from "@shared/components/Button";
+import { ButtonGroup } from "@shared/components/ButtonGroup";
 import { FilterChipGroup } from "@shared/components/FilterChipGroup";
 import { InfoChip } from "@shared/components/InfoChip";
 import { InfoChipGroup } from "@shared/components/InfoChipGroup";
@@ -1126,8 +1127,45 @@ function TakeQuizPage() {
                     )}
 
                     {phase === "inProgress" && (
-                        <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 shadow-sm pt-4 sm:pt-5 pb-6 sm:pb-8 px-6 sm:px-8">
-                            <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500 mb-4 pb-2">
+                        <div className="overflow-hidden bg-white/70 backdrop-blur-lg rounded-3xl border border-slate-200/80 shadow-sm pt-4 sm:pt-5 pb-6 sm:pb-8 px-6 sm:px-8">
+                            <div className="-mx-6 -mt-4 mb-5 flex items-center border-b border-slate-200/80 bg-slate-100/85 px-3 py-1 text-sm text-slate-500 dark:border-slate-800/40 dark:bg-slate-900/40 dark:text-slate-300 sm:hidden">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <InfoChip
+                                        variant="primary"
+                                        size="sm"
+                                        color={getCategoryChipColor(quiz.category)}
+                                        icon={(
+                                            <svg className="w-4 h-4 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                {categoryIcons[quiz.category] || categoryIcons.other}
+                                            </svg>
+                                        )}
+                                    >
+                                        {formatCategoryLabel(quiz.category)}
+                                    </InfoChip>
+                                    <InfoChip
+                                        variant="secondary"
+                                        size="sm"
+                                        color={getDifficultyChipColor(difficultyKey)}
+                                        icon={(
+                                            <svg
+                                                className="h-4 w-4 text-current"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth={1.8}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                {difficulty.icon}
+                                            </svg>
+                                        )}
+                                    >
+                                        {difficulty.label}
+                                    </InfoChip>
+                                </div>
+                            </div>
+                            <div className="mb-4 hidden flex-wrap items-center justify-between gap-2 pb-2 text-sm text-slate-500 dark:text-slate-300 sm:flex">
                                 <div className="flex flex-wrap items-center gap-2">
                                     <InfoChip
                                         variant="primary"
@@ -1172,7 +1210,7 @@ function TakeQuizPage() {
                                     return (
                                         <button
                                             key={answer._id}
-                                            className={`text-left px-4 py-3 rounded-xl border transition-colors ${isSelected
+                                            className={`min-h-9 rounded-xl border px-3 py-2 text-left text-sm transition-colors sm:px-4 sm:py-3 sm:text-base ${isSelected
                                                 ? "bg-slate-100/80 border-slate-300 text-slate-900 dark:bg-slate-900/90 dark:border-slate-700/50 dark:text-white"
                                                 : "bg-white/60 border-slate-200/80 text-slate-700 dark:bg-slate-900/40 dark:border-slate-800/60 dark:text-slate-300"
                                                 } ${isLocked ? "cursor-not-allowed opacity-60" : "hover:bg-slate-100 dark:hover:bg-slate-900/60"}`}
@@ -1186,11 +1224,73 @@ function TakeQuizPage() {
                                 })}
                             </div>
 
-                            <div className="mt-6 flex gap-3 flex-wrap">
-                                <button
-                                    className="flex-1 min-w-[160px] px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors"
+                            <ButtonGroup className="mt-6 flex w-full sm:hidden">
+                                <Button
+                                    variant="secondary"
+                                    color="standard"
+                                    size="compact"
+                                    onClick={goBack}
+                                    disabled={currentIndex === 0}
+                                    className="min-w-0 flex-1 !rounded-none !border-0 !bg-transparent !shadow-none whitespace-nowrap"
+                                >
+                                    Back
+                                </Button>
+                                {!isLastQuestion && (
+                                    <Button
+                                        variant="primary"
+                                        color="standard"
+                                        size="compact"
+                                        onClick={goNext}
+                                        disabled={currentSelections.length === 0}
+                                        className="min-w-0 flex-1 !rounded-none !border-0 whitespace-nowrap"
+                                    >
+                                        Next
+                                    </Button>
+                                )}
+                                {isLastQuestion && (
+                                    <Button
+                                        variant="primary"
+                                        color="standard"
+                                        size="compact"
+                                        onClick={submitQuiz}
+                                        disabled={currentSelections.length === 0}
+                                        className="min-w-0 flex-1 !rounded-none !border-0 whitespace-nowrap"
+                                    >
+                                        Submit
+                                    </Button>
+                                )}
+                            </ButtonGroup>
+                            <Button
+                                variant="secondary"
+                                color="standard"
+                                size="compact"
+                                onClick={returnToQuiz}
+                                className="mt-2.5 w-full whitespace-nowrap sm:hidden"
+                            >
+                                <span className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
+                                    <svg
+                                        className="hidden h-4 w-4 sm:block"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M10 8l-4 4 4 4" />
+                                        <path d="M6 12h8" />
+                                        <path d="M14 5h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" />
+                                    </svg>
+                                    <span>Exit</span>
+                                </span>
+                            </Button>
+                            <div className="mt-6 hidden flex-wrap gap-3 sm:flex">
+                                <Button
+                                    variant="secondary"
+                                    color="standard"
                                     onClick={returnToQuiz}
-                                    type="button"
+                                    className="min-w-[160px] flex-1"
                                 >
                                     <span className="inline-flex items-center justify-center gap-2">
                                         <svg
@@ -1209,34 +1309,37 @@ function TakeQuizPage() {
                                         </svg>
                                         <span>Exit</span>
                                     </span>
-                                </button>
-                                <button
-                                    className="flex-1 min-w-[160px] px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors disabled:opacity-50"
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    color="standard"
                                     onClick={goBack}
                                     disabled={currentIndex === 0}
-                                    type="button"
+                                    className="min-w-[160px] flex-1"
                                 >
                                     Back
-                                </button>
+                                </Button>
                                 {!isLastQuestion && (
-                                    <button
-                                        className="flex-1 min-w-[160px] px-6 py-3 rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white font-semibold hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 transition-colors disabled:opacity-50"
+                                    <Button
+                                        variant="primary"
+                                        color="standard"
                                         onClick={goNext}
                                         disabled={currentSelections.length === 0}
-                                        type="button"
+                                        className="min-w-[160px] flex-1"
                                     >
                                         Next
-                                    </button>
+                                    </Button>
                                 )}
                                 {isLastQuestion && (
-                                    <button
-                                        className="flex-1 min-w-[160px] px-6 py-3 rounded-xl bg-slate-800 dark:bg-blue-950/60 text-white font-semibold hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 transition-colors disabled:opacity-50"
+                                    <Button
+                                        variant="primary"
+                                        color="standard"
                                         onClick={submitQuiz}
                                         disabled={currentSelections.length === 0}
-                                        type="button"
+                                        className="min-w-[160px] flex-1"
                                     >
                                         Submit
-                                    </button>
+                                    </Button>
                                 )}
                             </div>
                         </div>
@@ -1319,17 +1422,18 @@ function TakeQuizPage() {
                             </p>
                             {difficultyKey !== "hard" && (
                                 <div className="mt-6 text-left">
-                                    <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                                        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Answer summary</h3>
+                                    <div className="mb-3 flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                        <h3 className="text-center text-lg font-semibold text-slate-800 dark:text-slate-100 sm:text-left">Answer summary</h3>
                                         <FilterChipGroup
                                             chips={summaryFilterChips}
                                             selectedValue={summaryFilter}
                                             ariaLabel="Filter answer summary"
-                                            className="w-fit"
+                                            fullWidth
+                                            className="w-full sm:w-fit"
                                             onChipClick={setSummaryFilter}
                                         />
                                     </div>
-                                    <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+                                    <div className="space-y-3 sm:max-h-[50vh] sm:overflow-y-auto sm:pr-1">
                                         {filteredSummaryItems.length === 0 ? (
                                             <div className="rounded-2xl border border-slate-200/80 bg-white/60 px-4 py-6 text-center text-sm text-slate-500">
                                                 No answers match this filter.
@@ -1337,8 +1441,8 @@ function TakeQuizPage() {
                                         ) : (
                                             filteredSummaryItems.map((item, index) => {
                                                 const statusClasses = item.isCorrect
-                                                    ? "border-emerald-300/90 bg-emerald-100/90 dark:bg-emerald-900/40 dark:border-emerald-800/60"
-                                                    : "border-rose-300/90 bg-rose-100/90 dark:bg-rose-900/40 dark:border-rose-800/60";
+                                                    ? "border-emerald-300/90 bg-emerald-100/90 dark:bg-slate-900/40 dark:border-emerald-700/70"
+                                                    : "border-rose-300/90 bg-rose-100/90 dark:bg-slate-900/40 dark:border-rose-700/70";
                                                 return (
                                                     <div
                                                         key={item.question._id || index}

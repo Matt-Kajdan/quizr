@@ -1020,13 +1020,13 @@ export default function ProfilePage() {
           )}
           <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 mb-6 sm:mb-8 shadow-sm">
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="relative flex items-center justify-center sm:justify-start">
+              <div className="flex items-center justify-center gap-2 sm:justify-start">
                 <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Quizzes created</h2>
                 <InfoChip
                   variant="subtle"
                   size="md"
                   color="slate"
-                  className={`absolute right-0 ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
+                  className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}
                   icon={(
                     <svg
                       viewBox="0 0 24 24"
@@ -1197,39 +1197,47 @@ export default function ProfilePage() {
                               {getFavouriteCount(quiz)}
                             </InfoChip>
                           </div>
-                          <div className="px-4 pt-2.5 pb-3 sm:px-6 sm:pt-4">
-                            <div className="mb-2 h-16 w-full sm:mb-3">
+                          <div className="px-3.5 pt-1.5 pb-2 sm:px-6 sm:pt-4 sm:pb-3">
+                            <div className="mb-1 h-12 w-full sm:mb-3 sm:h-16">
                               <h3
                                 className={`${titleSizeClass} font-semibold text-slate-800 transition-colors line-clamp-2 text-center h-full w-full flex items-center justify-center`}
                               >
                                 {quiz.title}
                               </h3>
                             </div>
-                            <div className="mb-3 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-600 dark:text-slate-400 sm:hidden">
-                              <InfoChip
-                                variant="secondary"
-                                size="sm"
-                                color="slate"
-                                icon={(
-                                  <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="h-3.5 w-3.5"
-                                  >
-                                    <path d="M9 2h10a2 2 0 0 1 2 2v10" />
-                                    <rect x="3" y="7" width="12" height="14" rx="2" />
-                                  </svg>
-                                )}
-                              >
-                                {questionCount} questions
-                              </InfoChip>
-                              <InfoChip variant="secondary" size="sm" color="slate">
-                                {passThresholdPercent}% to pass
-                              </InfoChip>
+                            <div className="mb-2 flex justify-center text-xs text-slate-600 dark:text-slate-400 sm:hidden">
+                              <InfoChipGroup>
+                                <InfoChip
+                                  variant="secondary"
+                                  size="sm"
+                                  color="slate"
+                                  className="!rounded-none !border-0 !bg-transparent"
+                                  icon={(
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      className="h-3.5 w-3.5"
+                                    >
+                                      <path d="M9 2h10a2 2 0 0 1 2 2v10" />
+                                      <rect x="3" y="7" width="12" height="14" rx="2" />
+                                    </svg>
+                                  )}
+                                >
+                                  {questionCount} questions
+                                </InfoChip>
+                                <InfoChip
+                                  variant="secondary"
+                                  size="sm"
+                                  color="slate"
+                                  className="!rounded-none !border-0 !bg-transparent"
+                                >
+                                  {passThresholdPercent}% to pass
+                                </InfoChip>
+                              </InfoChipGroup>
                             </div>
                             <div className="mb-3 hidden text-xs text-slate-600 divide-y divide-slate-200/80 dark:text-slate-400 dark:divide-slate-800/90 sm:block">
                               <div className="flex items-center justify-between py-2">
@@ -1321,7 +1329,7 @@ export default function ProfilePage() {
                                 />
                               </InfoChipGroup>
                             )}
-                            <div className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
+                            <div className="mt-2 flex items-center justify-center gap-1 text-xs text-slate-500 dark:group-hover:text-white/80">
                               <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
@@ -1593,13 +1601,13 @@ export default function ProfilePage() {
             <>
               <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
                 <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="relative flex items-center justify-center sm:justify-start">
+                  <div className="flex items-center justify-center gap-2 sm:justify-start">
                     <h2 className="text-center text-2xl font-semibold text-slate-800 sm:text-left sm:text-3xl">Quizzes Taken</h2>
                     <InfoChip
                       variant="subtle"
                       size="md"
                       color="slate"
-                      className={`absolute right-0 ${isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}`}
+                      className={isAccountLocked ? "text-slate-400 dark:text-slate-500" : ""}
                       icon={(
                         <svg
                           viewBox="0 0 24 24"

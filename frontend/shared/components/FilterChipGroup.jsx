@@ -8,18 +8,23 @@ export function FilterChipGroup({
   onChipClick,
   disabled = false,
   ariaLabel = "Filter options",
+  fullWidth = false,
   className,
 }) {
   return (
     <div
       className={joinClasses(
-        "relative min-w-0 overflow-hidden rounded-full border border-slate-200/80 bg-slate-100/80 h-10 dark:border-slate-700/60 dark:bg-slate-950",
+        "relative min-w-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100/80 h-10 dark:border-slate-700/60 dark:bg-slate-950",
+        fullWidth ? "w-full" : "",
         className
       )}
       role="group"
       aria-label={ariaLabel}
     >
-      <div className="flex h-full items-center gap-1.5 overflow-x-auto overflow-y-hidden p-1 no-scrollbar">
+      <div className={joinClasses(
+        "flex h-full items-center gap-1.5 overflow-x-auto overflow-y-hidden p-1 no-scrollbar",
+        fullWidth ? "w-full overflow-x-hidden" : ""
+      )}>
         {chips.map((chip) => {
           const isSelected = chip.value === selectedValue;
 
@@ -32,6 +37,7 @@ export function FilterChipGroup({
               onClick={() => onChipClick?.(chip.value)}
               className={joinClasses(
                 "inline-flex h-8 shrink-0 select-none items-center justify-center gap-1.5 rounded-xl border px-4 text-[10px] font-semibold leading-none transition-[background-color,color,border-color] duration-150 sm:text-xs",
+                fullWidth ? "min-w-0 flex-1 px-2.5" : "",
                 isSelected
                   ? "border-slate-200/80 bg-white text-slate-800 shadow-sm dark:border-slate-600/70 dark:bg-slate-800 dark:text-slate-100"
                   : "border-transparent text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200",

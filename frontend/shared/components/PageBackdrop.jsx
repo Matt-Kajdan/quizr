@@ -7,10 +7,23 @@ const mobileBackdropStyle = {
   backgroundColor: "var(--mobile-bg-color)",
 };
 
+const mobileBackdropPatternStyle = {
+  backgroundImage: `
+    linear-gradient(to right, var(--mobile-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--mobile-grid-line) 1px, transparent 1px)
+  `,
+  backgroundSize: "18px 18px",
+  transform: "rotate(45deg) scale(1.35)",
+  transformOrigin: "center",
+};
+
 export function PageBackdrop() {
   return (
     <>
       <div className="fixed inset-0 sm:hidden" style={mobileBackdropStyle}></div>
+      <div className="pointer-events-none fixed inset-0 overflow-hidden sm:hidden">
+        <div className="absolute inset-[-35%]" style={mobileBackdropPatternStyle}></div>
+      </div>
       <div className="fixed inset-0 hidden sm:block" style={desktopBackdropStyle}></div>
 
       <div className="pointer-events-none fixed inset-0 hidden overflow-hidden sm:block dark:hidden">
