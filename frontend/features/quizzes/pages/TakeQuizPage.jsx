@@ -725,7 +725,7 @@ function TakeQuizPage() {
                                     )}
                                 </div>
                                 {/* Desktop header ribbon: chips left, author + owner actions right */}
-                                <div className="hidden items-center justify-between gap-3 sm:flex">
+                                <div className="hidden min-h-9 items-center justify-between gap-3 sm:flex">
                                     {/* LEFT: category + difficulty */}
                                     <div className="flex items-center gap-2">
                                         <InfoChip
