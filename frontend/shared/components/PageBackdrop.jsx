@@ -7,16 +7,6 @@ const mobileBackdropStyle = {
   backgroundColor: "var(--mobile-bg-color)",
 };
 
-const mobileBackdropPatternStyle = {
-  backgroundImage: `
-    linear-gradient(to right, var(--mobile-grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--mobile-grid-line) 1px, transparent 1px)
-  `,
-  backgroundSize: "18px 18px",
-  transform: "rotate(45deg) scale(1.35)",
-  transformOrigin: "center",
-};
-
 export function PageBackdrop() {
   return (
     <>

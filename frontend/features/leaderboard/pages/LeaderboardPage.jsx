@@ -5,6 +5,8 @@ import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PaginationControl } from "@shared/components/PaginationControl";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
+import { StateCard } from "@shared/components/StateCard";
+import { UserAvatar } from "@shared/components/UserAvatar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 const columns = [
@@ -30,20 +32,6 @@ export default function LeaderboardPage() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const avatarGradients = [
-    "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
-    "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
-    "from-emerald-300 to-green-400 dark:from-emerald-500/80 dark:to-green-600/80",
-    "from-orange-300 to-amber-400 dark:from-orange-500/80 dark:to-amber-600/80"
-  ];
-  const getAvatarGradient = (userId) => {
-    const value = String(userId || "");
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-      hash = (hash * 31 + value.charCodeAt(i)) % avatarGradients.length;
-    }
-    return avatarGradients[hash];
-  };
   const opalBackdropStyle = {
     backgroundColor: "var(--opal-bg-color)",
     backgroundImage: "var(--opal-backdrop-image)"
@@ -181,17 +169,17 @@ export default function LeaderboardPage() {
 
   if (error) {
     return (
-      <div className="fixed inset-0 -top-20 flex items-center justify-center p-4" style={opalBackdropStyle}>
-        <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-8 border border-slate-200/80 max-w-md text-center shadow-sm">
-          <div className="w-16 h-16 bg-gradient-to-br from-rose-400 to-amber-400 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-          <h3 className="text-2xl font-bold text-slate-800 mb-3">Error</h3>
-          <p className="text-slate-600">{error}</p>
-        </div>
-      </div>
+      <StateCard
+        mode="fullscreen"
+        backdrop="opal"
+        variant="error"
+        tone="danger"
+        title="Error"
+        description={error}
+        cardClassName="max-w-md"
+        iconWrapperClassName="bg-gradient-to-br from-rose-400 to-amber-400 text-white"
+        titleClassName="font-bold"
+      />
     );
   }
 
@@ -244,6 +232,23 @@ export default function LeaderboardPage() {
               />
             </div>
             <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/60">
+              {sortedRows.length === 0 ? (
+                <StateCard
+                  variant="empty"
+                  tone="neutral"
+                  title="No leaderboard data yet"
+                  description="Entries will appear here once players start completing quizzes."
+                  wrapperClassName="px-4 py-10 sm:px-6 sm:py-12"
+                  cardClassName="border-0 bg-transparent p-0 shadow-none backdrop-blur-0"
+                  iconWrapperClassName="h-14 w-14 bg-slate-100/90 text-slate-500 sm:h-16 sm:w-16"
+                  titleClassName="text-lg sm:text-xl"
+                  icon={(
+                    <svg className="h-7 w-7 sm:h-8 sm:w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 19h16M7 16V9M12 16V5M17 16v-3" />
+                    </svg>
+                  )}
+                />
+              ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[660px] border-collapse text-[11px] sm:min-w-[760px] sm:text-base">
                   <thead className="bg-slate-100/70 text-left text-slate-600">
@@ -267,14 +272,7 @@ export default function LeaderboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/50 text-slate-700 text-left">
-                    {sortedRows.length === 0 ? (
-                      <tr>
-                        <td className="px-2.5 py-2 text-center text-slate-500 sm:px-4 sm:py-4" colSpan={columns.length}>
-                          No leaderboard data yet.
-                        </td>
-                      </tr>
-                    ) : (
-                      paginatedRows.map((entry, index) => (
+                    {paginatedRows.map((entry, index) => (
                         <tr key={entry.user_id}>
                           <td className="px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3">
                             {sortConfig.direction === "desc"
@@ -287,34 +285,29 @@ export default function LeaderboardPage() {
                                 to={toProfileUrl(entry.user_data.username)}
                                 className="flex w-full min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-800 hover:text-slate-800 hover:font-semibold sm:gap-3 sm:px-4 sm:py-3"
                               >
-                                <div
-                                  className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-[18%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[9px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
-                                >
-                                  {entry.user_data?.profile_pic ? (
-                                    <img
-                                      src={entry.user_data.profile_pic}
-                                      alt={entry.user_data.username}
-                                      className="w-full h-full object-cover"
-                                      onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.parentElement.innerHTML = `<span>${(entry.user_data?.username || "?").charAt(0).toUpperCase()}</span>`;
-                                      }}
-                                    />
-                                  ) : (
-                                    <span>{(entry.user_data?.username || "?").charAt(0).toUpperCase()}</span>
-                                  )}
-                                </div>
+                                <UserAvatar
+                                  userId={entry.user_id}
+                                  name={entry.user_data?.username || "?"}
+                                  src={entry.user_data?.profile_pic}
+                                  shape="rounded"
+                                  className="h-6 w-6 shrink-0 text-[9px] shadow-sm sm:h-9 sm:w-9 sm:text-sm"
+                                  textClassName="text-[9px] sm:text-sm"
+                                  style={{ borderRadius: "18%" }}
+                                />
                                 <span className="truncate text-slate-800 dark:text-slate-200">
                                   {entry.user_data?.username}
                                 </span>
                               </Link>
                             ) : (
                               <div className="flex min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-700 sm:gap-3 sm:px-4 sm:py-3">
-                                <div
-                                  className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-[18%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[9px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
-                                >
-                                  <span>?</span>
-                                </div>
+                                <UserAvatar
+                                  userId={entry.user_id}
+                                  name="?"
+                                  shape="rounded"
+                                  className="h-6 w-6 shrink-0 text-[9px] shadow-sm sm:h-9 sm:w-9 sm:text-sm"
+                                  textClassName="text-[9px] sm:text-sm"
+                                  style={{ borderRadius: "18%" }}
+                                />
                                 <span className="truncate text-slate-500">
                                   {entry.user_id ? `Unknown user (${entry.user_id})` : "Unknown user"}
                                 </span>
@@ -330,11 +323,11 @@ export default function LeaderboardPage() {
                           <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.attemptsOnTheirQuizzes || 0}</td>
                           <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.quizzesCreated}</td>
                         </tr>
-                      ))
-                    )}
+                      ))}
                   </tbody>
                 </table>
               </div>
+              )}
             </div>
           </div>
           {/* Pagination */}

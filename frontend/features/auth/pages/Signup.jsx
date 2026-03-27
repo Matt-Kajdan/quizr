@@ -4,12 +4,14 @@ import { signup } from "@shared/auth/authService";
 import { apiFetch } from "@shared/api/apiClient";
 import { BACKEND_URL } from "@shared/api/backendUrl";
 import { AuthPageShell } from "@shared/components/AuthPageShell";
+import { Field } from "@shared/components/Field";
 import { useUser } from "@shared/state/useUser";
 import { PasswordInput } from "@shared/components/PasswordInput";
 import { formatUsernameInput, trimTrailingSpace } from "@shared/utils/usernameValidation";
 import { setSigningUp as setSignupGate } from "@shared/auth/signupGate";
 
 export function Signup() {
+  const passwordMinLength = 12;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,24 +21,42 @@ export function Signup() {
   const [emailInUse, setEmailInUse] = useState(false);
   const [usernameWarning, setUsernameWarning] = useState(null);
   const [emailWarning, setEmailWarning] = useState(null);
+  const [passwordWasBlurred, setPasswordWasBlurred] = useState(false);
+  const [passwordSubmitAttempted, setPasswordSubmitAttempted] = useState(false);
 
   const { refreshUser } = useUser();
+  const isPasswordTooShort = password.length < passwordMinLength;
+  const confirmPasswordMismatch = confirmPassword.length > 0 && confirmPassword !== password;
+  const passwordLengthMessage = `Must be at least ${passwordMinLength} characters long`;
+  const confirmPasswordMessage = "Passwords must match";
+  const shouldShowPasswordLengthMessage = isPasswordTooShort && (passwordWasBlurred || passwordSubmitAttempted);
+  const passwordLengthError = passwordSubmitAttempted && shouldShowPasswordLengthMessage
+    ? passwordLengthMessage
+    : undefined;
+  const passwordLengthHelpText = !passwordLengthError && shouldShowPasswordLengthMessage
+    ? passwordLengthMessage
+    : undefined;
+  const confirmPasswordError = passwordSubmitAttempted && confirmPasswordMismatch
+    ? confirmPasswordMessage
+    : undefined;
+  const confirmPasswordHelpText = !confirmPasswordError && confirmPasswordMismatch
+    ? confirmPasswordMessage
+    : undefined;
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError(null);
     setEmailInUse(false);
+    setPasswordSubmitAttempted(true);
     try {
       if (!username.trim()) {
         setError("Username is required");
         return;
       }
-      if (password.length < 12) {
-        setError("Password must be at least 12 characters long");
+      if (isPasswordTooShort) {
         return;
       }
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
+      if (confirmPasswordMismatch) {
         return;
       }
       const availabilityRes = await fetch(
@@ -63,6 +83,7 @@ export function Signup() {
         throw new Error(body.message || "Unable to create user");
       }
       setSignupGate(false);
+      setPasswordSubmitAttempted(false);
       await refreshUser();
       navigate("/");
     } catch (err) {
@@ -81,9 +102,9 @@ export function Signup() {
       subtitle="Join Quizr and start playing"
     >
       <form onSubmit={handleSubmit} className="space-y-3">
-        <label htmlFor="username" className="block text-sm text-slate-600 dark:text-slate-400">Username</label>
-        <input
+        <Field
           id="username"
+          label="Username"
           type="text"
           value={username}
           onChange={(e) => {
@@ -106,14 +127,15 @@ export function Signup() {
             if (warning) setUsernameWarning(warning);
           }}
           onFocus={() => setUsernameWarning(null)}
-          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
+          labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+          inputClassName="mt-1"
+          error={usernameWarning}
+          reserveMessageSpace
+          messageClassName="mt-0.5 min-h-[1.25rem] pl-0.5"
         />
-        <p className={`mt-0.5 min-h-[1.25rem] pl-0.5 text-xs ${usernameWarning ? "text-rose-500" : "text-transparent"}`}>
-          {usernameWarning || "\u00A0"}
-        </p>
-        <label htmlFor="email" className="block text-sm text-slate-600 dark:text-slate-400">Email</label>
-        <input
+        <Field
           id="email"
+          label="Email"
           type="email"
           value={email}
           onChange={(e) => { setEmail(e.target.value); setEmailWarning(null); }}
@@ -122,34 +144,38 @@ export function Signup() {
               setEmailWarning("Please enter a valid email address.");
             }
           }}
-          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
+          labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+          inputClassName="mt-1"
+          error={emailWarning}
+          reserveMessageSpace
+          messageClassName="mt-0.5 min-h-[1.25rem] pl-0.5"
         />
-        <p className={`mt-0.5 min-h-[1.25rem] pl-0.5 text-xs ${emailWarning ? "text-rose-500" : "text-transparent"}`}>
-          {emailWarning || "\u00A0"}
-        </p>
-        <label htmlFor="password" className="block text-sm text-slate-600 dark:text-slate-400">Password</label>
         <PasswordInput
           id="password"
+          label="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          minLength={12}
+          onBlur={() => setPasswordWasBlurred(true)}
+          minLength={passwordMinLength}
+          labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+          helpText={passwordLengthHelpText}
+          error={passwordLengthError}
+          reserveMessageSpace
+          messageClassName="mt-0.5 min-h-[1.25rem] pl-0.5"
         />
-        <p className="mt-0.5 min-h-[1.25rem] pl-0.5 text-xs text-slate-500 dark:text-slate-500">Must be at least 12 characters long.</p>
-        <label htmlFor="confirmPassword" className="block text-sm text-slate-600 dark:text-slate-400">Confirm Password</label>
         <PasswordInput
           id="confirmPassword"
+          label="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           onPaste={(e) => e.preventDefault()}
-          minLength={12}
+          minLength={passwordMinLength}
+          labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+          helpText={confirmPasswordHelpText}
+          error={confirmPasswordError}
+          reserveMessageSpace
+          messageClassName="mt-0.5 min-h-[1.25rem] pl-0.5"
         />
-        <p className={`mt-0.5 min-h-[1.25rem] pl-0.5 text-xs ${
-          confirmPassword && confirmPassword !== password
-            ? "text-rose-500"
-            : "text-transparent"
-        }`}>
-          {confirmPassword && confirmPassword !== password ? "Passwords do not match." : "\u00A0"}
-        </p>
         <input
           role="submit-button"
           id="submit"

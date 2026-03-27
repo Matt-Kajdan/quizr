@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 import { apiFetch } from "@shared/api/apiClient";
 import { SearchField } from "@shared/components/SearchField";
+import { UserAvatar } from "@shared/components/UserAvatar";
 
 function joinClasses(...values) {
   return values.filter(Boolean).join(" ");
@@ -17,22 +18,6 @@ export default function UserSearchBar({ excludeUsername, className, inputClassNa
 
   const requestIdRef = useRef(0);
   const loadingTimerRef = useRef(null);
-
-  const avatarGradients = [
-    "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
-    "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
-    "from-emerald-300 to-green-400 dark:from-emerald-500/80 dark:to-green-600/80",
-    "from-orange-300 to-amber-400 dark:from-orange-500/80 dark:to-amber-600/80"
-  ];
-
-  const getAvatarGradient = (userId) => {
-    const value = String(userId || "");
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-      hash = (hash * 31 + value.charCodeAt(i)) % avatarGradients.length;
-    }
-    return avatarGradients[hash];
-  };
 
   useEffect(() => {
     const query = q.trim();
@@ -149,43 +134,32 @@ export default function UserSearchBar({ excludeUsername, className, inputClassNa
         id="mobile-search-input"
         className="w-full"
         inputClassName={inputClassName}
+        isResultsOpen={open}
+        isResultsLoading={showLoading}
+        results={users}
+        emptyResultsMessage="No users found"
+        resultsPanelClassName="fixed left-0 right-0 top-[calc(env(safe-area-inset-top)+3.5rem)] z-50 overflow-hidden bg-white shadow-lg dark:bg-slate-950 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-full sm:rounded-xl sm:border sm:border-slate-200/80 sm:dark:border-slate-800/80"
+        getResultKey={(u) => u.id || u.username}
+        renderResult={(u) => (
+          <Link
+            to={toProfileUrl(u.username)}
+            onMouseDown={handleResultMouseDown}
+            onClick={handleResultClick}
+            className="w-full text-left px-4 py-3 text-sm text-slate-800 visited:text-slate-800 hover:bg-slate-100/80 hover:text-slate-800 dark:text-slate-100 dark:visited:text-slate-100 dark:hover:bg-slate-900/60 dark:hover:text-slate-100 flex items-center gap-3 transition-colors"
+          >
+            <UserAvatar
+              userId={u.id || u._id}
+              name={u.username}
+              src={u.profile_pic}
+              size={36}
+              shape="rounded"
+              className="shrink-0"
+              textClassName="text-sm"
+            />
+            <span className="font-medium">{u.username}</span>
+          </Link>
+        )}
       />
-
-      {open && (
-        <div className="fixed left-0 right-0 top-[calc(env(safe-area-inset-top)+3.5rem)] z-50 overflow-hidden bg-white shadow-lg dark:bg-slate-950 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-full sm:rounded-xl sm:border sm:border-slate-200/80 sm:dark:border-slate-800/80">
-          {showLoading && (
-            <div className="px-4 py-3 text-sm text-slate-500 dark:text-slate-300 flex items-center gap-3 h-[60px]">Searching…</div>
-          )}
-          {!showLoading && users.length === 0 && (
-            <div className="px-4 py-3 text-sm text-slate-400 dark:text-slate-500 flex items-center gap-3 h-[60px]">No users found</div>
-          )}
-          {!showLoading &&
-            users.map((u) => (
-              <Link
-                key={u.id || u.username}
-                to={toProfileUrl(u.username)}
-                onMouseDown={handleResultMouseDown}
-                onClick={handleResultClick}
-                className="w-full text-left px-4 py-3 text-sm text-slate-800 visited:text-slate-800 hover:bg-slate-100/80 hover:text-slate-800 dark:text-slate-100 dark:visited:text-slate-100 dark:hover:bg-slate-900/60 dark:hover:text-slate-100 flex items-center gap-3 transition-colors"
-              >
-                <div className={`w-9 h-9 rounded-[30%] overflow-hidden bg-gradient-to-br ${getAvatarGradient(u.id || u._id)} flex items-center justify-center flex-shrink-0`}>
-                  {u.profile_pic ? (
-                    <img
-                      src={u.profile_pic}
-                      alt={u.username}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-white text-sm font-semibold">
-                      {u.username?.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <span className="font-medium">{u.username}</span>
-              </Link>
-            ))}
-        </div>
-      )}
     </div>
   );
 }

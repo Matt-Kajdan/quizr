@@ -137,10 +137,86 @@ describe("Signup page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getAllByText(/passwords do not match/i).length
+        screen.getAllByText(/passwords must match/i).length
       ).toBeGreaterThan(0);
     });
     expect(signupMock).not.toHaveBeenCalled();
     expect(apiFetchMock).not.toHaveBeenCalled();
+  });
+
+  it("shows the confirm-password hint live and clears it when the passwords match", () => {
+    renderSignup();
+
+    fireEvent.change(screen.getByLabelText("Confirm Password"), {
+      target: { value: "d" },
+    });
+
+    expect(screen.getByText("Passwords must match")).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "d" },
+    });
+
+    expect(screen.queryByText("Passwords must match")).toBeNull();
+  });
+
+  it("shows the password length hint only after blur and hides it once long enough", () => {
+    renderSignup();
+
+    expect(screen.queryByText("Must be at least 12 characters long")).toBeNull();
+
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "short" },
+    });
+    expect(screen.queryByText("Must be at least 12 characters long")).toBeNull();
+
+    fireEvent.blur(screen.getByLabelText("Password"));
+    expect(screen.getByText("Must be at least 12 characters long")).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "very-long-pass" },
+    });
+    expect(screen.queryByText("Must be at least 12 characters long")).toBeNull();
+  });
+
+  it("turns visible password helper messages red after submit until the values are fixed", async () => {
+    renderSignup();
+
+    fireEvent.change(screen.getByLabelText("Username"), {
+      target: { value: "quizr-user", selectionStart: 10 },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "quizr@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "short" },
+    });
+    fireEvent.blur(screen.getByLabelText("Password"));
+    fireEvent.change(screen.getByLabelText("Confirm Password"), {
+      target: { value: "different" },
+    });
+
+    const passwordHint = screen.getByText("Must be at least 12 characters long");
+    const mismatchHint = screen.getByText("Passwords must match");
+
+    expect(passwordHint.className).not.toContain("text-rose-500");
+    expect(mismatchHint.className).not.toContain("text-rose-500");
+
+    fireEvent.click(screen.getByDisplayValue("Sign up"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Must be at least 12 characters long").className).toContain("text-rose-500");
+      expect(screen.getByText("Passwords must match").className).toContain("text-rose-500");
+    });
+
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "very-long-pass" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm Password"), {
+      target: { value: "very-long-pass" },
+    });
+
+    expect(screen.queryByText("Must be at least 12 characters long")).toBeNull();
+    expect(screen.queryByText("Passwords must match")).toBeNull();
   });
 });

@@ -16,6 +16,8 @@ import { InfoChipGroup } from "@shared/components/InfoChipGroup";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PageShell } from "@shared/components/PageShell";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
+import { StateCard } from "@shared/components/StateCard";
+import { UserAvatar } from "@shared/components/UserAvatar";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -56,21 +58,6 @@ export default function ProfilePage() {
   const [removeFriendModalPos, setRemoveFriendModalPos] = useState({ top: 0, left: 0 });
   const removeFriendButtonRef = useRef(null);
   const removeFriendModalRef = useRef(null);
-  const avatarGradients = [
-    "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
-    "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
-    "from-emerald-300 to-green-400 dark:from-emerald-500/80 dark:to-green-600/80",
-    "from-orange-300 to-amber-400 dark:from-orange-500/80 dark:to-amber-600/80"
-  ];
-  const getAvatarGradient = (userId) => {
-    const value = String(userId || "");
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-      hash = (hash * 31 + value.charCodeAt(i)) % avatarGradients.length;
-    }
-    return avatarGradients[hash];
-  };
-
   const returnTo = location.pathname;
   const getFavouriteCount = (quiz) => Math.max(
     0,
@@ -553,51 +540,34 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <>
-        <div
-          className="fixed inset-0 -top-20"
-          style={{
-            backgroundColor: "var(--opal-bg-color)",
-            backgroundImage: "var(--opal-backdrop-image)"
-          }}
-        ></div>
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 border border-slate-200/80 max-w-md text-center shadow-sm">
-            <div className="w-16 h-16 bg-rose-500/15 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-3">Error</h3>
-            <p className="text-slate-600">{error}</p>
-          </div>
-        </div>
-      </>
+      <StateCard
+        mode="fullscreen"
+        backdrop="opal"
+        variant="error"
+        tone="danger"
+        title="Error"
+        description={error}
+        cardClassName="max-w-md"
+      />
     );
   }
 
   if (!profile) {
     return (
-      <>
-        <div
-          className="fixed inset-0 -top-20"
-          style={{
-            backgroundColor: "var(--opal-bg-color)",
-            backgroundImage: "var(--opal-backdrop-image)"
-          }}
-        ></div>
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 border border-slate-200/80 max-w-md text-center shadow-sm">
-            <div className="w-16 h-16 bg-slate-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-3">User Not Found</h3>
-            <p className="text-slate-600">The user you&apos;re looking for doesn&apos;t exist.</p>
-          </div>
-        </div>
-      </>
+      <StateCard
+        mode="fullscreen"
+        backdrop="opal"
+        variant="empty"
+        tone="neutral"
+        title="User Not Found"
+        description="The user you&apos;re looking for doesn&apos;t exist."
+        cardClassName="max-w-md bg-white/80"
+        icon={(
+          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        )}
+      />
     );
   }
 
@@ -693,10 +663,6 @@ export default function ProfilePage() {
     );
   }
 
-  function formatQuizCountLabel(count) {
-    return `${count} quiz${count === 1 ? "" : "zes"}`;
-  }
-
   function formatCategoryLabel(category) {
     if (!category) return "Other";
     return category.charAt(0).toUpperCase() + category.slice(1);
@@ -732,15 +698,16 @@ export default function ProfilePage() {
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 relative overflow-hidden shadow-sm">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <div className="relative">
-                  <div className={`w-20 h-20 sm:w-28 sm:h-28 rounded-[30%] overflow-hidden border-2 border-slate-200/80 bg-gradient-to-br ${getAvatarGradient(profile._id)} flex items-center justify-center`}>
-                    {profile.user_data?.profile_pic ? (
-                      <img src={profile.user_data.profile_pic} alt={profile.user_data.username} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-white text-3xl sm:text-4xl font-semibold">
-                        {profile.user_data?.username?.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
+                  <UserAvatar
+                    userId={profile._id}
+                    name={profile.user_data?.username}
+                    src={profile.user_data?.profile_pic}
+                    shape="rounded"
+                    border
+                    borderClassName="border-2 border-slate-200/80"
+                    className="w-20 h-20 text-3xl sm:w-28 sm:h-28 sm:text-4xl"
+                    textClassName="text-3xl sm:text-4xl"
+                  />
                 </div>
 
                 <div className="flex-1 text-center sm:text-left">
@@ -938,8 +905,7 @@ export default function ProfilePage() {
                         { label: "Quizzes created", value: quizzesCreatedCount },
                         { label: `${ownerLabel} average score`, value: `${myAvgScore}%` }
                       ];
-                      const total = statsList.length;
-                      return statsList.map((s, idx) => (
+                      return statsList.map((s) => (
                         <div
                           key={s.label + s.value}
                           className={`flex items-end justify-between px-1 py-1 text-sm border-slate-200/80 dark:border-slate-800/90 border-b last:border-b-0 sm:border-b-0 sm:[&:not(:nth-last-child(-n+2))]:border-b`}
@@ -1066,9 +1032,9 @@ export default function ProfilePage() {
             </div>
             {createdQuizzes.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-20 h-20 bg-slate-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-slate-100 dark:bg-transparent">
                   <svg className="w-10 h-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-slate-800 mb-2">No Quizzes Created</h3>
@@ -1443,7 +1409,7 @@ export default function ProfilePage() {
               </div>
               {myFavourites.length === 0 ? (
                 <div className="text-center py-10">
-                  <div className="w-16 h-16 bg-amber-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-amber-200/80 dark:bg-transparent rounded-full mx-auto mb-4 flex items-center justify-center">
                     <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
                     </svg>
@@ -1996,7 +1962,7 @@ export default function ProfilePage() {
             </>
           ) : (
             <div className="text-center py-12">
-              <div className="w-20 h-20 bg-slate-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-slate-100 dark:bg-transparent">
                 <svg className="w-10 h-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
