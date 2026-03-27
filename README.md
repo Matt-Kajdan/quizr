@@ -25,13 +25,11 @@ Folder rules:
 - `backend/app`: Express assembly and startup
 - `backend/features`: domain modules such as users, quizzes, and friends
 - `backend/lib`: backend infrastructure and shared support code
+- `backend/tests`: Jest coverage for backend behavior
 - `frontend/app`: router, app shell, and provider composition
 - `frontend/features`: product areas and route-level UI
 - `frontend/shared`: reusable client utilities, auth, state, hooks, and UI
-
-Architecture note:
-- There is no separate maintained `docs/` tree right now
-- If deeper architecture docs are added later, they should describe the current `frontend/` and `backend/` layout rather than the old `api/src` structure
+- `frontend/tests`: Vitest coverage for current client behavior
 
 ## Requirements
 
