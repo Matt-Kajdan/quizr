@@ -5,6 +5,7 @@ import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PaginationControl } from "@shared/components/PaginationControl";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
+import { StateCard } from "@shared/components/StateCard";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
@@ -168,17 +169,17 @@ export default function LeaderboardPage() {
 
   if (error) {
     return (
-      <div className="fixed inset-0 -top-20 flex items-center justify-center p-4" style={opalBackdropStyle}>
-        <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-8 border border-slate-200/80 max-w-md text-center shadow-sm">
-          <div className="w-16 h-16 bg-gradient-to-br from-rose-400 to-amber-400 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-          <h3 className="text-2xl font-bold text-slate-800 mb-3">Error</h3>
-          <p className="text-slate-600">{error}</p>
-        </div>
-      </div>
+      <StateCard
+        mode="fullscreen"
+        backdrop="opal"
+        variant="error"
+        tone="danger"
+        title="Error"
+        description={error}
+        cardClassName="max-w-md"
+        iconWrapperClassName="bg-gradient-to-br from-rose-400 to-amber-400 text-white"
+        titleClassName="font-bold"
+      />
     );
   }
 
@@ -231,6 +232,23 @@ export default function LeaderboardPage() {
               />
             </div>
             <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/60">
+              {sortedRows.length === 0 ? (
+                <StateCard
+                  variant="empty"
+                  tone="neutral"
+                  title="No leaderboard data yet"
+                  description="Entries will appear here once players start completing quizzes."
+                  wrapperClassName="px-4 py-10 sm:px-6 sm:py-12"
+                  cardClassName="border-0 bg-transparent p-0 shadow-none backdrop-blur-0"
+                  iconWrapperClassName="h-14 w-14 bg-slate-100/90 text-slate-500 sm:h-16 sm:w-16"
+                  titleClassName="text-lg sm:text-xl"
+                  icon={(
+                    <svg className="h-7 w-7 sm:h-8 sm:w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 19h16M7 16V9M12 16V5M17 16v-3" />
+                    </svg>
+                  )}
+                />
+              ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[660px] border-collapse text-[11px] sm:min-w-[760px] sm:text-base">
                   <thead className="bg-slate-100/70 text-left text-slate-600">
@@ -254,14 +272,7 @@ export default function LeaderboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/50 text-slate-700 text-left">
-                    {sortedRows.length === 0 ? (
-                      <tr>
-                        <td className="px-2.5 py-2 text-center text-slate-500 sm:px-4 sm:py-4" colSpan={columns.length}>
-                          No leaderboard data yet.
-                        </td>
-                      </tr>
-                    ) : (
-                      paginatedRows.map((entry, index) => (
+                    {paginatedRows.map((entry, index) => (
                         <tr key={entry.user_id}>
                           <td className="px-2.5 py-1.5 text-left font-medium text-slate-800 sm:px-4 sm:py-3">
                             {sortConfig.direction === "desc"
@@ -312,11 +323,11 @@ export default function LeaderboardPage() {
                           <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.attemptsOnTheirQuizzes || 0}</td>
                           <td className="px-2.5 py-1.5 text-left text-slate-600 dark:text-slate-400 sm:px-4 sm:py-3">{entry.quizzesCreated}</td>
                         </tr>
-                      ))
-                    )}
+                      ))}
                   </tbody>
                 </table>
               </div>
+              )}
             </div>
           </div>
           {/* Pagination */}

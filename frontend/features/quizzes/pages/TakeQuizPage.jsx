@@ -84,7 +84,6 @@ function TakeQuizPage() {
         backgroundColor: "var(--opal-bg-color)",
         backgroundImage: "var(--opal-backdrop-image)"
     };
-
     const loadQuiz = useCallback(async () => {
         const res = await apiFetch(`/quizzes/${id}`);
         const data = await res.json();

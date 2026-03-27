@@ -16,6 +16,7 @@ import { InfoChipGroup } from "@shared/components/InfoChipGroup";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PageShell } from "@shared/components/PageShell";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
+import { StateCard } from "@shared/components/StateCard";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
@@ -539,51 +540,34 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <>
-        <div
-          className="fixed inset-0 -top-20"
-          style={{
-            backgroundColor: "var(--opal-bg-color)",
-            backgroundImage: "var(--opal-backdrop-image)"
-          }}
-        ></div>
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 border border-slate-200/80 max-w-md text-center shadow-sm">
-            <div className="w-16 h-16 bg-rose-500/15 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-3">Error</h3>
-            <p className="text-slate-600">{error}</p>
-          </div>
-        </div>
-      </>
+      <StateCard
+        mode="fullscreen"
+        backdrop="opal"
+        variant="error"
+        tone="danger"
+        title="Error"
+        description={error}
+        cardClassName="max-w-md"
+      />
     );
   }
 
   if (!profile) {
     return (
-      <>
-        <div
-          className="fixed inset-0 -top-20"
-          style={{
-            backgroundColor: "var(--opal-bg-color)",
-            backgroundImage: "var(--opal-backdrop-image)"
-          }}
-        ></div>
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 border border-slate-200/80 max-w-md text-center shadow-sm">
-            <div className="w-16 h-16 bg-slate-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-3">User Not Found</h3>
-            <p className="text-slate-600">The user you&apos;re looking for doesn&apos;t exist.</p>
-          </div>
-        </div>
-      </>
+      <StateCard
+        mode="fullscreen"
+        backdrop="opal"
+        variant="empty"
+        tone="neutral"
+        title="User Not Found"
+        description="The user you&apos;re looking for doesn&apos;t exist."
+        cardClassName="max-w-md bg-white/80"
+        icon={(
+          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        )}
+      />
     );
   }
 
@@ -1048,9 +1032,9 @@ export default function ProfilePage() {
             </div>
             {createdQuizzes.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-20 h-20 bg-slate-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-slate-100 dark:bg-transparent">
                   <svg className="w-10 h-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-slate-800 mb-2">No Quizzes Created</h3>
@@ -1425,7 +1409,7 @@ export default function ProfilePage() {
               </div>
               {myFavourites.length === 0 ? (
                 <div className="text-center py-10">
-                  <div className="w-16 h-16 bg-amber-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-amber-200/80 dark:bg-transparent rounded-full mx-auto mb-4 flex items-center justify-center">
                     <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3l2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" />
                     </svg>
@@ -1978,7 +1962,7 @@ export default function ProfilePage() {
             </>
           ) : (
             <div className="text-center py-12">
-              <div className="w-20 h-20 bg-slate-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-slate-100 dark:bg-transparent">
                 <svg className="w-10 h-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>

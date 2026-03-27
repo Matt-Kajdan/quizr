@@ -7,6 +7,7 @@ import { InfoChip } from "@shared/components/InfoChip";
 import { PageBackdrop } from "@shared/components/PageBackdrop";
 import { SearchField } from "@shared/components/SearchField";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
+import { StateCard } from "@shared/components/StateCard";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
 import {
   formatCategoryLabel,
@@ -242,11 +243,9 @@ export function Home() {
     event.currentTarget.style.setProperty("--logo-y", "50%");
   };
 
-  if (loading || isUserLoading)
+  if (loading || isUserLoading) {
     return (
-      <div
-        className="fixed inset-0 flex items-center justify-center"
-      >
+      <div className="fixed inset-0 flex items-center justify-center">
         <PageBackdrop />
         <div className="relative flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
@@ -254,6 +253,7 @@ export function Home() {
         </div>
       </div>
     );
+  }
 
   return (
     <>
@@ -494,46 +494,30 @@ export function Home() {
           )}
 
           {quizzes.length === 0 && (
-            <div className="text-center py-12 sm:py-20 max-w-md mx-auto px-4">
-              <div className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-sm">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-amber-400 to-rose-400 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center">
-                  <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 sm:mb-3">No Quizzes Yet</h3>
-                <p className="text-slate-600 text-sm sm:text-base mb-4 sm:mb-6">
-                  Start your learning journey by creating your first quiz
-                </p>
-                <button className="bg-gradient-to-r from-amber-400 to-rose-400 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-semibold hover:shadow-lg hover:shadow-amber-400/40 transition-all transform hover:scale-105 active:scale-95">
-                  Create Your First Quiz
-                </button>
-              </div>
-            </div>
+            <StateCard
+              variant="empty"
+              tone="friendly"
+              title="No Quizzes Yet"
+              description="Start your learning journey by creating your first quiz"
+              actionLabel="Create Your First Quiz"
+              wrapperClassName="mx-auto max-w-md px-4 py-12 text-center sm:py-20"
+              cardClassName="p-8 sm:p-12"
+              iconWrapperClassName="bg-gradient-to-br from-amber-400 to-rose-400 text-white"
+              titleClassName="font-bold text-slate-900"
+              actionClassName="rounded-full bg-gradient-to-r from-amber-400 to-rose-400 px-6 py-2.5 text-sm hover:from-amber-400 hover:to-rose-400 hover:shadow-lg hover:shadow-amber-400/40 sm:px-8 sm:py-3 sm:text-base"
+            />
           )}
           {quizzes.length > 0 && showSearchEmptyState && (
-            <div className="mx-auto max-w-md px-4 py-12 sm:py-16">
-              <div className="rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white/70 p-8 text-center shadow-sm backdrop-blur-lg">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100/90 text-slate-500">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-6 w-6"
-                  >
-                    <path d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-                    <path d="M8.5 11.5h5" />
-                  </svg>
-                </div>
-                <h3 className="mb-2 text-xl font-bold text-slate-900">No results found</h3>
-                <p className="text-sm text-slate-600 sm:text-base">
-                  No results for these search criteria.
-                </p>
-              </div>
-            </div>
+            <StateCard
+              variant="no-results"
+              tone="search"
+              title="No results found"
+              description="No results for these search criteria."
+              wrapperClassName="mx-auto max-w-md px-4 py-12 sm:py-16"
+              cardClassName="p-8"
+              iconWrapperClassName="h-14 w-14 bg-slate-100/90 text-slate-500 sm:h-14 sm:w-14"
+              titleClassName="font-bold text-slate-900"
+            />
           )}
           {quizzes.length > 0 && !showSearchEmptyState && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

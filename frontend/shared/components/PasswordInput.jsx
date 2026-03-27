@@ -6,12 +6,13 @@ import { Field } from "./Field";
  * Accepts all standard input props (value, onChange, placeholder, disabled, minLength, etc.)
  * plus an optional `inputClassName` to override the input's class.
  *
- * When `minLength` and `value` are provided, a character counter is shown
+ * Set `showCharacterCount` to `true` to display a character counter
  * to the left of the eye icon.
  */
 export const PasswordInput = forwardRef(function PasswordInput({
   inputClassName,
   minLength,
+  showCharacterCount = false,
   value,
   ...props
 }, ref) {
@@ -22,7 +23,7 @@ export const PasswordInput = forwardRef(function PasswordInput({
       type="password"
       value={value}
       minLength={minLength}
-      characterCount={typeof minLength === "number" ? minLength : false}
+      characterCount={showCharacterCount && typeof minLength === "number" ? minLength : false}
       inputClassName={inputClassName}
     />
   );

@@ -27,6 +27,7 @@ const SETTINGS_SECTIONS = [
 const panelClassName = "bg-white/70 dark:bg-slate-900/40 backdrop-blur-lg rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800/60 shadow-sm";
 const inputClassName = "w-full px-4 py-3 bg-white/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300/70 dark:focus:ring-slate-700/50 disabled:opacity-50";
 const labelClassName = "block text-slate-600 dark:text-slate-300 mb-2";
+const passwordMinLength = 12;
 function SettingsSidebar({ sections, activeSection, onSelect }) {
   return (
     <aside className="self-start lg:sticky lg:top-24">
@@ -73,6 +74,8 @@ export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [newPasswordWasBlurred, setNewPasswordWasBlurred] = useState(false);
+  const [passwordSubmitAttempted, setPasswordSubmitAttempted] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
   const [emailSaving, setEmailSaving] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
@@ -129,6 +132,23 @@ export default function SettingsPage() {
 
   const isAccountLocked = profile?.status === "pending_deletion";
   const previewInitial = (username.trim() || originalUsername || profile?.user_data?.username || "?").charAt(0).toUpperCase();
+  const isNewPasswordTooShort = newPassword.length < passwordMinLength;
+  const confirmPasswordMismatch = confirmPassword.length > 0 && confirmPassword !== newPassword;
+  const passwordLengthMessage = `Must be at least ${passwordMinLength} characters long`;
+  const confirmPasswordMessage = "Passwords must match";
+  const shouldShowNewPasswordMessage = isNewPasswordTooShort && (newPasswordWasBlurred || passwordSubmitAttempted);
+  const newPasswordFieldError = passwordSubmitAttempted && shouldShowNewPasswordMessage
+    ? passwordLengthMessage
+    : undefined;
+  const newPasswordFieldHelpText = !newPasswordFieldError && shouldShowNewPasswordMessage
+    ? passwordLengthMessage
+    : undefined;
+  const confirmPasswordFieldError = passwordSubmitAttempted && confirmPasswordMismatch
+    ? confirmPasswordMessage
+    : undefined;
+  const confirmPasswordFieldHelpText = !confirmPasswordFieldError && confirmPasswordMismatch
+    ? confirmPasswordMessage
+    : undefined;
 
   useEffect(() => {
     if (isAccountLocked && activeSection === "delete") {
@@ -240,14 +260,13 @@ export default function SettingsPage() {
     if (isAccountLocked) return;
     setPasswordError(null);
     setPasswordMessage(null);
+    setPasswordSubmitAttempted(true);
 
-    if (newPassword !== confirmPassword) {
-      setPasswordError("Passwords don't match");
+    if (confirmPasswordMismatch) {
       return;
     }
 
-    if (newPassword.length < 12) {
-      setPasswordError("Password must be at least 12 characters");
+    if (isNewPasswordTooShort) {
       return;
     }
 
@@ -269,6 +288,8 @@ export default function SettingsPage() {
       setNewPassword("");
       setConfirmPassword("");
       setCurrentPassword("");
+      setNewPasswordWasBlurred(false);
+      setPasswordSubmitAttempted(false);
     } catch (err) {
       if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         setPasswordError("Current password is incorrect");
@@ -517,12 +538,16 @@ export default function SettingsPage() {
             <PasswordInput
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              onBlur={() => setNewPasswordWasBlurred(true)}
               placeholder="Enter new password"
               disabled={isAccountLocked}
-              minLength={12}
+              minLength={passwordMinLength}
+              helpText={newPasswordFieldHelpText}
+              error={newPasswordFieldError}
+              reserveMessageSpace
+              messageClassName="mt-0.5 pl-0.5 min-h-[1.25rem]"
               inputClassName={joinClasses(inputClassName, "pr-20")}
             />
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 pl-0.5 min-h-[1.25rem]">Must be at least 12 characters long.</p>
           </div>
           <div>
             <label className={labelClassName}>Confirm Password</label>
@@ -532,7 +557,11 @@ export default function SettingsPage() {
               onPaste={(e) => e.preventDefault()}
               placeholder="Confirm new password"
               disabled={isAccountLocked}
-              minLength={12}
+              minLength={passwordMinLength}
+              helpText={confirmPasswordFieldHelpText}
+              error={confirmPasswordFieldError}
+              reserveMessageSpace
+              messageClassName="mt-0.5 pl-0.5 min-h-[1.25rem]"
               inputClassName={joinClasses(inputClassName, "pr-20")}
             />
           </div>

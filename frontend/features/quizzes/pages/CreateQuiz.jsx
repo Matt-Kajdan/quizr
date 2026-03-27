@@ -3,24 +3,25 @@ import { signOut } from "firebase/auth";
 import { useLocation, useNavigate, useBlocker } from "react-router-dom";
 import { createQuiz } from "@features/quizzes/api/quizzes";
 import { SortableQuestionList } from "@features/quizzes/components/SortableQuestionList";
+import { QuizEditorScreen } from "@features/quizzes/components/quizeditor/QuizEditorScreen";
 import {
   stripEditorQuestionIds,
   withEditorQuestionId,
 } from "@features/quizzes/components/questionEditorUtils";
-import { DIFFICULTY_ICONS } from "@shared/assets/icons";
-import { PageShell } from "@shared/components/PageShell";
+import {
+  ANSWER_COUNT_OPTIONS,
+  DEFAULT_ANSWERS_PER_QUESTION,
+  QUIZ_EDITOR_CATEGORIES,
+  QUIZ_EDITOR_CATEGORY_BAR_COLORS,
+  QUIZ_EDITOR_DIFFICULTY_OPTIONS,
+} from "@features/quizzes/components/quizeditor/quizEditorConfig";
 import { useAuth } from "@shared/auth/useAuth";
 import { auth } from "@shared/auth/firebase";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
-import { PageHeader } from "@shared/components/PageHeader";
-import { SelectDropdown } from "@shared/components/SelectDropdown";
-import { LogOut } from "lucide-react";
 
 export default function CreateQuiz() {
   const user = useAuth();
   const isMobile = useIsMobile();
-  const ANSWER_COUNT_OPTIONS = useMemo(() => [2, 3, 4, 5, 6], []);
-  const DEFAULT_ANSWERS_PER_QUESTION = 4;
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("other");
   const [difficulty, setDifficulty] = useState("medium");
@@ -88,7 +89,6 @@ export default function CreateQuiz() {
     requireAllCorrect,
     reqToPass,
     questions,
-    DEFAULT_ANSWERS_PER_QUESTION,
   ]);
 
   const blocker = useBlocker(hasChanges && !ignoreBlocker);
@@ -264,389 +264,69 @@ export default function CreateQuiz() {
         req_to_pass: safeReqToPass,
       });
       const quizId = data?.quiz?._id;
-      setIgnoreBlocker(true)
+      setIgnoreBlocker(true);
       setPendingNavigation(quizId ? `/quiz/${quizId}` : "/");
     } catch (err) {
       alert(err.message);
     }
   }
-
-  const difficultyOptions = [
-    {
-      value: "easy",
-      label: "Easy",
-      description: "Review every question after finishing, including the correct answers.",
-      gradient: "from-emerald-500/80 via-emerald-500/80 to-emerald-500/80 dark:from-emerald-900/60 dark:via-emerald-900/60 dark:to-emerald-900/60",
-      border: "border-emerald-400/50 dark:border-emerald-800/50",
-      icon: DIFFICULTY_ICONS.easy,
-    },
-    {
-      value: "medium",
-      label: "Medium",
-      description: "Review every question after finishing, showing which selections were right or wrong.",
-      gradient: "from-amber-400/85 via-amber-400/85 to-amber-400/85 dark:from-amber-900/60 dark:via-amber-900/60 dark:to-amber-900/60",
-      border: "border-amber-400/50 dark:border-amber-800/50",
-      icon: DIFFICULTY_ICONS.medium,
-    },
-    {
-      value: "hard",
-      label: "Hard",
-      description: "Only see the total number of correct answers after finishing.",
-      gradient: "from-rose-500/85 via-rose-500/85 to-rose-500/85 dark:from-rose-900/60 dark:via-rose-900/60 dark:to-rose-900/60",
-      border: "border-rose-400/50 dark:border-rose-800/50",
-      icon: DIFFICULTY_ICONS.hard,
-    },
-  ];
-  const categories = [
-    { value: "art", label: "Art" },
-    { value: "history", label: "History" },
-    { value: "music", label: "Music" },
-    { value: "science", label: "Science" },
-    { value: "other", label: "Other" },
-  ];
-  const categoryBarColors = {
-    art: "bg-rose-200/80 dark:bg-rose-900/60 dark:text-rose-200",
-    history: "bg-amber-200/80 dark:bg-amber-900/60 dark:text-amber-200",
-    music: "bg-sky-200/80 dark:bg-sky-900/60 dark:text-sky-200",
-    science: "bg-emerald-200/80 dark:bg-emerald-900/60 dark:text-emerald-200",
-    other: "bg-slate-200/80 dark:bg-slate-800/60 dark:text-slate-200",
-  };
   const questionCount = questions.length;
   const passPercent = questionCount > 0 ? Math.round((reqToPass / questionCount) * 100) : 0;
   const passLabel = `${reqToPass}/${questionCount} (${passPercent}%)`;
   const quizTitleLabel = title.trim() || "Untitled quiz";
-  const questionBarClass = categoryBarColors[category] || categoryBarColors.other;
-  const selectedDifficultyIndex = Math.max(
-    0,
-    difficultyOptions.findIndex((option) => option.value === difficulty)
-  );
-  const selectedDifficultyOption = difficultyOptions[selectedDifficultyIndex] || difficultyOptions[1];
+  const questionBarClass = QUIZ_EDITOR_CATEGORY_BAR_COLORS[category] || QUIZ_EDITOR_CATEGORY_BAR_COLORS.other;
 
   return (
-    <>
-      <PageShell>
-        {/* Mobile Top Bar */}
-        {questions.length > 0 && isMobile && (
-          <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800/80 pt-[env(safe-area-inset-top)]">
-            <div className="px-4 py-2 flex items-center gap-3">
-              <div className="grid grid-cols-3 gap-2 flex-1">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="bg-white/80 hover:bg-white dark:bg-slate-800/50 dark:border-slate-800/80 dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:text-slate-100 text-slate-700 px-3 py-2.5 rounded-lg text-xs font-semibold border border-slate-200/80 transition-colors flex items-center justify-center gap-1.5"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={addQuestion}
-                  className="bg-white/80 hover:bg-white dark:bg-slate-800/50 dark:border-slate-800/80 dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:text-slate-100 text-slate-700 px-3 py-2.5 rounded-lg text-xs font-semibold border border-slate-200/80 transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => handleSubmit(e)}
-                  className="bg-slate-800 dark:bg-blue-950/60 text-white px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 flex items-center justify-center gap-1.5"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Create
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={handleSignOut}
-                className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 transition-colors"
-              >
-                <LogOut size={20} />
-              </button>
-            </div>
-          </div>
-        )}
-        {questions.length > 0 && isMobile && (
-          <div aria-hidden="true" className="h-[calc(env(safe-area-inset-top)+3.5rem)] sm:hidden" />
-        )}
-        <PageHeader title="Create New Quiz" subtitle="Design your own quiz" />
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm">
-              <label className="block text-slate-600 font-medium mb-2 text-sm">
-                Title
-              </label>
-              <input
-                type="text"
-                placeholder="Enter your quiz title..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full bg-white/70 border border-slate-200/80 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:shadow-[0_0_16px_-6px_rgba(148,163,184,0.6)]"
-              />
-
-              <div className="mt-6 grid gap-y-4 lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] lg:gap-x-3">
-                <div>
-                  <div className="space-y-4">
-                    <div className="relative">
-                  <label className="block text-slate-600 dark:text-slate-400 font-medium mb-2 text-sm">
-                    Category
-                  </label>
-                  <SelectDropdown
-                    value={category}
-                    options={categories}
-                    onChange={setCategory}
-                    buttonClassName="w-full rounded-xl px-4 py-3 text-left flex items-center justify-between"
-                    menuClassName="max-h-64 rounded-xl"
-                    optionClassName="font-medium"
-                    itemRoundedClassName="first:rounded-t-xl last:rounded-b-xl"
-                    renderTrigger={({ isOpen, selectedOption }) => (
-                      <>
-                        <span>{selectedOption?.label || category}</span>
-                        <svg className={`w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </>
-                    )}
-                  />
-                </div>
-                    <div className="relative">
-                      <label className="block text-slate-600 dark:text-slate-400 font-medium mb-2 text-sm">
-                        Answers per question
-                      </label>
-                      <div className="rounded-xl border border-slate-200/80 bg-white/60 p-3">
-                        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                          <span>Options per question</span>
-                          <span>{answersPerQuestion} answers</span>
-                        </div>
-                        <div className="relative">
-                          <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-900/80 rounded-lg overflow-hidden">
-                            <div
-                              className="h-full bg-slate-800 dark:bg-slate-100"
-                              style={{ width: `${((answersPerQuestion - ANSWER_COUNT_OPTIONS[0]) / (ANSWER_COUNT_OPTIONS[ANSWER_COUNT_OPTIONS.length - 1] - ANSWER_COUNT_OPTIONS[0])) * 100}%` }}
-                            />
-                          </div>
-                          <input
-                            type="range"
-                            draggable={false}
-                            min={ANSWER_COUNT_OPTIONS[0]}
-                            max={ANSWER_COUNT_OPTIONS[ANSWER_COUNT_OPTIONS.length - 1]}
-                            step="1"
-                            value={answersPerQuestion}
-                            onChange={(e) => handleAnswersPerQuestionChange(Number(e.target.value))}
-                            className="relative w-full h-1.5 appearance-none bg-transparent cursor-ew-resize z-10 touch-none select-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-ew-resize [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:mt-[-5px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-800 dark:[&::-webkit-slider-thumb]:bg-slate-100 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-slate-950 [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:cursor-ew-resize [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-800 dark:[&::-moz-range-thumb]:bg-slate-100 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-slate-950 [&::-moz-range-thumb]:shadow-sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-slate-600 font-medium mb-2 text-sm">
-                        Difficulty
-                      </label>
-                      <div className="w-full border border-slate-200/80 bg-white/70 rounded-xl p-1">
-                        <div className="relative grid grid-cols-3 gap-1">
-                          <div
-                            aria-hidden="true"
-                            className={`pointer-events-none absolute inset-y-0 rounded-lg shadow-sm transition-[left,background-color,border-color] duration-180 ease-out bg-gradient-to-r ${selectedDifficultyOption.gradient} ${selectedDifficultyOption.border}`}
-                            style={{
-                              left: `calc(${selectedDifficultyIndex} * ((100% - 0.5rem) / 3 + 0.25rem))`,
-                              width: "calc((100% - 0.5rem) / 3)"
-                            }}
-                          />
-                          {difficultyOptions.map((option) => {
-                            const isActive = difficulty === option.value;
-                            return (
-                              <button
-                                key={option.value}
-                                type="button"
-                                onClick={() => setDifficulty(option.value)}
-                                aria-pressed={isActive}
-                                className={`relative z-10 flex min-h-[42px] select-none items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wide transition-colors duration-150 ${isActive
-                                  ? "text-white"
-                                  : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-200 dark:hover:bg-slate-800/60 dark:hover:text-slate-200"
-                                  }`}
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className="h-3.5 w-3.5 shrink-0"
-                                  style={{
-                                    backgroundColor: "currentColor",
-                                    maskImage: `url(${option.icon})`,
-                                    WebkitMaskImage: `url(${option.icon})`,
-                                    maskRepeat: "no-repeat",
-                                    WebkitMaskRepeat: "no-repeat",
-                                    maskPosition: "center",
-                                    WebkitMaskPosition: "center",
-                                    maskSize: "contain",
-                                    WebkitMaskSize: "contain",
-                                  }}
-                                />
-                                <span>{option.label}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      <div className="mt-2 px-1 text-sm text-slate-600 min-h-[40px]">
-                        {difficultyOptions.map((option) => (
-                          <p key={option.value} className={difficulty === option.value ? "block" : "hidden"}>
-                            {option.description}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="hidden lg:block self-stretch bg-slate-200/80" />
-                <div>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-slate-600 font-medium mb-2 text-sm">
-                        Pass threshold
-                      </label>
-                      <div className="rounded-xl border border-slate-200/80 bg-white/60 p-3">
-                        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                          <span>Required correct answers</span>
-                          <span>{passLabel}</span>
-                        </div>
-                        <div className="relative">
-                          <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-900/80 rounded-lg overflow-hidden">
-                            <div
-                              className="h-full bg-slate-800 dark:bg-slate-100"
-                              style={{ width: `${(reqToPass / (questionCount || 1)) * 100}%` }}
-                            />
-                          </div>
-                          <input
-                            type="range"
-                            draggable={false}
-                            min="0"
-                            max={questionCount}
-                            step="1"
-                            value={reqToPass}
-                            onChange={(e) => setReqToPass(Number(e.target.value))}
-                            className="relative w-full h-1.5 appearance-none bg-transparent cursor-ew-resize z-10 touch-none select-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-ew-resize [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:mt-[-5px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-800 dark:[&::-webkit-slider-thumb]:bg-slate-100 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-slate-950 [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:cursor-ew-resize [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-800 dark:[&::-moz-range-thumb]:bg-slate-100 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-slate-950 [&::-moz-range-thumb]:shadow-sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-3 select-none">
-                      <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white/60 divide-y divide-slate-200/80 dark:divide-slate-800/80 transition-colors hover:border-slate-300/80">
-                        <label className="flex items-start gap-3 p-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={allowMultipleCorrect}
-                        onChange={(e) => handleAllowMultipleCorrectChange(e.target.checked)}
-                        className="mt-1 h-4 w-4 min-h-4 min-w-4 shrink-0 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[2px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
-                      />
-                      <span className="text-left text-sm text-slate-700">
-                        Allow multiple correct answers
-                        <span className="block text-xs text-slate-500 mt-1">
-                          Enables selecting more than one correct answer per question.
-                        </span>
-                        </span>
-                        </label>
-                        <label
-                          className={`flex items-start gap-3 p-3 ${allowMultipleCorrect ? "cursor-pointer" : "cursor-default opacity-50"}`}
-                        >
-                        <input
-                          type="checkbox"
-                          checked={requireAllCorrect}
-                          onChange={(e) => setRequireAllCorrect(e.target.checked)}
-                          disabled={!allowMultipleCorrect}
-                          className={`mt-1 h-4 w-4 min-h-4 min-w-4 shrink-0 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[2px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45 ${allowMultipleCorrect ? "cursor-pointer" : "cursor-default"
-                            }`}
-                        />
-                        <span className="text-left text-sm text-slate-700">
-                          Require all correct answers
-                          <span className="block text-xs text-slate-500 mt-1">
-                            Mark correct only if the selection matches the full correct set.
-                          </span>
-                        </span>
-                        </label>
-                      </div>
-                    </div>
-                    <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 hover:border-slate-300/80 transition-all cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={lockAnswers}
-                        onChange={(e) => setLockAnswers(e.target.checked)}
-                        className="mt-1 h-4 w-4 min-h-4 min-w-4 shrink-0 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[2px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
-                      />
-                      <span className="text-left text-sm text-slate-700">
-                        Lock answers after Next
-                        <span className="block text-xs text-slate-500 mt-1">
-                          You can go back to review, but answers cannot be changed.
-                        </span>
-                      </span>
-                    </label>
-                    <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/60 p-3 hover:border-slate-300/80 transition-all cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={randomQuestionOrder}
-                        onChange={(e) => setRandomQuestionOrder(e.target.checked)}
-                        className="mt-1 h-4 w-4 min-h-4 min-w-4 shrink-0 appearance-none rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 checked:bg-slate-800 dark:checked:bg-slate-200 checked:border-transparent transition-all cursor-pointer relative after:content-[''] after:absolute after:hidden checked:after:block after:left-[5px] after:top-[2px] after:w-[4px] after:h-[8px] after:border-white dark:after:border-slate-900 after:border-b-2 after:border-r-2 after:rotate-45"
-                      />
-                      <span className="text-left text-sm text-slate-700">
-                        Questions in random order
-                        <span className="block text-xs text-slate-500 mt-1">
-                          Shuffle the question order for each quiz attempt.
-                        </span>
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <SortableQuestionList
-              questions={questions}
-              setQuestions={setQuestions}
-              quizTitleLabel={quizTitleLabel}
-              questionBarClass={questionBarClass}
-              allowMultipleCorrect={allowMultipleCorrect}
-              onQuestionChange={handleQuestionChange}
-              onAnswerChange={handleAnswerChange}
-              onSetCorrectAnswer={setCorrectAnswer}
-              onRemoveQuestion={removeQuestion}
-              onDragStateChange={setIsQuestionDragging}
-            />
-            {questions.length > 0 && (
-              <div className={`sticky bottom-6 z-20 pt-4 hidden sm:block ${isQuestionDragging ? "pointer-events-none" : ""}`}>
-                <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/70 backdrop-blur-lg shadow-lg px-4 py-4 sm:px-6">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <button
-                      type="button"
-                      onClick={handleCancel}
-                      className="flex-1 bg-white/70 hover:bg-white/90 dark:bg-slate-800/40 dark:border-slate-800/80 dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:text-slate-100 backdrop-blur-lg text-slate-700 px-6 py-3 rounded-xl font-semibold border border-slate-200/80 hover:border-slate-300/80 transition-colors flex items-center justify-center gap-2"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={addQuestion}
-                      className="flex-1 bg-white/70 hover:bg-white/90 dark:bg-slate-800/40 dark:border-slate-800/80 dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:text-slate-100 backdrop-blur-lg text-slate-700 px-6 py-3 rounded-xl font-semibold border border-slate-200/80 hover:border-slate-300/80 transition-colors flex items-center justify-center gap-2"
-                    >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      Add Question
-                    </button>
-                    <button
-                      type="submit"
-                      className="flex-1 bg-slate-800 dark:bg-blue-950/60 text-white px-6 py-3 rounded-xl font-semibold transition-colors hover:bg-slate-700 dark:hover:bg-blue-900/60 dark:border dark:border-blue-400/30 flex items-center justify-center gap-2"
-                    >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Create Quiz
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-        </form>
-      </PageShell>
-    </>
+    <QuizEditorScreen
+      isMobile={isMobile}
+      pageTitle="Create New Quiz"
+      pageSubtitle="Design your own quiz"
+      title={title}
+      onTitleChange={setTitle}
+      category={category}
+      onCategoryChange={setCategory}
+      categories={QUIZ_EDITOR_CATEGORIES}
+      answersPerQuestion={answersPerQuestion}
+      answerCountOptions={ANSWER_COUNT_OPTIONS}
+      onAnswersPerQuestionChange={handleAnswersPerQuestionChange}
+      difficulty={difficulty}
+      difficultyOptions={QUIZ_EDITOR_DIFFICULTY_OPTIONS}
+      onDifficultyChange={setDifficulty}
+      passLabel={passLabel}
+      reqToPass={reqToPass}
+      questionCount={questionCount}
+      onReqToPassChange={setReqToPass}
+      allowMultipleCorrect={allowMultipleCorrect}
+      onAllowMultipleCorrectChange={handleAllowMultipleCorrectChange}
+      requireAllCorrect={requireAllCorrect}
+      onRequireAllCorrectChange={setRequireAllCorrect}
+      lockAnswers={lockAnswers}
+      onLockAnswersChange={setLockAnswers}
+      randomQuestionOrder={randomQuestionOrder}
+      onRandomQuestionOrderChange={setRandomQuestionOrder}
+      onCancel={handleCancel}
+      onAddQuestion={addQuestion}
+      onSubmit={handleSubmit}
+      onSignOut={handleSignOut}
+      cancelLabelMobile="Cancel"
+      cancelLabelDesktop="Cancel"
+      submitLabelMobile="Create"
+      submitLabelDesktop="Create Quiz"
+      showQuestionActions={questions.length > 0}
+      isQuestionDragging={isQuestionDragging}
+    >
+      <SortableQuestionList
+        questions={questions}
+        setQuestions={setQuestions}
+        quizTitleLabel={quizTitleLabel}
+        questionBarClass={questionBarClass}
+        allowMultipleCorrect={allowMultipleCorrect}
+        onQuestionChange={handleQuestionChange}
+        onAnswerChange={handleAnswerChange}
+        onSetCorrectAnswer={setCorrectAnswer}
+        onRemoveQuestion={removeQuestion}
+        onDragStateChange={setIsQuestionDragging}
+      />
+    </QuizEditorScreen>
   );
 }
