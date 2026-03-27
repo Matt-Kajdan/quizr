@@ -1,10 +1,10 @@
-import { forwardRef } from "react";
+import { Fragment, forwardRef } from "react";
 
 function joinClasses(...values) {
   return values.filter(Boolean).join(" ");
 }
 
-export const SearchField = forwardRef(function SearchField({
+export const SearchBar = forwardRef(function SearchBar({
   value,
   onChange,
   onClear,
@@ -15,6 +15,15 @@ export const SearchField = forwardRef(function SearchField({
   clearButtonClassName,
   iconClassName,
   placeholder = "Search",
+  isResultsOpen = false,
+  isResultsLoading = false,
+  results = [],
+  emptyResultsMessage = "No results found",
+  renderResult,
+  renderLoadingResults,
+  renderEmptyResults,
+  getResultKey,
+  resultsPanelClassName,
   ...inputProps
 }, ref) {
   function handleKeyDown(event) {
@@ -68,6 +77,35 @@ export const SearchField = forwardRef(function SearchField({
           inputClassName
         )}
       />
+      {isResultsOpen && (
+        <div className={resultsPanelClassName}>
+          {isResultsLoading && (
+            renderLoadingResults
+              ? renderLoadingResults()
+              : (
+                <div className="px-4 py-3 text-sm text-slate-500 dark:text-slate-300 flex items-center gap-3 h-[60px]">
+                  Searching…
+                </div>
+              )
+          )}
+          {!isResultsLoading && results.length === 0 && (
+            renderEmptyResults
+              ? renderEmptyResults()
+              : (
+                <div className="px-4 py-3 text-sm text-slate-400 dark:text-slate-500 flex items-center gap-3 h-[60px]">
+                  {emptyResultsMessage}
+                </div>
+              )
+          )}
+          {!isResultsLoading && renderResult && results.map((result, index) => (
+            <Fragment key={getResultKey ? getResultKey(result, index) : index}>
+              {renderResult(result, index)}
+            </Fragment>
+          ))}
+        </div>
+      )}
     </div>
   );
 });
+
+export const SearchField = SearchBar;

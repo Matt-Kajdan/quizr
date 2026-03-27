@@ -4,6 +4,7 @@ import { signup } from "@shared/auth/authService";
 import { apiFetch } from "@shared/api/apiClient";
 import { BACKEND_URL } from "@shared/api/backendUrl";
 import { AuthPageShell } from "@shared/components/AuthPageShell";
+import { Field } from "@shared/components/Field";
 import { useUser } from "@shared/state/useUser";
 import { PasswordInput } from "@shared/components/PasswordInput";
 import { formatUsernameInput, trimTrailingSpace } from "@shared/utils/usernameValidation";
@@ -81,9 +82,9 @@ export function Signup() {
       subtitle="Join Quizr and start playing"
     >
       <form onSubmit={handleSubmit} className="space-y-3">
-        <label htmlFor="username" className="block text-sm text-slate-600 dark:text-slate-400">Username</label>
-        <input
+        <Field
           id="username"
+          label="Username"
           type="text"
           value={username}
           onChange={(e) => {
@@ -106,14 +107,15 @@ export function Signup() {
             if (warning) setUsernameWarning(warning);
           }}
           onFocus={() => setUsernameWarning(null)}
-          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
+          labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+          inputClassName="mt-1"
+          error={usernameWarning}
+          reserveMessageSpace
+          messageClassName="mt-0.5 min-h-[1.25rem] pl-0.5"
         />
-        <p className={`mt-0.5 min-h-[1.25rem] pl-0.5 text-xs ${usernameWarning ? "text-rose-500" : "text-transparent"}`}>
-          {usernameWarning || "\u00A0"}
-        </p>
-        <label htmlFor="email" className="block text-sm text-slate-600 dark:text-slate-400">Email</label>
-        <input
+        <Field
           id="email"
+          label="Email"
           type="email"
           value={email}
           onChange={(e) => { setEmail(e.target.value); setEmailWarning(null); }}
@@ -122,11 +124,12 @@ export function Signup() {
               setEmailWarning("Please enter a valid email address.");
             }
           }}
-          className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
+          labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+          inputClassName="mt-1"
+          error={emailWarning}
+          reserveMessageSpace
+          messageClassName="mt-0.5 min-h-[1.25rem] pl-0.5"
         />
-        <p className={`mt-0.5 min-h-[1.25rem] pl-0.5 text-xs ${emailWarning ? "text-rose-500" : "text-transparent"}`}>
-          {emailWarning || "\u00A0"}
-        </p>
         <label htmlFor="password" className="block text-sm text-slate-600 dark:text-slate-400">Password</label>
         <PasswordInput
           id="password"

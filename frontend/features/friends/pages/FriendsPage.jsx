@@ -8,6 +8,7 @@ import { Button } from "@shared/components/Button";
 import { InfoChip } from "@shared/components/InfoChip";
 import { PageHeader } from "@shared/components/PageHeader";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
+import { UserAvatar } from "@shared/components/UserAvatar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 export default function FriendsPage() {
@@ -69,20 +70,6 @@ export default function FriendsPage() {
     backgroundImage: "var(--opal-backdrop-image)"
   };
 
-  const avatarGradients = [
-    "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
-    "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
-    "from-emerald-300 to-green-400 dark:from-emerald-500/80 dark:to-green-600/80",
-    "from-orange-300 to-amber-400 dark:from-orange-500/80 dark:to-amber-600/80"
-  ];
-  const getAvatarGradient = (userId) => {
-    const value = String(userId || "");
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-      hash = (hash * 31 + value.charCodeAt(i)) % avatarGradients.length;
-    }
-    return avatarGradients[hash];
-  };
   const dateSortChip = [{ value: "date", label: "Newest", reverseLabel: "Oldest" }];
   const sortedFriends = useMemo(() => {
     const items = [...friends];
@@ -162,7 +149,6 @@ export default function FriendsPage() {
                     <div className="grid grid-cols-1 gap-3">
                       {incomingPending.map((r) => {
                         const other = getOtherUser(r);
-                        const gradient = getAvatarGradient(other?._id || other?.id || other?.user_id);
                         return (
                           <Link
                             key={r._id}
@@ -171,21 +157,14 @@ export default function FriendsPage() {
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-3 min-w-0 text-left">
-                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg shrink-0`}>
-                                  {other.user_data?.profile_pic ? (
-                                    <img
-                                      src={other.user_data.profile_pic}
-                                      alt={other.user_data.username}
-                                      className="w-full h-full object-cover"
-                                      onError={(e) => {
-                                        e.target.style.display = "none";
-                                        e.target.parentElement.innerHTML = `<span class="text-white font-semibold text-lg">${other.user_data.username.charAt(0).toUpperCase()}</span>`;
-                                      }}
-                                    />
-                                  ) : (
-                                    <span>{other.user_data?.username?.charAt(0).toUpperCase()}</span>
-                                  )}
-                                </div>
+                                <UserAvatar
+                                  userId={other?._id || other?.id || other?.user_id}
+                                  name={other.user_data?.username}
+                                  src={other.user_data?.profile_pic}
+                                  shape="rounded"
+                                  className="w-11 h-11 shrink-0 text-lg sm:w-12 sm:h-12"
+                                  textClassName="text-lg"
+                                />
                                 <div className="min-w-0">
                                   <p className="font-semibold text-slate-800 dark:text-slate-100 text-base sm:text-lg truncate">{other.user_data?.username}</p>
                                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Sent you a request</p>
@@ -242,7 +221,6 @@ export default function FriendsPage() {
                     <div className="grid grid-cols-1 gap-3">
                       {outgoingPending.map((r) => {
                         const other = getOtherUser(r);
-                        const gradient = getAvatarGradient(other?._id || other?.id || other?.user_id);
                         return (
                           <Link
                             key={r._id}
@@ -251,21 +229,14 @@ export default function FriendsPage() {
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-3 min-w-0 text-left">
-                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg shrink-0`}>
-                                  {other.user_data?.profile_pic ? (
-                                    <img
-                                      src={other.user_data.profile_pic}
-                                      alt={other.user_data.username}
-                                      className="w-full h-full object-cover"
-                                      onError={(e) => {
-                                        e.target.style.display = "none";
-                                        e.target.parentElement.innerHTML = `<span class="text-white font-semibold text-lg">${other.user_data.username.charAt(0).toUpperCase()}</span>`;
-                                      }}
-                                    />
-                                  ) : (
-                                    <span>{other.user_data?.username?.charAt(0).toUpperCase()}</span>
-                                  )}
-                                </div>
+                                <UserAvatar
+                                  userId={other?._id || other?.id || other?.user_id}
+                                  name={other.user_data?.username}
+                                  src={other.user_data?.profile_pic}
+                                  shape="rounded"
+                                  className="w-11 h-11 shrink-0 text-lg sm:w-12 sm:h-12"
+                                  textClassName="text-lg"
+                                />
                                 <div className="min-w-0">
                                   <p className="font-semibold text-slate-800 dark:text-slate-100 text-base sm:text-lg truncate">{other.user_data?.username}</p>
                                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Request sent</p>
@@ -333,7 +304,6 @@ export default function FriendsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {sortedFriends.map((f) => {
                     const other = getOtherUser(f);
-                    const gradient = getAvatarGradient(other?._id || other?.id || other?.user_id);
                     const friendshipTime = getFriendshipTime(f);
                     return (
                       <Link
@@ -385,21 +355,14 @@ export default function FriendsPage() {
                         ) : (
                           <div className="flex items-center justify-between gap-3 w-full">
                             <div className="flex items-center gap-3 min-w-0 text-left">
-                              <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-[30%] overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-semibold text-lg shrink-0`}>
-                                {other.user_data?.profile_pic ? (
-                                  <img
-                                    src={other.user_data.profile_pic}
-                                    alt={other.user_data.username}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      e.target.style.display = "none";
-                                      e.target.parentElement.innerHTML = `<span class="text-white font-semibold text-lg">${other.user_data.username.charAt(0).toUpperCase()}</span>`;
-                                    }}
-                                  />
-                                ) : (
-                                  <span>{other.user_data?.username?.charAt(0).toUpperCase()}</span>
-                                )}
-                              </div>
+                              <UserAvatar
+                                userId={other?._id || other?.id || other?.user_id}
+                                name={other.user_data?.username}
+                                src={other.user_data?.profile_pic}
+                                shape="rounded"
+                                className="w-11 h-11 shrink-0 text-lg sm:w-12 sm:h-12"
+                                textClassName="text-lg"
+                              />
                               <div className="min-w-0">
                                 <p className="font-semibold text-slate-800 dark:text-slate-100 text-base sm:text-lg truncate">{other.user_data?.username}</p>
                                 {friendshipTime > 0 && (

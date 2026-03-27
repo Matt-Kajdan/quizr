@@ -28,13 +28,14 @@ function getOptionClassName({ isActive, roundedClassName }) {
   );
 }
 
-export function SelectDropdown({
+export function Dropdown({
   value,
   options,
   onChange,
   getOptionValue = defaultGetOptionValue,
   getOptionLabel = defaultGetOptionLabel,
   renderTrigger,
+  renderOption,
   className,
   buttonClassName,
   menuClassName,
@@ -132,7 +133,9 @@ export function SelectDropdown({
                 optionClassName
               )}
             >
-              {optionLabel}
+              {renderOption
+                ? renderOption({ option, optionValue, optionLabel, isActive })
+                : optionLabel}
             </button>
           );
         })}
@@ -140,3 +143,5 @@ export function SelectDropdown({
     </div>
   );
 }
+
+export const SelectDropdown = Dropdown;

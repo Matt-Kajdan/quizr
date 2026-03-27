@@ -16,6 +16,7 @@ import { InfoChipGroup } from "@shared/components/InfoChipGroup";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PageShell } from "@shared/components/PageShell";
 import { SortingChipBar } from "@shared/components/SortingChipBar";
+import { UserAvatar } from "@shared/components/UserAvatar";
 import { useUser } from "@shared/state/useUser";
 import { useIsMobile } from "@shared/hooks/useIsMobile";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
@@ -56,21 +57,6 @@ export default function ProfilePage() {
   const [removeFriendModalPos, setRemoveFriendModalPos] = useState({ top: 0, left: 0 });
   const removeFriendButtonRef = useRef(null);
   const removeFriendModalRef = useRef(null);
-  const avatarGradients = [
-    "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
-    "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
-    "from-emerald-300 to-green-400 dark:from-emerald-500/80 dark:to-green-600/80",
-    "from-orange-300 to-amber-400 dark:from-orange-500/80 dark:to-amber-600/80"
-  ];
-  const getAvatarGradient = (userId) => {
-    const value = String(userId || "");
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-      hash = (hash * 31 + value.charCodeAt(i)) % avatarGradients.length;
-    }
-    return avatarGradients[hash];
-  };
-
   const returnTo = location.pathname;
   const getFavouriteCount = (quiz) => Math.max(
     0,
@@ -693,10 +679,6 @@ export default function ProfilePage() {
     );
   }
 
-  function formatQuizCountLabel(count) {
-    return `${count} quiz${count === 1 ? "" : "zes"}`;
-  }
-
   function formatCategoryLabel(category) {
     if (!category) return "Other";
     return category.charAt(0).toUpperCase() + category.slice(1);
@@ -732,15 +714,16 @@ export default function ProfilePage() {
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-slate-200/80 relative overflow-hidden shadow-sm">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <div className="relative">
-                  <div className={`w-20 h-20 sm:w-28 sm:h-28 rounded-[30%] overflow-hidden border-2 border-slate-200/80 bg-gradient-to-br ${getAvatarGradient(profile._id)} flex items-center justify-center`}>
-                    {profile.user_data?.profile_pic ? (
-                      <img src={profile.user_data.profile_pic} alt={profile.user_data.username} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-white text-3xl sm:text-4xl font-semibold">
-                        {profile.user_data?.username?.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
+                  <UserAvatar
+                    userId={profile._id}
+                    name={profile.user_data?.username}
+                    src={profile.user_data?.profile_pic}
+                    shape="rounded"
+                    border
+                    borderClassName="border-2 border-slate-200/80"
+                    className="w-20 h-20 text-3xl sm:w-28 sm:h-28 sm:text-4xl"
+                    textClassName="text-3xl sm:text-4xl"
+                  />
                 </div>
 
                 <div className="flex-1 text-center sm:text-left">
@@ -938,8 +921,7 @@ export default function ProfilePage() {
                         { label: "Quizzes created", value: quizzesCreatedCount },
                         { label: `${ownerLabel} average score`, value: `${myAvgScore}%` }
                       ];
-                      const total = statsList.length;
-                      return statsList.map((s, idx) => (
+                      return statsList.map((s) => (
                         <div
                           key={s.label + s.value}
                           className={`flex items-end justify-between px-1 py-1 text-sm border-slate-200/80 dark:border-slate-800/90 border-b last:border-b-0 sm:border-b-0 sm:[&:not(:nth-last-child(-n+2))]:border-b`}

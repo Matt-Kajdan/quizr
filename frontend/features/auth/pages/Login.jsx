@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { login, forgotPassword } from "@shared/auth/authService";
 import { BACKEND_URL } from "@shared/api/backendUrl";
 import { AuthPageShell } from "@shared/components/AuthPageShell";
+import { Field } from "@shared/components/Field";
 import { PasswordInput } from "@shared/components/PasswordInput";
 
 export function Login() {
@@ -86,14 +87,15 @@ export function Login() {
             </div>
           ) : (
             <form onSubmit={handleForgotSubmit} className="mt-5 space-y-4">
-              <label htmlFor="forgot-email" className="block text-sm text-slate-600 dark:text-slate-400">Email</label>
-              <input
+              <Field
                 id="forgot-email"
+                label="Email"
                 type="email"
                 required
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
+                labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+                inputClassName="mt-2"
               />
               <input
                 type="submit"
@@ -116,17 +118,17 @@ export function Login() {
       ) : (
         <>
           <form onSubmit={handleSubmit} className="space-y-3">
-            <label htmlFor="identifier" className="block text-sm text-slate-600 dark:text-slate-400">Email or username</label>
-            <input
+            <Field
               id="identifier"
+              label="Email or username"
               type="text"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white/70 px-4 py-3 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/70 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-slate-700/70"
+              labelClassName="block text-sm text-slate-600 dark:text-slate-400"
+              inputClassName="mt-1"
+              reserveMessageSpace
+              messageClassName="mt-0.5 min-h-[1.25rem] pl-0.5 text-transparent"
             />
-            <p className="mt-0.5 min-h-[1.25rem] pl-0.5 text-xs text-transparent">
-              &nbsp;
-            </p>
             <label htmlFor="password" className="block text-sm text-slate-600 dark:text-slate-400">Password</label>
             <PasswordInput
               id="password"

@@ -5,6 +5,7 @@ import { PageShell } from "@shared/components/PageShell";
 import { PageHeader } from "@shared/components/PageHeader";
 import { PaginationControl } from "@shared/components/PaginationControl";
 import { SelectDropdown } from "@shared/components/SelectDropdown";
+import { UserAvatar } from "@shared/components/UserAvatar";
 import { toProfileUrl } from "@shared/utils/usernameValidation";
 
 const columns = [
@@ -30,20 +31,6 @@ export default function LeaderboardPage() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const avatarGradients = [
-    "from-rose-300 to-pink-400 dark:from-rose-500/80 dark:to-pink-600/80",
-    "from-sky-300 to-blue-400 dark:from-sky-500/80 dark:to-blue-600/80",
-    "from-emerald-300 to-green-400 dark:from-emerald-500/80 dark:to-green-600/80",
-    "from-orange-300 to-amber-400 dark:from-orange-500/80 dark:to-amber-600/80"
-  ];
-  const getAvatarGradient = (userId) => {
-    const value = String(userId || "");
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-      hash = (hash * 31 + value.charCodeAt(i)) % avatarGradients.length;
-    }
-    return avatarGradients[hash];
-  };
   const opalBackdropStyle = {
     backgroundColor: "var(--opal-bg-color)",
     backgroundImage: "var(--opal-backdrop-image)"
@@ -287,34 +274,29 @@ export default function LeaderboardPage() {
                                 to={toProfileUrl(entry.user_data.username)}
                                 className="flex w-full min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-800 hover:text-slate-800 hover:font-semibold sm:gap-3 sm:px-4 sm:py-3"
                               >
-                                <div
-                                  className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-[18%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[9px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
-                                >
-                                  {entry.user_data?.profile_pic ? (
-                                    <img
-                                      src={entry.user_data.profile_pic}
-                                      alt={entry.user_data.username}
-                                      className="w-full h-full object-cover"
-                                      onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.parentElement.innerHTML = `<span>${(entry.user_data?.username || "?").charAt(0).toUpperCase()}</span>`;
-                                      }}
-                                    />
-                                  ) : (
-                                    <span>{(entry.user_data?.username || "?").charAt(0).toUpperCase()}</span>
-                                  )}
-                                </div>
+                                <UserAvatar
+                                  userId={entry.user_id}
+                                  name={entry.user_data?.username || "?"}
+                                  src={entry.user_data?.profile_pic}
+                                  shape="rounded"
+                                  className="h-6 w-6 shrink-0 text-[9px] shadow-sm sm:h-9 sm:w-9 sm:text-sm"
+                                  textClassName="text-[9px] sm:text-sm"
+                                  style={{ borderRadius: "18%" }}
+                                />
                                 <span className="truncate text-slate-800 dark:text-slate-200">
                                   {entry.user_data?.username}
                                 </span>
                               </Link>
                             ) : (
                               <div className="flex min-w-0 items-center gap-1.5 px-1.5 py-1 text-slate-700 sm:gap-3 sm:px-4 sm:py-3">
-                                <div
-                                  className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-[18%] bg-gradient-to-br ${getAvatarGradient(entry.user_id)} text-[9px] font-semibold text-white shadow-sm sm:h-9 sm:w-9 sm:rounded-[30%] sm:text-sm`}
-                                >
-                                  <span>?</span>
-                                </div>
+                                <UserAvatar
+                                  userId={entry.user_id}
+                                  name="?"
+                                  shape="rounded"
+                                  className="h-6 w-6 shrink-0 text-[9px] shadow-sm sm:h-9 sm:w-9 sm:text-sm"
+                                  textClassName="text-[9px] sm:text-sm"
+                                  style={{ borderRadius: "18%" }}
+                                />
                                 <span className="truncate text-slate-500">
                                   {entry.user_id ? `Unknown user (${entry.user_id})` : "Unknown user"}
                                 </span>
