@@ -43,6 +43,21 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+@keyframes quizr-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: quizr-spin 0.85s linear infinite !important;
+  border-right-color: transparent !important;
+}
+
+html.dark .animate-spin {
+  border-right-color: transparent !important;
+}
+
 @media screen and (max-width: 640px) {
 
   input[type="text"],
